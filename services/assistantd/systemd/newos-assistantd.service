@@ -1,0 +1,20 @@
+[Unit]
+Description=NewOS assistant
+Documentation=https://github.com/mr1charles/new-os-/blob/main/docs/ASSISTANT.md
+PartOf=newos-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/newos-assistantd
+Restart=on-failure
+RestartSec=2
+# The API key can live here instead of the keyring: Environment=ANTHROPIC_API_KEY=...
+# (prefer `secret-tool store --label="NewOS assistant" service newos-assistant account anthropic-api-key`)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=%h %t
+
+[Install]
+WantedBy=newos-session.target

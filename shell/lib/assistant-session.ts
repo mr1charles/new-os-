@@ -107,7 +107,9 @@ function handleEvent(event: ChatEvent) {
       )
       break
     case "fallback":
-      setProvider({ kind: event.to, model: provider.peek().model })
+      // Either the cloud was unreachable (switch to on-device) or Claude's server-side
+      // refusal fallback answered with another model.
+      setProvider({ kind: event.to, model: event.model })
       break
     case "done":
       updateLast((m) => ({ ...m, streaming: false }))

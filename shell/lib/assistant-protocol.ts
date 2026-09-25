@@ -12,7 +12,7 @@ export type ChatEvent =
   | { type: "tool_call"; id: string; name: string; input: unknown }
   | { type: "tool_result"; id: string; name: string; ok: boolean; output: string }
   | { type: "confirm"; request_id: string; tool: string; summary: string }
-  | { type: "fallback"; from: ProviderKind; to: ProviderKind; reason: string }
+  | { type: "fallback"; from: ProviderKind; to: ProviderKind; model: string; reason: string }
   | { type: "done"; stop_reason: string }
   | { type: "error"; message: string }
 
@@ -33,7 +33,11 @@ export interface StatusResponse {
   mode: "auto" | "cloud" | "local"
   active: ProviderKind | "none"
   online: boolean
-  cloud: { configured: boolean; model: string }
+  cloud: {
+    configured: boolean
+    model: string
+    key_source: "environment" | "keyring" | "file" | null
+  }
   local: { available: boolean; model: string; url: string }
   assistant_name: string
 }

@@ -1,0 +1,36 @@
+# ~/.config/newos/assistant.toml. Every setting is optional; these are the defaults.
+# The Settings app (milestone 3) edits this file.
+
+# auto: Claude in the cloud when online and a key is set, otherwise the on-device model.
+# cloud: always Claude. local: always on-device (nothing leaves the laptop).
+mode = "auto"
+name = "Assistant"
+
+[cloud]
+base_url = "https://api.anthropic.com"
+model = "claude-opus-5"
+# low | medium | high | xhigh | max
+effort = "medium"
+max_tokens = 64000
+thinking = true
+# Server-side refusal fallbacks: a declined request is re-run on Anthropic's recommended
+# fallback model instead of failing.
+fallbacks = true
+# The key is read from this environment variable, then the keyring, then api_key_file.
+api_key_env = "ANTHROPIC_API_KEY"
+# api_key_file = "/home/you/.config/newos/anthropic.key"
+
+[local]
+url = "http://127.0.0.1:11434"
+model = "qwen2.5:3b"
+embed_model = "nomic-embed-text"
+num_ctx = 8192
+
+[privacy]
+share_window_title = true
+store_history = true
+
+[tools]
+# run_shell always asks for approval in the Dynamic Island before running anything.
+allow_shell = true
+# notes_dir = "/home/you/Notes"

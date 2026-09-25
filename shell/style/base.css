@@ -1,0 +1,133 @@
+/* Shared shell styles. Colors come from @newos/design-tokens (--newos-*), loaded first. */
+
+* {
+  font-family: var(--newos-font-family);
+}
+
+window.popup-window,
+window.island-window,
+window.dock-window,
+window.wallpaper-window {
+  background: transparent;
+}
+
+window.popup-window.dim {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.panel {
+  background: var(--newos-color-material-regular);
+  color: var(--newos-color-fg);
+  border: 1px solid var(--newos-color-separator);
+  border-radius: 18px;
+  box-shadow: var(--newos-color-shadow-popover);
+  padding: 12px;
+  font-size: 13px;
+  margin: 12px;
+}
+
+label {
+  color: inherit;
+}
+
+.accent-icon {
+  color: var(--newos-accent);
+}
+
+button.pill {
+  background: var(--newos-color-control);
+  color: var(--newos-color-fg);
+  border: none;
+  box-shadow: none;
+  border-radius: 999px;
+  padding: 4px 14px;
+  min-height: 0;
+  font-weight: 500;
+}
+
+button.pill:hover {
+  background: var(--newos-color-control-hover);
+}
+
+button.pill.suggested {
+  background: var(--newos-accent);
+  color: var(--newos-color-fg-on-accent);
+}
+
+button.pill.destructive {
+  background: var(--newos-color-danger);
+  color: #ffffff;
+}
+
+button.flat-icon {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 8px;
+  padding: 6px;
+  min-width: 0;
+  min-height: 0;
+  color: var(--newos-color-fg-secondary);
+}
+
+button.flat-icon:hover,
+button.flat-icon:checked {
+  background: var(--newos-color-control-hover);
+  color: var(--newos-color-fg);
+}
+
+.provider-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--newos-accent) 22%, transparent);
+  color: var(--newos-accent);
+}
+
+/* Menus: system menu and dock context menus. */
+popover.system-menu > contents,
+popover.dock-popover > contents {
+  background: var(--newos-color-material-thick);
+  color: var(--newos-color-fg);
+  border: 1px solid var(--newos-color-separator);
+  border-radius: 10px;
+  box-shadow: var(--newos-color-shadow-popover);
+  padding: 5px;
+}
+
+button.menu-item {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  min-width: 220px;
+  min-height: 0;
+  color: var(--newos-color-fg);
+  font-weight: 400;
+}
+
+button.menu-item:hover {
+  background: var(--newos-accent);
+  color: var(--newos-color-fg-on-accent);
+}
+
+.menu-hint {
+  color: var(--newos-color-fg-secondary);
+  font-size: 12px;
+}
+
+button.menu-item:hover .menu-hint {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+separator.menu-separator {
+  background: var(--newos-color-separator);
+  min-height: 1px;
+  margin: 4px 8px;
+}
+
+.menu-confirm {
+  padding: 4px 8px;
+}

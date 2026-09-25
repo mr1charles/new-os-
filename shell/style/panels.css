@@ -1,0 +1,194 @@
+/* Control Center and the app switcher. */
+
+.control-center {
+  min-width: 348px;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.cc-module {
+  background: var(--newos-color-control);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.cc-module-title {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.cc-caption {
+  font-size: 11px;
+  color: var(--newos-color-fg-secondary);
+}
+
+.cc-toggle {
+  border-radius: 12px;
+}
+
+button.cc-toggle-main,
+button.cc-toggle-more,
+button.cc-list-row,
+button.cc-slider-icon,
+button.segment,
+button.cc-link {
+  background: none;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  min-height: 0;
+  color: var(--newos-color-fg);
+}
+
+button.cc-toggle-main {
+  padding: 3px;
+  border-radius: 10px;
+}
+
+button.cc-toggle-main:hover,
+button.cc-toggle-more:hover,
+button.cc-list-row:hover {
+  background: var(--newos-color-control-hover);
+}
+
+.cc-toggle-icon {
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 999px;
+  background: var(--newos-color-control-hover);
+}
+
+.cc-toggle.active .cc-toggle-icon {
+  background: var(--newos-accent);
+  color: var(--newos-color-fg-on-accent);
+}
+
+.cc-toggle-title {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.cc-toggle-subtitle {
+  font-size: 11px;
+  color: var(--newos-color-fg-secondary);
+}
+
+button.cc-toggle-more {
+  padding: 4px;
+  border-radius: 8px;
+  color: var(--newos-color-fg-secondary);
+}
+
+.cc-slider scale {
+  padding: 0;
+  margin: 0;
+}
+
+.cc-slider scale > trough {
+  min-height: 22px;
+  border-radius: 11px;
+  background: var(--newos-color-track-off);
+  border: none;
+}
+
+.cc-slider scale > trough > highlight {
+  border-radius: 11px;
+  background: var(--newos-color-fg);
+  border: none;
+}
+
+.cc-slider scale > trough > slider {
+  min-width: 22px;
+  min-height: 22px;
+  margin: 0;
+  border-radius: 11px;
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+button.cc-slider-icon {
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.cc-battery-percent {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.segmented {
+  background: var(--newos-color-track-off);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+button.segment {
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+
+button.segment.active {
+  background: var(--newos-color-bg-elevated);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.now-playing image.cover {
+  border-radius: 8px;
+}
+
+.cc-page-header {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--newos-color-separator);
+}
+
+.cc-page-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+button.cc-list-row {
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+button.cc-list-row.active {
+  color: var(--newos-accent);
+  font-weight: 600;
+}
+
+entry.cc-password {
+  margin: 4px 8px 6px;
+  border-radius: 8px;
+}
+
+button.cc-link {
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--newos-color-fg-secondary);
+}
+
+button.cc-link:hover {
+  color: var(--newos-color-fg);
+}
+
+.app-switcher {
+  padding: 16px;
+  border-radius: 26px;
+  background: var(--newos-color-material-thick);
+}
+
+button.switcher-item {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 18px;
+  padding: 12px;
+  color: var(--newos-color-fg);
+  font-size: 12px;
+}
+
+button.switcher-item.selected {
+  background: var(--newos-color-control-active);
+}

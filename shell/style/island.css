@@ -1,0 +1,270 @@
+/* Dynamic Island: always black, like the hardware it imitates. */
+
+.island {
+  background: #000000;
+  color: #ffffff;
+  border-radius: 19px;
+  min-width: 190px;
+  min-height: 34px;
+  padding: 0 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transition:
+    min-width 450ms cubic-bezier(0.2, 0.9, 0.2, 1.05),
+    min-height 450ms cubic-bezier(0.2, 0.9, 0.2, 1.05),
+    border-radius 450ms cubic-bezier(0.2, 0.9, 0.2, 1.05),
+    padding 450ms cubic-bezier(0.2, 0.9, 0.2, 1.05);
+}
+
+.island.compact.kind-media,
+.island.compact.kind-timer,
+.island.compact.kind-install {
+  min-width: 250px;
+}
+
+.island.expanded {
+  min-width: 400px;
+  min-height: 66px;
+  border-radius: 30px;
+  padding: 10px 16px;
+}
+
+.island.expanded.kind-idle {
+  min-width: 320px;
+  min-height: 40px;
+  border-radius: 20px;
+  padding: 4px 16px;
+}
+
+.island.expanded.kind-volume,
+.island.expanded.kind-brightness {
+  min-width: 330px;
+  min-height: 42px;
+  border-radius: 21px;
+  padding: 4px 18px;
+}
+
+.island.large {
+  min-width: 540px;
+  min-height: 120px;
+  border-radius: 36px;
+  padding: 16px 22px;
+}
+
+.island-page {
+  border-spacing: 12px;
+}
+
+.island-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.island-body {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+}
+
+.island-caption {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+}
+
+.idle-hint {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.idle-time {
+  font-weight: 600;
+  font-feature-settings: "tnum";
+}
+
+.island image {
+  color: #ffffff;
+}
+
+.island .accent-icon {
+  color: var(--newos-accent);
+}
+
+button.island-button {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+  border-radius: 999px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+button.island-button:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+button.island-button.large {
+  min-width: 38px;
+  min-height: 38px;
+}
+
+button.island-button.destructive {
+  background: #ff9f0a;
+  color: #000000;
+}
+
+button.island-button.destructive image {
+  color: #000000;
+}
+
+.island button.pill {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.island button.pill.suggested {
+  background: var(--newos-accent);
+}
+
+levelbar.island-level > trough {
+  min-height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 0;
+}
+
+levelbar.island-level > trough > block {
+  min-height: 6px;
+  border-radius: 3px;
+  border: none;
+}
+
+levelbar.island-level > trough > block.filled {
+  background: #ffffff;
+}
+
+levelbar.island-level > trough > block.empty {
+  background: transparent;
+}
+
+levelbar.timer-level > trough > block.filled {
+  background: #ff9f0a;
+}
+
+.level-value {
+  font-feature-settings: "tnum";
+}
+
+image.cover {
+  border-radius: 10px;
+}
+
+image.cover.small {
+  border-radius: 6px;
+}
+
+image.notification-image {
+  border-radius: 10px;
+}
+
+.equalizer .bar {
+  min-width: 3px;
+  min-height: 4px;
+  border-radius: 2px;
+  background: var(--newos-accent);
+}
+
+.equalizer.playing .b1 {
+  animation: eq 900ms ease-in-out infinite;
+}
+
+.equalizer.playing .b2 {
+  animation: eq 700ms ease-in-out 150ms infinite;
+}
+
+.equalizer.playing .b3 {
+  animation: eq 1000ms ease-in-out 300ms infinite;
+}
+
+.equalizer.playing .b4 {
+  animation: eq 800ms ease-in-out 100ms infinite;
+}
+
+@keyframes eq {
+  0% {
+    min-height: 4px;
+  }
+  50% {
+    min-height: 15px;
+  }
+  100% {
+    min-height: 4px;
+  }
+}
+
+.timer-icon,
+.timer-countdown {
+  color: #ff9f0a;
+}
+
+.timer-countdown {
+  font-weight: 600;
+  font-feature-settings: "tnum";
+}
+
+.timer-countdown.big {
+  font-size: 30px;
+  font-weight: 300;
+}
+
+.battery-big {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.battery-big.charging,
+.island image.charging {
+  color: #30d158;
+}
+
+.battery-big.low,
+.island image.low {
+  color: #ff453a;
+}
+
+.warning-icon {
+  color: #ffd60a;
+}
+
+.confirm-summary {
+  font-family: var(--newos-font-mono);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.assistant-text {
+  font-size: 14px;
+}
+
+.pulsing {
+  animation: pulse 1400ms ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.island .provider-badge {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
+}

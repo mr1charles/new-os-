@@ -1,0 +1,32 @@
+{
+  "name": "@newos/shell",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NewOS desktop shell: bar, Dynamic Island, dock, launcher, control center, notifications, assistant overlay (AGS/Astal, GTK4).",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "dev": "ags run --gtk 4 app.ts",
+    "start": "ags run --gtk 4 app.ts",
+    "bundle": "ags bundle app.ts dist/newos-shell",
+    "types": "ags types -d . --gtk 4 -u"
+  },
+  "dependencies": {
+    "@newos/design-tokens": "workspace:*",
+    "ags": "github:Aylur/ags#v3.1.2",
+    "gnim": "^1.9.1"
+  },
+  "devDependencies": {
+    "@girs/adw-1": "1.10.0-4.0.0-rc.1",
+    "@girs/gdk-4.0": "4.0.0-4.0.0-rc.1",
+    "@girs/gio-2.0": "2.88.0-4.0.0-rc.1",
+    "@girs/gjs": "4.0.0-rc.1",
+    "@girs/glib-2.0": "2.88.0-4.0.0-rc.1",
+    "@girs/gobject-2.0": "2.88.0-4.0.0-rc.1",
+    "@girs/graphene-1.0": "1.0.0-4.0.0-rc.1",
+    "@girs/gtk-4.0": "4.23.0-4.0.0-rc.1",
+    "@girs/pango-1.0": "1.57.1-4.0.0-rc.1",
+    "@girs/soup-3.0": "3.6.6-4.0.0-rc.1"
+  }
+}

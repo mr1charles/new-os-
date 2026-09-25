@@ -1,0 +1,70 @@
+window.bar {
+  background: var(--newos-color-material-bar);
+  color: var(--newos-color-fg);
+}
+
+.bar-content {
+  min-height: 30px;
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+button.bar-item,
+menubutton.bar-item > button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--newos-color-fg);
+  border-radius: 6px;
+  padding: 2px 8px;
+  min-height: 22px;
+  min-width: 0;
+}
+
+button.bar-item:hover,
+menubutton.bar-item > button:hover {
+  background: var(--newos-color-control-hover);
+}
+
+menubutton.bar-item > button:checked {
+  background: var(--newos-color-control-active);
+}
+
+menubutton.logo > button {
+  padding: 2px 12px;
+}
+
+menubutton.logo image {
+  -gtk-icon-size: 16px;
+}
+
+.active-app {
+  font-weight: 700;
+  padding: 0 8px;
+}
+
+.clock label {
+  font-weight: 500;
+  font-feature-settings: "tnum";
+}
+
+.battery-percent {
+  font-size: 12px;
+}
+
+.battery.charging image {
+  color: var(--newos-color-success);
+}
+
+.battery.low image {
+  color: var(--newos-color-warning);
+}
+
+.battery.critical image,
+.battery.critical .battery-percent {
+  color: var(--newos-color-danger);
+}
+
+.assistant-button image {
+  color: var(--newos-accent);
+}

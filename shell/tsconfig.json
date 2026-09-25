@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2023"],
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "ags/gtk4",
+    "types": [],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "env.d.ts",
+    "types/**/*.d.ts",
+    "app.ts",
+    "lib/**/*.ts",
+    "widgets/**/*.ts",
+    "widgets/**/*.tsx"
+  ],
+  "exclude": ["node_modules", "@girs", ".ags", "**/*.test.ts"]
+}

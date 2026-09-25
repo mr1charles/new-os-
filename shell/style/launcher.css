@@ -1,0 +1,95 @@
+.launcher {
+  padding: 0;
+  min-width: 680px;
+  border-radius: 18px;
+  background: var(--newos-color-material-thick);
+}
+
+.launcher.view-grid {
+  min-width: 820px;
+}
+
+.launcher-search {
+  padding: 12px 16px;
+}
+
+.launcher.view-results .launcher-search,
+.launcher.view-grid .launcher-search {
+  border-bottom: 1px solid var(--newos-color-separator);
+}
+
+.launcher-search image {
+  color: var(--newos-color-fg-secondary);
+}
+
+.launcher-search entry {
+  background: none;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  min-height: 34px;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--newos-color-fg);
+}
+
+.launcher-results {
+  padding: 6px;
+}
+
+button.launcher-result {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 10px;
+  padding: 7px 10px;
+  color: var(--newos-color-fg);
+}
+
+button.launcher-result.selected {
+  background: var(--newos-accent);
+  color: var(--newos-color-fg-on-accent);
+}
+
+.result-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.result-subtitle {
+  font-size: 11px;
+  color: var(--newos-color-fg-secondary);
+}
+
+button.launcher-result.selected .result-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+button.launcher-result.kind-calc .result-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.result-hint {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.launcher-grid {
+  padding: 16px;
+}
+
+button.grid-app {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 14px;
+  padding: 10px 6px;
+  min-width: 96px;
+  color: var(--newos-color-fg);
+  font-size: 12px;
+}
+
+button.grid-app:hover {
+  background: var(--newos-color-control-hover);
+}

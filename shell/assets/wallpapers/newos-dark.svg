@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2400" viewBox="0 0 3840 2400" preserveAspectRatio="xMidYMid slice">
+  <!-- NewOS default wallpaper (dark). Original artwork, MIT licensed. -->
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#0B1026"/>
+      <stop offset="0.55" stop-color="#15123A"/>
+      <stop offset="1" stop-color="#050814"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#6A5CFF" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#6A5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF4FA3" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#FF4FA3" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#1FD1F9" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#1FD1F9" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7F7BFF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#B9A8FF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FF7EC7" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="3840" height="2400" fill="url(#base)"/>
+  <ellipse cx="1150" cy="1650" rx="1500" ry="1100" fill="url(#glowA)"/>
+  <ellipse cx="2950" cy="700" rx="1300" ry="1000" fill="url(#glowB)"/>
+  <ellipse cx="2300" cy="2100" rx="1400" ry="800" fill="url(#glowC)"/>
+  <path d="M-200 1500 C 700 1100, 1500 1900, 2400 1400 S 3700 900, 4100 1250" fill="none" stroke="url(#wave)" stroke-width="140" stroke-linecap="round"/>
+  <path d="M-200 1720 C 800 1350, 1600 2100, 2500 1640 S 3700 1150, 4100 1480" fill="none" stroke="url(#wave)" stroke-width="60" stroke-linecap="round" opacity="0.6"/>
+</svg>

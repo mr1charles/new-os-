@@ -1,0 +1,30 @@
+{
+  "name": "newos",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NewOS: a macOS-style Linux operating system with a custom shell, Dynamic Island, smart assistant, and Dual Space login.",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r --if-present test",
+    "build": "pnpm -r --if-present build",
+    "check": "pnpm build:tokens && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+    "build:tokens": "pnpm --filter @newos/design-tokens build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.2",
+    "eslint": "^10.11.0",
+    "prettier": "^3.9.9",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.1"
+  }
+}

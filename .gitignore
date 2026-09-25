@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+out/
+target/
+coverage/
+*.tsbuildinfo
+
+# generated types and vendored AGS library for typechecking
+shell/.ags/
+shell/@girs/
+apps/*/src-tauri/gen/
+
+# local config and secrets
+.env
+.env.*
+*.local
+
+# editors and OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.log

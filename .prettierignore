@@ -1,0 +1,9 @@
+node_modules
+dist
+out
+target
+pnpm-lock.yaml
+shell/.ags
+shell/@girs
+distro/archiso/airootfs
+*.md

@@ -1,0 +1,13 @@
+diff --git a/dist/jsx/state.ts b/dist/jsx/state.ts
+index 0c5cc6eb153375e7bed635e6364ee024b8b06eca..1f23e2beb6496c455d29283d9e6f972252b622e5 100644
+--- a/dist/jsx/state.ts
++++ b/dist/jsx/state.ts
+@@ -712,7 +712,7 @@ export function createConnection<T>(init: T, ...handlers: ConnectionHandler<T>[]
+         if (subscribers.size === 0) {
+             dispose = handlers.map(([object, signal, callback]) => {
+                 const id = connect.call(object, signal, (_, ...args) => {
+-                    const newValue = callback(...args, currentValue)
++                    const newValue = (callback as (...a: unknown[]) => T)(...args, currentValue)
+                     if (!Object.is(currentValue, newValue)) {
+                         currentValue = newValue
+                         Array.from(subscribers).forEach((cb) => cb())

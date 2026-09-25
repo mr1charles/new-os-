@@ -1,0 +1,104 @@
+# Roadmap
+
+Each milestone ends with typecheck, lint, and tests passing in CI, plus a checklist to run on
+the laptop or a VM.
+
+| # | Milestone | Status |
+|---|---|---|
+| M0 | Scaffold: monorepo, design tokens, docs, CI | Done |
+| M1 | Desktop shell: bar, Dynamic Island, Dock, launcher, panels | Done |
+| M2 | Assistant daemon and assistant UI | Done |
+| M3 | Settings app, `@newos/ui` kit, `@newos/sdk` | Next |
+| M4 | Files, Notes, Terminal, Calculator | Planned |
+| M5 | Dual Space login, lock screen, biometrics | Planned |
+| M6 | Mail (Gmail, iCloud), Messages, Calendar | Planned |
+| M7 | App Store (Flatpak, EXE, APK), Browser, Photos, Music, Clock | Planned |
+| M8 | Bootable ISO, installer, HP tweaks, ISO built in CI | Planned |
+| M9 | Gestures, Mission Control, Spotlight-grade search, updates, voice | Planned |
+
+## M0 — Scaffold (done)
+
+- [x] pnpm workspace, strict TypeScript, ESLint, Prettier, Vitest
+- [x] Cargo workspace with rustfmt and clippy
+- [x] `@newos/design-tokens`: light/dark colors, 8 accents, type, radii, blur, motion →
+      GTK4 CSS and web CSS
+- [x] CI for both toolchains
+- [x] Docs
+
+## M1 — Desktop shell (done)
+
+- [x] Menu bar: OS menu (About, Settings, Sleep, Restart, Shut Down, Lock, Log Out), active
+      app, tray, battery, Bluetooth, Wi-Fi, volume, Control Center, assistant, clock
+- [x] Dynamic Island with a priority queue: notifications, media (live), volume and
+      brightness, charging and low battery, timers (live), installs (live), assistant,
+      confirmations, welcome
+- [x] Dock: pinned and running apps, magnification, launch bounce, running dots, context
+      menu (windows, Keep in Dock, Quit), Launchpad
+- [x] Launcher: Spotlight search (apps, Settings pages, calculator, assistant, web) and
+      Launchpad grid
+- [x] Control Center: Wi-Fi and Bluetooth (with network and device lists), Airplane, Focus,
+      Dark Mode, Night Shift, brightness, volume, Now Playing, battery and power modes
+- [x] Notification Center with calendar, timers, and history
+- [x] App switcher (Super+Tab), light and dark wallpapers, original icons
+- [x] Hyprland config: floating windows, blur, animations, gestures, macOS-style shortcuts
+- [ ] Verified on the laptop (needs the ISO or an Arch install)
+
+## M2 — Assistant (done)
+
+- [x] `newos-assistantd`: local HTTP API on a user-only unix socket
+- [x] Claude provider: streaming, tool use, adaptive thinking, refusal fallbacks, prompt caching
+- [x] Ollama provider: streaming, tool calls, embeddings
+- [x] Automatic routing between cloud and on-device, with fallback when the cloud is unreachable
+- [x] 29 tools: system settings, apps and windows, files, notes, timers, memory, shell
+- [x] Approval in the Dynamic Island for shell commands, Trash, and sleep
+- [x] Conversation history, remembered facts, tool audit log (SQLite)
+- [x] One-shot tasks for apps: summarize, rewrite, classify, reply, explain, command, extract, title
+- [x] Shell: assistant panel (Super+Space), island states, launcher hand-off
+- [ ] Voice input and output (M9)
+
+## M3 — Settings, UI kit, SDK (next)
+
+- [ ] `@newos/ui`: window chrome with traffic lights, sidebar, toolbar, lists, sheets,
+      popovers, toggles, sliders
+- [ ] `@newos/sdk`: assistant client, live settings store, typed IPC
+- [ ] Settings app: Wi-Fi, Bluetooth, Displays, Sound, Battery, Keyboard, Trackpad,
+      Appearance, Wallpaper, Desktop & Dock, Notifications, Focus, Users & Spaces, Assistant
+      (API key into the keyring, local model), Privacy, Software Update, About
+- [ ] `services/syslib` grows D-Bus access (NetworkManager, BlueZ, UPower) for Settings
+
+## M4 — Core apps
+
+Files (list/column/icon views, Trash, Quick Look, natural-language search), Notes (Markdown in
+`~/Notes`, summarize, rewrite, "ask my notes"), Terminal (tabs, English to command), Calculator.
+
+## M5 — Dual Space
+
+One space per Linux account. `spacesd` resolves which space a password, fingerprint, or face
+belongs to. A greetd greeter and a lock screen with one password field. Switching spaces goes
+through a second greeter on another VT, like fast user switching. Biometric login uses a small
+PAM module that accepts a single-use token from `spacesd`.
+
+## M6 — Communication
+
+Mail over IMAP/SMTP (Gmail and iCloud with app passwords; Gmail OAuth later) with priority
+inbox, summaries, and suggested replies. Messages over Matrix, plus SMS through a virtual
+number (Twilio or Telnyx) so texting works without a phone. Calendar with CalDAV and
+natural-language events.
+
+## M7 — App Store and media
+
+One search over Flathub, Windows apps through Bottles (Wine), and Android apps through
+Waydroid. Installs show progress in the island. Browser, Photos, Music, Clock.
+
+## M8 — Bootable ISO
+
+archiso profile with linux-zen, Intel microcode and graphics, PipeWire, NetworkManager, BlueZ,
+greetd, Hyprland, Astal, Flatpak, Waydroid, Wine, fprintd, Howdy, and Ollama. Tauri installer:
+hardware check, disk (whole disk or next to Windows), spaces, Wi-Fi, assistant, biometrics.
+GitHub Actions builds the ISO.
+
+## M9 — Polish
+
+Pinch and four-finger gestures, Mission Control, embedding-based search, screenshot HUD,
+system updates in the App Store, voice (whisper.cpp in, piper out), accessibility, and
+encrypted homes per space.

@@ -98,7 +98,7 @@ pub fn find_files(root: &Path, query: &str, kind: &str, limit: usize) -> Vec<(St
         let modified = entry.metadata().ok().and_then(|m| m.modified().ok()).unwrap_or(SystemTime::UNIX_EPOCH);
         matches.push((entry.path().to_string_lossy().into_owned(), modified));
     }
-    matches.sort_by(|a, b| b.1.cmp(&a.1));
+    matches.sort_by_key(|m| std::cmp::Reverse(m.1));
     matches.truncate(limit);
     matches
 }

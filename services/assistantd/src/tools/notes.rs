@@ -61,7 +61,7 @@ fn note_files(dir: &Path) -> Vec<(PathBuf, std::time::SystemTime)> {
             (e.path(), modified)
         })
         .collect();
-    notes.sort_by(|a, b| b.1.cmp(&a.1));
+    notes.sort_by_key(|n| std::cmp::Reverse(n.1));
     notes
 }
 

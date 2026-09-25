@@ -12,7 +12,8 @@
 ## Setup
 
 ```bash
-# Node 22 and pnpm 10 (corepack enable), Rust stable
+# Node 22 and pnpm 10 (corepack enable), and rustup: it installs the Rust version pinned in
+# rust-toolchain.toml (1.98.1) the first time you run cargo
 pnpm install
 pnpm check              # tokens → typecheck → lint → prettier → vitest
 cargo test --workspace

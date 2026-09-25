@@ -43,8 +43,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/design-tokens
       ags:
-        specifier: github:Aylur/ags#v3.1.2
-        version: git+https://git@github.com:Aylur/ags.git#bbee2f18939f1ec7ff720e717cf305e73635628f(gnim@1.9.1(patch_hash=796974410d21a020d805a1cfd67346788c84c16b31eec12b0d2d2f4a23c02a3d))
+        specifier: git+https://github.com/Aylur/ags.git#v3.1.2
+        version: git+https://github.com/Aylur/ags.git#bbee2f18939f1ec7ff720e717cf305e73635628f(gnim@1.9.1(patch_hash=796974410d21a020d805a1cfd67346788c84c16b31eec12b0d2d2f4a23c02a3d))
       gnim:
         specifier: ^1.9.1
         version: 1.9.1(patch_hash=796974410d21a020d805a1cfd67346788c84c16b31eec12b0d2d2f4a23c02a3d)
@@ -420,8 +420,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  ags@git+https://git@github.com:Aylur/ags.git#bbee2f18939f1ec7ff720e717cf305e73635628f:
-    resolution: {commit: bbee2f18939f1ec7ff720e717cf305e73635628f, repo: git@github.com:Aylur/ags.git, type: git}
+  ags@git+https://github.com/Aylur/ags.git#bbee2f18939f1ec7ff720e717cf305e73635628f:
+    resolution: {commit: bbee2f18939f1ec7ff720e717cf305e73635628f, repo: https://github.com/Aylur/ags.git, type: git}
     version: 3.1.2
     engines: {gjs: '>=1.79.0'}
     os: [linux]
@@ -1350,7 +1350,7 @@ snapshots:
 
   acorn@8.18.0: {}
 
-  ags@git+https://git@github.com:Aylur/ags.git#bbee2f18939f1ec7ff720e717cf305e73635628f(gnim@1.9.1(patch_hash=796974410d21a020d805a1cfd67346788c84c16b31eec12b0d2d2f4a23c02a3d)):
+  ags@git+https://github.com/Aylur/ags.git#bbee2f18939f1ec7ff720e717cf305e73635628f(gnim@1.9.1(patch_hash=796974410d21a020d805a1cfd67346788c84c16b31eec12b0d2d2f4a23c02a3d)):
     dependencies:
       gnim: 1.9.1(patch_hash=796974410d21a020d805a1cfd67346788c84c16b31eec12b0d2d2f4a23c02a3d)
 

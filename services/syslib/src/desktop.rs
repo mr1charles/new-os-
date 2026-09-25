@@ -71,7 +71,7 @@ pub fn list_apps(dirs: &[PathBuf]) -> Vec<DesktopEntry> {
         collect(dir, dir, &mut seen);
     }
     let mut apps: Vec<DesktopEntry> = seen.into_values().flatten().collect();
-    apps.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    apps.sort_by_key(|a| a.name.to_lowercase());
     apps
 }
 

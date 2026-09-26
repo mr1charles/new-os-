@@ -24,7 +24,6 @@ export function hasProgram(name: string): boolean {
   return GLib.find_program_in_path(name) !== null
 }
 
-export const lockScreen = () => run(["loginctl", "lock-session"])
 export const suspend = () => run(["systemctl", "suspend"])
 export const restart = () => run(["systemctl", "reboot"])
 export const shutdown = () => run(["systemctl", "poweroff"])

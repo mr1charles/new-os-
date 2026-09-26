@@ -6,9 +6,10 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use clap::Parser;
+use newos_spacesd::auth::MockAuthenticator;
 use newos_spacesd::callers::AccountFiles;
 use newos_spacesd::ratelimit::RateLimiter;
-use newos_spacesd::registry::Registry;
+use newos_spacesd::registry::{Registry, Space};
 use newos_spacesd::service::{Authorization, Service, BUS_NAME, OBJECT_PATH};
 use newos_syslib::SystemRunner;
 use tokio::sync::Mutex;
@@ -26,6 +27,10 @@ struct Args {
     /// PAM service for password checks.
     #[arg(long, default_value = "newos-spaces")]
     pam_service: String,
+    /// With --session: two demo spaces with mock accounts, for trying the login screen without
+    /// creating users. "Work" opens with work-demo, "Personal" with home-demo.
+    #[arg(long, requires = "session")]
+    demo: bool,
 }
 
 #[tokio::main]
@@ -34,7 +39,8 @@ async fn main() -> anyhow::Result<()> {
         .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
         .init();
     let args = Args::parse();
-    let own_uid = std::fs::metadata("/proc/self").map(|m| std::os::unix::fs::MetadataExt::uid(&m)).unwrap_or(u32::MAX);
+    // SAFETY: geteuid has no preconditions and cannot fail.
+    let own_uid = unsafe { libc::geteuid() };
     if !args.session && own_uid != 0 {
         anyhow::bail!("the system service must run as root (use --session for development)");
     }
@@ -47,10 +53,22 @@ async fn main() -> anyhow::Result<()> {
         anyhow::bail!("built without PAM support")
     };
 
+    let (registry, auth, runner): (Registry, Arc<dyn newos_spacesd::auth::Authenticator>, Arc<dyn newos_syslib::CommandRunner>) =
+        if args.demo {
+            let mut registry = Registry::default();
+            for (account, name, accent) in [("space-work", "Work", "blue"), ("space-personal", "Personal", "pink")] {
+                registry.add(Space { account: account.into(), name: name.into(), accent: accent.into(), default: false, last_used: 0 });
+            }
+            let mock = MockAuthenticator::with(&[("space-work", "work-demo"), ("space-personal", "home-demo")]);
+            tracing::warn!("demo mode: mock accounts, nothing is changed on this system");
+            (registry, Arc::new(mock), Arc::new(newos_syslib::MockRunner::new()))
+        } else {
+            (Registry::load(&args.state)?, auth, Arc::new(SystemRunner::default()))
+        };
     let service = Service {
-        registry: Mutex::new(Registry::load(&args.state)?),
+        registry: Mutex::new(registry),
         auth,
-        runner: Arc::new(SystemRunner::default()),
+        runner,
         limiter: Mutex::new(RateLimiter::default()),
         callers: AccountFiles::default(),
         authorization: if args.session { Authorization::SameUser } else { Authorization::Polkit },

@@ -17,11 +17,14 @@ import panels from "../style/panels.css"
 import launcher from "../style/launcher.css"
 import notifications from "../style/notifications.css"
 import assistant from "../style/assistant.css"
+import login from "../style/login.css"
 import { config } from "./config"
 import { resolveTheme, type Theme } from "@newos/sdk/settings-schema"
 import { minute } from "./clock"
 
-const STYLES = [base, bar, island, dock, panels, launcher, notifications, assistant].join("\n")
+const STYLES = [base, bar, island, dock, panels, launcher, notifications, assistant, login].join(
+  "\n",
+)
 
 const Adw = await import("gi://Adw?version=1").then((m) => m.default).catch(() => null)
 

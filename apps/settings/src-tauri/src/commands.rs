@@ -224,3 +224,42 @@ pub async fn updates(ctx: State<'_, Ctx>) -> Result<Vec<updates::PackageUpdate>>
 pub async fn update_in_terminal(ctx: State<'_, Ctx>) -> Result<()> {
     terminal::run_in_terminal(&ctx.runner, terminal::UPDATE_SCRIPT).await
 }
+
+// Users & Spaces (newos-spacesd) -----------------------------------------------------------------
+
+use newos_appkit::spaces::{self, Space};
+
+#[tauri::command]
+pub async fn spaces_list() -> Result<Vec<Space>> {
+    spaces::list().await
+}
+
+#[tauri::command]
+pub async fn spaces_create(name: String, password: String, accent: String) -> Result<Space> {
+    spaces::create(&name, &password, &accent).await
+}
+
+#[tauri::command]
+pub async fn spaces_delete(account: String, keep_home: bool) -> Result<()> {
+    spaces::delete(&account, keep_home).await
+}
+
+#[tauri::command]
+pub async fn spaces_rename(account: String, name: String) -> Result<()> {
+    spaces::rename(&account, &name).await
+}
+
+#[tauri::command]
+pub async fn spaces_set_accent(account: String, accent: String) -> Result<()> {
+    spaces::set_accent(&account, &accent).await
+}
+
+#[tauri::command]
+pub async fn spaces_set_default(account: String) -> Result<()> {
+    spaces::set_default(&account).await
+}
+
+#[tauri::command]
+pub async fn spaces_set_password(account: String, password: String) -> Result<()> {
+    spaces::set_password(&account, &password).await
+}

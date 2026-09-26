@@ -858,3 +858,69 @@ declare module "gi://AstalPowerProfiles" {
   }
   export default AstalPowerProfiles
 }
+
+// ---------------------------------------------------------------------------------------------
+// AstalAuth (PAM from the shell: the lock screen checks the space's own password)
+// ---------------------------------------------------------------------------------------------
+declare module "gi://AstalAuth" {
+  import type Gio from "gi://Gio?version=2.0"
+
+  namespace AstalAuth {
+    class Pam {
+      /** Starts PAM for the current user with `password`; returns false if it could not start. */
+      static authenticate(
+        password: string,
+        callback: (source: null, result: Gio.AsyncResult) => void,
+      ): boolean
+      /** 0 on success; throws a GLib.Error on failure. */
+      static authenticate_finish(result: Gio.AsyncResult): number
+    }
+  }
+  export default AstalAuth
+}
+
+// ---------------------------------------------------------------------------------------------
+// AstalGreet (greetd IPC for the login screen)
+// ---------------------------------------------------------------------------------------------
+declare module "gi://AstalGreet" {
+  import type Gio from "gi://Gio?version=2.0"
+
+  namespace AstalGreet {
+    /** Authenticate `username` with greetd and start `cmd` as their session. */
+    function login(
+      username: string,
+      password: string,
+      cmd: string,
+      callback: (source: null, result: Gio.AsyncResult) => void,
+    ): void
+    /** Throws a GLib.Error when greetd refused the login. */
+    function login_finish(result: Gio.AsyncResult): void
+  }
+  export default AstalGreet
+}
+
+// ---------------------------------------------------------------------------------------------
+// Gtk4SessionLock (ext-session-lock-v1 from gtk4-layer-shell: the lock screen)
+// ---------------------------------------------------------------------------------------------
+declare module "gi://Gtk4SessionLock?version=1.0" {
+  import type Gtk from "gi://Gtk?version=4.0"
+  import type Gdk from "gi://Gdk?version=4.0"
+  import type GObject from "gi://GObject?version=2.0"
+
+  namespace Gtk4SessionLock {
+    function is_supported(): boolean
+
+    class Instance extends GObject.Object {
+      static ["new"](): Instance
+      /** Ask the compositor to lock. "locked" or "failed" follows. */
+      lock(): boolean
+      unlock(): void
+      is_locked(): boolean
+      assign_window_to_monitor(window: Gtk.Window, monitor: Gdk.Monitor): void
+      connect(signal: "locked" | "failed" | "unlocked", callback: (self: Instance) => void): number
+      connect(signal: "monitor", callback: (self: Instance, monitor: Gdk.Monitor) => void): number
+      connect(signal: string, callback: (...args: unknown[]) => unknown): number
+    }
+  }
+  export default Gtk4SessionLock
+}

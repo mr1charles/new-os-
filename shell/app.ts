@@ -22,6 +22,7 @@ import ControlCenter from "./widgets/ControlCenter"
 import NotificationCenter from "./widgets/NotificationCenter"
 import AppSwitcher from "./widgets/AppSwitcher"
 import AssistantPanel from "./widgets/AssistantPanel"
+import { followLogind } from "./widgets/LockScreen"
 
 const destroy = (window: GObject.Object) => (window as Gtk.Window).destroy()
 
@@ -50,5 +51,6 @@ app.start({
     NotificationCenter()
     AppSwitcher()
     AssistantPanel()
+    followLogind()
   },
 })

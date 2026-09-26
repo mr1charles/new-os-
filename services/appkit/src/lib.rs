@@ -12,6 +12,7 @@ pub mod notes;
 pub mod paths;
 pub mod pty;
 pub mod settings;
+pub mod spaces;
 #[cfg(feature = "tauri")]
 pub mod tauri_app;
 pub mod terminal;

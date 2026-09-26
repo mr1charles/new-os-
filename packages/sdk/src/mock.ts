@@ -17,6 +17,7 @@ import {
   type FileEntry,
   type FileKind,
   type NoteMeta,
+  type SpaceInfo,
   type TrashItem,
 } from "./commands"
 import { emitMockEvent, type MockBackend } from "./ipc"
@@ -302,6 +303,25 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
   const byName = (a: FileEntry, b: FileEntry) =>
     Number(b.kind === "folder") - Number(a.kind === "folder") ||
     a.name.localeCompare(b.name, undefined, { numeric: true })
+
+  // Spaces: the account you are in, plus a second space. Passwords are kept only to reproduce
+  // spacesd's "each space needs its own password" rule.
+  let spaces: SpaceInfo[] = [
+    {
+      account: "a",
+      name: "a",
+      accent: "blue",
+      default: true,
+      last_used: Math.floor(Date.now() / 1000),
+    },
+    { account: "space-work", name: "Work", accent: "purple", default: false, last_used: 0 },
+  ]
+  const spacePasswords = new Map([["space-work", "work-demo"]])
+  const findSpace = (account: unknown) => {
+    const space = spaces.find((s) => s.account === account)
+    if (!space) throw new Error(`no space ${String(account)}`)
+    return space
+  }
 
   // Terminal: a pretend shell that echoes what you type.
   const mockPrompt = "\x1b[1;34m~\x1b[0m $ "
@@ -791,6 +811,64 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       ]
     },
     update_in_terminal: () => null,
+
+    spaces_list: () => spaces.map((s) => ({ ...s })),
+    spaces_create: async ({ name, password, accent }) => {
+      await wait(latency)
+      if (String(password).length < 6)
+        throw new Error("Use at least 6 characters for a space’s password.")
+      const clash = [...spacePasswords.entries()].find(([, p]) => p === password)
+      if (clash)
+        throw new Error(
+          `That password already opens “${findSpace(clash[0]).name}”. Each space needs its own password.`,
+        )
+      const slug =
+        String(name)
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "") || "space"
+      let account = `space-${slug}`
+      for (let n = 2; spaces.some((s) => s.account === account); n++) account = `space-${slug}-${n}`
+      const space = {
+        account,
+        name: String(name).trim(),
+        accent: String(accent),
+        default: false,
+        last_used: 0,
+      }
+      spaces = [...spaces, space]
+      spacePasswords.set(account, String(password))
+      return space
+    },
+    spaces_delete: ({ account }) => {
+      if (spaces.length === 1) throw new Error("The last space can’t be deleted.")
+      if (account === "a") throw new Error("Log out of that space before deleting it.")
+      const removed = findSpace(account)
+      spaces = spaces.filter((s) => s.account !== account)
+      if (removed.default && spaces[0]) spaces[0].default = true
+      spacePasswords.delete(String(account))
+      return null
+    },
+    spaces_rename: ({ account, name }) => {
+      findSpace(account).name = String(name).trim()
+      return null
+    },
+    spaces_set_accent: ({ account, accent }) => {
+      findSpace(account).accent = String(accent)
+      return null
+    },
+    spaces_set_default: ({ account }) => {
+      findSpace(account)
+      spaces.forEach((s) => (s.default = s.account === account))
+      return null
+    },
+    spaces_set_password: ({ account, password }) => {
+      findSpace(account)
+      const clash = [...spacePasswords.entries()].find(([a, p]) => p === password && a !== account)
+      if (clash) throw new Error(`That password already opens “${findSpace(clash[0]).name}”.`)
+      spacePasswords.set(String(account), String(password))
+      return null
+    },
   }
 
   return {

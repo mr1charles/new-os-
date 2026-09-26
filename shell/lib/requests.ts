@@ -5,6 +5,7 @@
  *
  * Hyprland binds (shell/hypr/hyprland.conf) call these for Super+Space, volume keys, etc.
  */
+import { lockSession } from "../widgets/LockScreen"
 import { hidePopup, openLauncher, showPopup, togglePopup, type PopupName } from "./popups"
 import { stepVolume, toggleMute } from "./audio"
 import { stepBrightness } from "./brightness"
@@ -25,6 +26,7 @@ const HELP = `NewOS shell commands:
   brightness up|down              change screen brightness
   theme dark|light|auto|toggle    change appearance
   dnd on|off|toggle               Do Not Disturb
+  lock                            Lock the screen
   timer <duration> [label]        start a timer, e.g. "timer 10m tea"
   island dismiss                  clear the island
   close                           close any open panel`
@@ -48,6 +50,9 @@ export function handleRequest(argv: string[], respond: (response: string) => voi
 
 function dispatch(command: string, args: string[]): string {
   switch (command) {
+    case "lock":
+      lockSession()
+      return "ok"
     case "launcher":
       togglePopupMode("search")
       return "ok"

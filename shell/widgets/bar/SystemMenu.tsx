@@ -1,15 +1,8 @@
 import Gtk from "gi://Gtk?version=4.0"
 import GLib from "gi://GLib?version=2.0"
 import { createState } from "ags"
-import {
-  lockScreen,
-  logOut,
-  openApp,
-  openSettings,
-  restart,
-  shutdown,
-  suspend,
-} from "../../lib/system"
+import { logOut, openApp, openSettings, restart, shutdown, suspend } from "../../lib/system"
+import { lockSession } from "../LockScreen"
 
 type PendingAction = "restart" | "shutdown" | "logout" | null
 
@@ -90,7 +83,7 @@ export default function SystemMenu() {
           {confirmable("Restart…", "restart", "Restart now?", restart)}
           {confirmable("Shut Down…", "shutdown", "Shut down now?", shutdown)}
           {separator()}
-          {item("Lock Screen", lockScreen, "Super L")}
+          {item("Lock Screen", lockSession, "Super L")}
           {confirmable(`Log Out ${who}…`, "logout", "Log out now?", logOut)}
         </box>
       </popover>

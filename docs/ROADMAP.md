@@ -10,7 +10,7 @@ the laptop or a VM.
 | M2 | Assistant daemon and assistant UI | Done |
 | M3 | Settings app, `@newos/ui` kit, `@newos/sdk` | Done |
 | M4 | Files, Notes, Terminal, Calculator | Done |
-| M5 | Dual Space login, lock screen, biometrics | Next |
+| M5 | Dual Space login, lock screen, biometrics | In progress |
 | M6 | Mail (Gmail, iCloud), Messages, Calendar | Planned |
 | M7 | App Store (Flatpak, EXE, APK), Browser, Photos, Music, Clock | Planned |
 | M8 | Bootable ISO, installer, HP tweaks, ISO built in CI | Planned |
@@ -107,12 +107,22 @@ tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` 
 - [ ] Column view and drag and drop in Files; embedding-based "ask my notes" (keyword retrieval
       for now)
 
-## M5 — Dual Space
+## M5 — Dual Space (in progress)
 
-One space per Linux account. `spacesd` resolves which space a password, fingerprint, or face
-belongs to. A greetd greeter and a lock screen with one password field. Switching spaces goes
-through a second greeter on another VT, like fast user switching. Biometric login uses a small
-PAM module that accepts a single-use token from `spacesd`.
+- [x] `newos-spacesd` (system D-Bus `org.newos.Spaces1`): which space a password opens, through
+      PAM; rate limited; only the greeter and spaces may ask; changes need polkit; a password
+      that already opens another space is refused. Tested with mocks, on a real D-Bus, and with
+      real accounts and PAM inside the testing container. Design: [DUAL-SPACE.md](DUAL-SPACE.md)
+- [x] Login screen (`shell/greeter.ts`) for greetd: one password field, no user list, then
+      greetd logs in the space it opens; configs in `distro/configs/greetd`
+- [x] Lock screen on ext-session-lock: your password unlocks; another space's password is
+      recognized
+- [x] Settings → Users & Spaces: add, rename, change password, make default, delete
+- [x] Testing mode runs a demo spacesd ("work-demo", "home-demo") and a lock password ("newos")
+- [ ] Switching to another running space from the lock screen (logind session activation)
+- [ ] Starting a space that is not running from the lock screen (second greeter on another VT)
+- [ ] Fingerprint login to a space (single-use token PAM module); the ELAN reader works
+- [ ] Per-space wallpaper and accent on the login screen
 
 ## M6 — Communication
 

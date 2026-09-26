@@ -1,0 +1,136 @@
+/* Login screen and lock screen (widgets/login, Greeter, LockScreen). */
+
+.greeter-window,
+.lock-window {
+  background: black;
+}
+
+.login {
+  padding: 72px 24px 40px;
+}
+
+.login-date {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.login-time {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 112px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin-top: -8px;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.3);
+}
+
+.login-card {
+  min-width: 300px;
+  padding: 20px 22px 14px;
+  border-radius: 22px;
+  background: rgba(30, 30, 34, 0.42);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.login-card.shake {
+  animation: login-shake 420ms var(--newos-motion-standard);
+}
+
+@keyframes login-shake {
+  0% {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  15% {
+    margin-left: -24px;
+    margin-right: 24px;
+  }
+  35% {
+    margin-left: 18px;
+    margin-right: -18px;
+  }
+  55% {
+    margin-left: -12px;
+    margin-right: 12px;
+  }
+  75% {
+    margin-left: 6px;
+    margin-right: -6px;
+  }
+  100% {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.login-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  margin-top: -6px;
+}
+
+.login-field passwordentry,
+.login-field entry {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 17px;
+  border: none;
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  caret-color: white;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.login-field passwordentry:focus-within {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    0 0 0 3px alpha(var(--newos-accent), 0.45);
+}
+
+.login-field passwordentry text placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.login-go {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.login-go:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.login-status {
+  min-height: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+}
+
+.login-footer {
+  margin-top: 24px;
+}
+
+.login-power {
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+}
+
+.login-power:hover {
+  background: rgba(255, 255, 255, 0.14);
+}

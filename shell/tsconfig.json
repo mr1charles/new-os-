@@ -20,6 +20,7 @@
     "env.d.ts",
     "types/**/*.d.ts",
     "app.ts",
+    "greeter.ts",
     "lib/**/*.ts",
     "widgets/**/*.ts",
     "widgets/**/*.tsx"

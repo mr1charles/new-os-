@@ -13,6 +13,9 @@
 # `run` from a text console (Ctrl+Alt+F3, log in) takes over the whole screen like the real
 # OS, with the real Super key.
 #
+# Super+L (Alt+L in a window) locks the screen; the password is "newos". Dual Space runs in demo
+# mode: "work-demo" and "home-demo" are the passwords of two pretend spaces.
+#
 # No root needed: the container uses user namespaces (the ranges in /etc/subuid and
 # /etc/subgid). It shares the host's network, GPU, sound (PipeWire), and system services
 # (NetworkManager, BlueZ, UPower, fprintd, logind), so Wi-Fi, Bluetooth, volume, and the
@@ -43,7 +46,7 @@ PACKAGES=(
   libsecret gnome-keyring libnotify libcanberra playerctl
   grim slurp wl-clipboard xdg-utils
   inter-font ttf-jetbrains-mono noto-fonts noto-fonts-emoji adwaita-icon-theme
-  kitty firefox xdotool
+  kitty firefox xdotool wtype
 )
 AUR_PACKAGES=(aylurs-gtk-shell-git libastal-meta)
 
@@ -181,6 +184,9 @@ grep -q "^$NAME:" "$ROOT/etc/passwd" || {
   echo "$NAME:x:1000:" >> "$ROOT/etc/group"
   echo "$NAME:!*:20000::::::" >> "$ROOT/etc/shadow"
 }
+# A known password for the container's user, so its lock screen can be unlocked: "newos".
+# It exists only inside the container.
+chroot "$ROOT" /usr/bin/sh -c "echo '$NAME:newos' | chpasswd" 2>/dev/null || true
 mkdir -p "$ROOT/home/$NAME" && chown 1000:1000 "$ROOT/home/$NAME"
 mkdir -p -m 750 "$ROOT/etc/sudoers.d"
 echo "$NAME ALL=(ALL) NOPASSWD: ALL" > "$ROOT/etc/sudoers.d/newos-live"
@@ -221,7 +227,12 @@ update() {
     export CARGO_TARGET_DIR="$HOME/.cache/newos-target"
     [ -d node_modules ] || { echo "error: run pnpm install on the host first" >&2; exit 1; }
     # Tools added after the container was created.
-    sudo pacman -S --needed --noconfirm poppler udisks2 clang >/dev/null 2>&1 || true
+    sudo pacman -S --needed --noconfirm poppler udisks2 clang wtype >/dev/null 2>&1 || true
+    # The lock screen needs a password to unlock: "newos" (this container only).
+    echo "$USER:newos" | sudo chpasswd
+    cargo build --release -p newos-spacesd
+    sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-spacesd" /usr/local/bin/newos-spacesd
+    sudo install -Dm644 distro/configs/pam/newos-spaces /etc/pam.d/newos-spaces
     node packages/design-tokens/src/build.mjs >/dev/null
     cargo build --release -p newos-assistantd
     sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-assistantd" /usr/local/bin/newos-assistantd
@@ -267,6 +278,10 @@ monitor = , preferred, auto, 1
 source = $newos_conf
 source = $HOME/.config/newos/hyprland-settings.conf
 env = XCURSOR_SIZE, 24
+# Dual Space in testing mode: a demo spacesd on the session bus with two mock spaces, "Work"
+# (password work-demo) and "Personal" (home-demo). No real accounts are created.
+env = NEWOS_SPACES_BUS, session
+exec-once = sh -c 'newos-spacesd --session --demo > "$logs/spacesd.log" 2>&1'
 exec-once = gnome-keyring-daemon --start --components=secrets
 exec-once = sh -c 'newos-assistantd > "$logs/assistantd.log" 2>&1'
 exec-once = sh -c 'cd "$NEWOS_REPO/shell" && ags run --gtk 4 app.ts > "$logs/shell.log" 2>&1'
@@ -287,11 +302,15 @@ exec_in_session() {
     fi
   done
   [ -n "$pid" ] || die "NewOS is not running. Start it with: scripts/live.sh run"
-  local signature
-  signature="$(find "/proc/$pid/root/run/user/1000/hypr" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | head -1)"
-  nsenter --target "$pid" --user --mount --root --wd=/ --setuid 1000 --setgid 1000 --preserve-credentials \
+  local signature bus display runtime="/proc/$pid/root/run/user/1000"
+  signature="$(find "$runtime/hypr" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | head -1)"
+  # The session's own D-Bus (dbus-run-session) and Wayland socket, not the host's.
+  bus="$(tr '\0' '\n' <"/proc/$pid/environ" | sed -n 's/^DBUS_SESSION_BUS_ADDRESS=//p')"
+  display="$(find "$runtime" -maxdepth 1 -name 'wayland-*' ! -name '*.lock' -printf '%f\n' | grep -vx "${WAYLAND_DISPLAY:-none}" | head -1)"
+  nsenter --target "$pid" --user --mount --pid --root --wd=/ --setuid 1000 --setgid 1000 --preserve-credentials \
     /usr/bin/env -i -C "/home/$USER_NAME" PATH=/usr/local/bin:/usr/bin HOME="/home/$USER_NAME" XDG_RUNTIME_DIR=/run/user/1000 \
-    HYPRLAND_INSTANCE_SIGNATURE="$signature" WAYLAND_DISPLAY=wayland-1 "$@"
+    HYPRLAND_INSTANCE_SIGNATURE="$signature" WAYLAND_DISPLAY="${display:-wayland-1}" DBUS_SESSION_BUS_ADDRESS="$bus" \
+    NEWOS_REPO="$REPO" "$@"
 }
 
 remove() {
@@ -327,7 +346,7 @@ case "${1:-}" in
     ;;
   __session) session ;;
   *)
-    sed -n '2,20p' "$SELF" | sed 's/^# \{0,1\}//'
+    sed -n '2,17p' "$SELF" | sed 's/^# \{0,1\}//'
     exit 1
     ;;
 esac

@@ -28,6 +28,7 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 zbus = { workspace = true }
 clap = { version = "4", features = ["derive"] }
+libc = "0.2"
 pam-client = { version = "0.5", optional = true }
 
 [dev-dependencies]

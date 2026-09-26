@@ -384,3 +384,24 @@ code {
   font-size: var(--newos-font-size-footnote);
   color: var(--newos-color-fg-secondary);
 }
+
+/* Users & Spaces ------------------------------------------------------------------------- */
+
+.settings-space-dot {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+}
+
+.settings-sheet-intro {
+  margin-bottom: var(--newos-space-3);
+  color: var(--newos-color-fg-secondary);
+}
+
+.settings-sheet-note {
+  margin-top: var(--newos-space-3);
+  font-size: var(--newos-font-size-footnote);
+  color: var(--newos-color-fg-secondary);
+}

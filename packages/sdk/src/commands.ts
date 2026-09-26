@@ -137,6 +137,16 @@ export interface Fingerprints {
   enrolled: string[]
 }
 
+export interface SpaceInfo {
+  /** The account behind the space, e.g. "space-work". */
+  account: string
+  name: string
+  accent: string
+  default: boolean
+  /** Unix seconds of the last login. */
+  last_used: number
+}
+
 export interface PackageUpdate {
   name: string
   from: string
@@ -345,6 +355,15 @@ export interface Commands {
   account: [Record<string, never>, Account]
   fingerprints: [Record<string, never>, Fingerprints]
   updates: [Record<string, never>, PackageUpdate[]]
+
+  // Users & Spaces (newos-spacesd; changes ask for an administrator)
+  spaces_list: [Record<string, never>, SpaceInfo[]]
+  spaces_create: [{ name: string; password: string; accent: string }, SpaceInfo]
+  spaces_delete: [{ account: string; keepHome: boolean }, null]
+  spaces_rename: [{ account: string; name: string }, null]
+  spaces_set_accent: [{ account: string; accent: string }, null]
+  spaces_set_default: [{ account: string }, null]
+  spaces_set_password: [{ account: string; password: string }, null]
   update_in_terminal: [Record<string, never>, null]
 }
 

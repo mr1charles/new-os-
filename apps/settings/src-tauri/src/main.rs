@@ -57,6 +57,13 @@ fn with_commands<R: Runtime>(builder: tauri::Builder<R>, common: Common, ctx: co
         commands::fingerprints,
         commands::updates,
         commands::update_in_terminal,
+        commands::spaces_list,
+        commands::spaces_create,
+        commands::spaces_delete,
+        commands::spaces_rename,
+        commands::spaces_set_accent,
+        commands::spaces_set_default,
+        commands::spaces_set_password,
     ]))
 }
 

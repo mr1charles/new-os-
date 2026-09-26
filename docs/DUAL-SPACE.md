@@ -48,6 +48,20 @@ whose password check then fails in greetd.
 - **Face unlock never picks a space.** Webcam face matching (Howdy) can be fooled by a photo,
   so it may unlock the space you are already in but never open or switch to another one.
 
+## Trying it
+
+In testing mode (`scripts/live.sh run`), spacesd runs in demo mode with two pretend spaces:
+"Work" opens with `work-demo`, "Personal" with `home-demo`. Lock the screen with Alt+L (Super+L
+full screen); the container user's password `newos` unlocks it, and the demo passwords are
+recognized as other spaces. The login screen can be previewed without greetd:
+
+```bash
+scripts/live.sh exec sh -c 'cd $NEWOS_REPO/shell && NEWOS_GREETER_PREVIEW=1 ags run --gtk 4 greeter.ts'
+```
+
+Real accounts and PAM are checked by `services/spacesd/tests/pam-in-container.sh`, which runs as
+the container's root and creates and removes throwaway accounts inside the container only.
+
 ## Not in this milestone
 
 - **Biometric login to a space** (M5.1): fingerprints cannot be passed to greetd as a

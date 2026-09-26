@@ -60,8 +60,8 @@ rootless container with everything NewOS needs, using your real Wi-Fi, sound, an
 ([details](docs/DEVELOPING.md#testing-mode-the-whole-os-in-a-container)):
 
 ```bash
-scripts/live.sh create   # once, ~20-30 minutes
-scripts/live.sh run      # NewOS in a window (or full screen from a text console)
+scripts/install-preview.sh   # adds "NewOS Preview" to your app menu: set up, start, update
+scripts/live.sh run          # or from a terminal: NewOS in a window (full screen from a console)
 ```
 
 ## Docs

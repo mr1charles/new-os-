@@ -39,7 +39,7 @@ PACKAGES=(
   hyprland hypridle xdg-desktop-portal-hyprland mesa vulkan-intel
   gtk3 gtk4 gtk4-layer-shell libadwaita librsvg gobject-introspection webkit2gtk-4.1
   wireplumber networkmanager bluez-utils upower power-profiles-daemon python-gobject
-  brightnessctl fprintd pacman-contrib poppler udisks2
+  brightnessctl fprintd pacman-contrib poppler udisks2 clang
   libsecret gnome-keyring libnotify libcanberra playerctl
   grim slurp wl-clipboard xdg-utils
   inter-font ttf-jetbrains-mono noto-fonts noto-fonts-emoji adwaita-icon-theme
@@ -221,7 +221,7 @@ update() {
     export CARGO_TARGET_DIR="$HOME/.cache/newos-target"
     [ -d node_modules ] || { echo "error: run pnpm install on the host first" >&2; exit 1; }
     # Tools added after the container was created.
-    sudo pacman -S --needed --noconfirm poppler udisks2 >/dev/null 2>&1 || true
+    sudo pacman -S --needed --noconfirm poppler udisks2 clang >/dev/null 2>&1 || true
     node packages/design-tokens/src/build.mjs >/dev/null
     cargo build --release -p newos-assistantd
     sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-assistantd" /usr/local/bin/newos-assistantd

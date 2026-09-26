@@ -1,0 +1,9 @@
+#%PAM-1.0
+# NewOS Dual Space (newos-spacesd): which space a password opens. The login itself goes
+# through greetd's own stack.
+#
+# pam_faillock is left out on purpose: one password is tried against every space, and faillock
+# would count that as failures on the spaces it did not match. spacesd rate-limits instead.
+# nodelay: no 2-second delay per non-matching space; spacesd applies its own lockout.
+auth      required  pam_unix.so nodelay
+account   required  pam_unix.so

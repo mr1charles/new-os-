@@ -36,6 +36,10 @@ pub trait CommandRunner: Send + Sync {
 
     /// Start a program and do not wait for it (apps, URLs).
     fn spawn_detached<'a>(&'a self, program: &'a str, args: &'a [String]) -> BoxFuture<'a, Result<()>>;
+
+    /// Run with `input` on stdin, for secrets that must never be on a command line
+    /// (`chpasswd`).
+    fn run_with_input<'a>(&'a self, program: &'a str, args: &'a [String], input: &'a str) -> BoxFuture<'a, Result<CommandOutput>>;
 }
 
 /// Run and require success, returning stdout.
@@ -83,6 +87,36 @@ impl CommandRunner for SystemRunner {
         })
     }
 
+    fn run_with_input<'a>(&'a self, program: &'a str, args: &'a [String], input: &'a str) -> BoxFuture<'a, Result<CommandOutput>> {
+        Box::pin(async move {
+            use tokio::io::AsyncWriteExt;
+            let mut child = match tokio::process::Command::new(program)
+                .args(args)
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::piped())
+                .kill_on_drop(true)
+                .spawn()
+            {
+                Ok(child) => child,
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Err(SysError::NotInstalled { program: program.to_string() }),
+                Err(e) => return Err(e.into()),
+            };
+            if let Some(mut stdin) = child.stdin.take() {
+                stdin.write_all(input.as_bytes()).await?;
+            }
+            let output = match tokio::time::timeout(self.timeout, child.wait_with_output()).await {
+                Err(_) => return Err(SysError::Failed { program: program.to_string(), message: "timed out".into() }),
+                Ok(result) => result?,
+            };
+            Ok(CommandOutput {
+                status: output.status.code().unwrap_or(-1),
+                stdout: String::from_utf8_lossy(&output.stdout).into_owned(),
+                stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+            })
+        })
+    }
+
     fn spawn_detached<'a>(&'a self, program: &'a str, args: &'a [String]) -> BoxFuture<'a, Result<()>> {
         Box::pin(async move {
             match std::process::Command::new(program)
@@ -105,6 +139,7 @@ impl CommandRunner for SystemRunner {
 pub struct MockRunner {
     responses: Mutex<VecDeque<Result<CommandOutput>>>,
     calls: Mutex<Vec<Vec<String>>>,
+    inputs: Mutex<Vec<String>>,
 }
 
 impl MockRunner {
@@ -121,6 +156,11 @@ impl MockRunner {
     pub fn respond_err(&self, error: SysError) -> &Self {
         self.responses.lock().unwrap().push_back(Err(error));
         self
+    }
+
+    /// What each `run_with_input` call wrote to stdin, in order.
+    pub fn inputs(&self) -> Vec<String> {
+        self.inputs.lock().unwrap().clone()
     }
 
     /// Every call so far, as `[program, args...]`.
@@ -145,5 +185,24 @@ impl CommandRunner for MockRunner {
     fn spawn_detached<'a>(&'a self, program: &'a str, args: &'a [String]) -> BoxFuture<'a, Result<()>> {
         self.record(program, args);
         Box::pin(async { Ok(()) })
+    }
+
+    fn run_with_input<'a>(&'a self, program: &'a str, args: &'a [String], input: &'a str) -> BoxFuture<'a, Result<CommandOutput>> {
+        self.inputs.lock().unwrap().push(input.to_string());
+        self.run(program, args)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn passes_input_on_stdin() {
+        let out = SystemRunner::default().run_with_input("cat", &[], "secret\n").await.unwrap();
+        assert_eq!(out.stdout, "secret\n");
+        let mock = MockRunner::new();
+        mock.run_with_input("chpasswd", &[], "a:b\n").await.unwrap();
+        assert_eq!(mock.inputs(), ["a:b\n"]);
     }
 }

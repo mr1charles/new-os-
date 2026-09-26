@@ -5,7 +5,7 @@
 import GLib from "gi://GLib?version=2.0"
 import Gio from "gi://Gio?version=2.0"
 import { createState } from "ags"
-import { cloneJson, parseConfig, type ShellConfig } from "./config-schema"
+import { cloneJson, parseConfig, type ShellConfig } from "@newos/sdk/settings-schema"
 
 export const CONFIG_DIR = GLib.build_filenamev([GLib.get_user_config_dir(), "newos"])
 export const CONFIG_PATH = GLib.build_filenamev([CONFIG_DIR, "shell.json"])

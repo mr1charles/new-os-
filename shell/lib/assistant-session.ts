@@ -4,7 +4,7 @@
  */
 import { createState } from "ags"
 import { chat, confirmTool, type ChatHandle } from "./assistant"
-import { describeTool, type ChatEvent, type ProviderKind } from "./assistant-protocol"
+import { describeTool, type ChatEvent, type ProviderKind } from "@newos/sdk/assistant-protocol"
 import { island } from "./island"
 import { openPopup } from "./popups"
 import { hyprland } from "./services"

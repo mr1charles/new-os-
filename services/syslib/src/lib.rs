@@ -4,16 +4,21 @@
 //! parsing) is unit tested without touching the machine. The real runner calls the standard
 //! tools a NewOS install ships: `wpctl` (PipeWire), `brightnessctl`, `nmcli`
 //! (NetworkManager), `bluetoothctl`, `loginctl`/`systemctl`, `hyprctl`, `gtk-launch`,
-//! `xdg-open`, `gio`, and `ags` for talking to the shell.
+//! `xdg-open`, `gio`, `powerprofilesctl`, and `ags` for talking to the shell.
 
+pub mod about;
 pub mod audio;
+pub mod bluetooth;
 pub mod desktop;
 pub mod display;
+pub mod hyprconf;
 pub mod hyprland;
 pub mod network;
 pub mod power;
 pub mod runner;
 pub mod shell;
+pub mod updates;
+pub mod users;
 
 pub use runner::{CommandOutput, CommandRunner, MockRunner, SystemRunner};
 

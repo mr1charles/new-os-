@@ -1,0 +1,39 @@
+{
+  "name": "@newos/ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NewOS UI kit: macOS-style window chrome, sidebar, toolbar, grouped lists, controls, sheets and popovers for Tauri + React apps.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "playground": "vite playground"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "@newos/design-tokens": "workspace:*",
+    "@newos/sdk": "workspace:*",
+    "@tauri-apps/api": "^2.11.1",
+    "lucide-react": "^1.48.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.1.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vite": "^8.3.1"
+  }
+}

@@ -28,10 +28,11 @@ see and touch is built in this repo.
 
 | Layer | Technology | Where |
 |---|---|---|
-| Apps | Tauri 2 + React + TypeScript | `apps/` (milestone 3+) |
+| Apps | Tauri 2 + React + TypeScript | [`apps/`](apps) (Settings so far) |
+| App UI kit and SDK | React components; typed IPC, settings, assistant | [`packages/ui/`](packages/ui), [`packages/sdk/`](packages/sdk) |
 | Desktop shell | AGS/Astal (TypeScript, GTK4, layer-shell) | [`shell/`](shell) |
 | Assistant | Rust daemon, Claude API + Ollama | [`services/assistantd/`](services/assistantd) |
-| System integration | Rust library | [`services/syslib/`](services/syslib) |
+| System integration | Rust libraries | [`services/syslib/`](services/syslib), [`services/appkit/`](services/appkit) |
 | Design system | tokens → GTK CSS + web CSS | [`packages/design-tokens/`](packages/design-tokens) |
 | Base | Arch Linux, linux-zen, Hyprland, greetd | `distro/` (milestone 8) |
 
@@ -40,12 +41,18 @@ The full picture is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## Try it
 
 You need an Arch-based Linux machine (or VM) for the desktop. The checks run anywhere with
-Node 22 and Rust:
+Node 22 and Rust (plus WebKitGTK 4.1 for the app backends):
 
 ```bash
 pnpm install
-pnpm check             # design tokens, typecheck, lint, format, 81 unit tests
-cargo test --workspace # assistant daemon and system library, 67 tests
+pnpm check             # design tokens, typecheck, lint, format, 122 unit tests
+cargo test --workspace # daemon, system libraries, app backends: 116 tests
+```
+
+The Settings app's interface also runs in any browser against sample data:
+
+```bash
+pnpm --filter @newos/settings dev   # then open http://localhost:1420
 ```
 
 To run the desktop from this checkout inside your current session, see

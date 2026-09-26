@@ -5,7 +5,8 @@ reused; the shell, assistant, login, apps, and installer are built here.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ Apps: Tauri 2 + React (Settings, Files, Notes, Terminal, Mail, ...)        │  apps/ (M3+)
+│ Apps: Tauri 2 + React (Settings; Files, Notes, Terminal, Mail, ... next)   │  apps/
+│ @newos/ui (window chrome, controls) · @newos/sdk (IPC, settings, assistant)│  packages/
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Shell: AGS/Astal, TypeScript, GTK4 layer-shell                             │  shell/
 │ bar · Dynamic Island · Dock · launcher · Control Center · notifications    │
@@ -13,7 +14,8 @@ reused; the shell, assistant, login, apps, and installer are built here.
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Services (Rust)                                                            │  services/
 │ newos-assistantd: models, tools, memory, local API                         │
-│ newos-syslib: audio, display, network, power, windows, desktop entries     │
+│ newos-syslib: audio, display, network, Bluetooth, power, input, windows    │
+│ newos-appkit: settings file, assistant client and config, keyring (apps)   │
 │ (spacesd for Dual Space in M5)                                             │
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Platform: Hyprland · greetd · PipeWire/WirePlumber · NetworkManager ·      │
@@ -31,6 +33,7 @@ reused; the shell, assistant, login, apps, and installer are built here.
 | Shell (`ags run`, instance `newos`) | Hyprland `exec-once` | Hyprland IPC, D-Bus services, assistantd |
 | `newos-assistantd` | systemd user unit (`newos-session.target`) | Anthropic API or Ollama, system tools |
 | Ollama | its own systemd service | assistantd |
+| Apps (`newos-settings`, ...) | the Dock, Spotlight, `Super+,` | their Rust backend: syslib, appkit, assistantd |
 
 The shell is also the desktop's notification server: it owns
 `org.freedesktop.Notifications` through AstalNotifd, so no other notification daemon runs.
@@ -102,13 +105,44 @@ Claude-specific handling lives in `providers/claude.rs`:
   recommended fallback model.
 - Automatic prompt caching is on.
 
+## Apps
+
+Each app is a Tauri 2 window with a React frontend and a small Rust backend.
+
+- **`@newos/ui`** draws the macOS-style chrome and controls: traffic lights (the window has no
+  server-side decorations; Hyprland adds rounding, shadow, and blur), sidebar, toolbar,
+  grouped rows, switches, sliders, segmented controls, sheets, popovers. Everything is styled
+  with design-token CSS variables, so light/dark and the accent follow the user's settings.
+- **`@newos/sdk`** is how the frontend reaches the system. `call("wifi_networks", {rescan})` is
+  typed end to end by the `Commands` map in `packages/sdk/src/commands.ts`. The same package
+  has the live settings store (`useSettings()`), theming (`useAppTheme()`), the assistant
+  client (`assistant.complete("summarize", text)`, streamed `assistant.chat()`), and a mock
+  backend so an app's UI runs in a plain browser with sample data.
+- **The Rust backend** registers `#[tauri::command]`s that wrap `newos-syslib` (system) and
+  `newos-appkit` (settings file with a file watcher, assistant config and keyring, a client
+  for assistantd's unix socket, since webviews cannot open one). A Vitest check keeps the SDK's
+  command list, the registered handlers, and the mock in step, and IPC tests on Tauri's mock
+  runtime call each command with the JSON the frontend sends.
+
+System integration goes through command-line tools (`nmcli`, `bluetoothctl`, `wpctl`,
+`hyprctl`, `powerprofilesctl`, `fprintd-list`) behind `CommandRunner`, not D-Bus bindings.
+Each parser is unit tested against real output captured on the target laptop, and the tools
+are the same ones a user would run to debug. D-Bus (zbus) is used where a tool is not enough:
+`spacesd` in milestone 5.
+
+Settings (`apps/settings`, binary `newos-settings`) opens a page with `--page <id>`; ids are
+shared with the shell's Spotlight search in `packages/sdk/src/settings-pages.ts`. A second
+launch focuses the open window and switches page.
+
 ## Files and paths
 
 | Path | Owner | Contents |
 |---|---|---|
 | `~/.config/newos/shell.json` | shell, Settings | appearance, Dock, bar, island, Focus, Night Shift |
 | `~/.config/newos/assistant.toml` | assistantd, Settings | mode, models, privacy, tools |
-| `~/.config/newos/hyprland-user.conf` | user | Hyprland overrides |
+| `~/.config/newos/hyprland-settings.conf` | Settings | input and monitor choices, applied live with `hyprctl keyword` |
+| `~/.config/newos/hyprland-user.conf` | user | Hyprland overrides (sourced last, so they win) |
+| Keyring: `service=newos-assistant account=anthropic-api-key` | Settings, assistantd | the Anthropic API key |
 | `~/.local/share/newos/assistant.db` | assistantd | conversations, facts, tool audit |
 | `~/Notes/*.md` | Notes app, assistant | notes |
 | `$XDG_RUNTIME_DIR/newos/assistant.sock` | assistantd | local API |

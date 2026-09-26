@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@newos/design-tokens": "workspace:*",
+    "@newos/sdk": "workspace:*",
     "ags": "git+https://github.com/Aylur/ags.git#v3.1.2",
     "gnim": "^1.9.1"
   },

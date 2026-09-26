@@ -1,0 +1,25 @@
+[package]
+name = "newos-appkit"
+description = "Shared backend for NewOS apps: the live settings file, the assistant config and keyring, and a client for assistantd's unix-socket API. Tauri backends wrap these in commands."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+newos-syslib = { path = "../syslib" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+bytes = "1"
+http-body-util = "0.1"
+hyper = { version = "1", features = ["client", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+notify = "8"
+toml_edit = "0.23"
+
+[dev-dependencies]
+tempfile = "3"

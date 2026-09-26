@@ -21,10 +21,26 @@ done
 
 (cd "$ROOT" && pnpm --filter @newos/design-tokens build >/dev/null)
 
+# Settings writes live input and display changes here; Hyprland refuses to start if a sourced
+# file is missing.
+SETTINGS_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/newos/hyprland-settings.conf"
+mkdir -p "$(dirname "$SETTINGS_CONF")"
+touch "$SETTINGS_CONF"
+
+# Apps built from this checkout (pnpm --filter @newos/settings tauri build --debug --no-bundle)
+# are found under their installed names, so Super+, and the shell's Settings buttons open them.
+BIN="$RUNTIME/bin"
+mkdir -p "$BIN"
+if [ -x "$ROOT/target/debug/newos-settings" ]; then
+  ln -sf "$ROOT/target/debug/newos-settings" "$BIN/newos-settings"
+fi
+export PATH="$BIN:$PATH"
+
 CONF="$RUNTIME/hyprland.conf"
 cat > "$CONF" <<CONF
 monitor = , preferred, auto, 1
 source = $ROOT/shell/hypr/newos.conf
+source = $SETTINGS_CONF
 exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE
 exec-once = sh -c 'cd "$ROOT" && cargo run --quiet -p newos-assistantd 2>&1 | tee "$RUNTIME/assistantd.log"'
 exec-once = sh -c 'cd "$ROOT/shell" && ags run --gtk 4 app.ts 2>&1 | tee "$RUNTIME/shell.log"'

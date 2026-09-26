@@ -6,7 +6,7 @@
 import GLib from "gi://GLib?version=2.0"
 import Gio from "gi://Gio?version=2.0"
 import Soup from "gi://Soup?version=3.0"
-import { SseParser } from "./sse"
+import { SseParser } from "@newos/sdk/sse"
 import {
   parseChatEvent,
   parseSystemEvent,
@@ -15,7 +15,7 @@ import {
   type CompleteRequest,
   type StatusResponse,
   type SystemEvent,
-} from "./assistant-protocol"
+} from "@newos/sdk/assistant-protocol"
 import { config } from "./config"
 
 Gio._promisify(Soup.Session.prototype, "send_async", "send_finish")

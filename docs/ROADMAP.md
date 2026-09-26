@@ -8,8 +8,8 @@ the laptop or a VM.
 | M0 | Scaffold: monorepo, design tokens, docs, CI | Done |
 | M1 | Desktop shell: bar, Dynamic Island, Dock, launcher, panels | Done |
 | M2 | Assistant daemon and assistant UI | Done |
-| M3 | Settings app, `@newos/ui` kit, `@newos/sdk` | Next |
-| M4 | Files, Notes, Terminal, Calculator | Planned |
+| M3 | Settings app, `@newos/ui` kit, `@newos/sdk` | Done |
+| M4 | Files, Notes, Terminal, Calculator | Next |
 | M5 | Dual Space login, lock screen, biometrics | Planned |
 | M6 | Mail (Gmail, iCloud), Messages, Calendar | Planned |
 | M7 | App Store (Flatpak, EXE, APK), Browser, Photos, Music, Clock | Planned |
@@ -56,15 +56,28 @@ the laptop or a VM.
 - [x] Shell: assistant panel (Super+Space), island states, launcher hand-off
 - [ ] Voice input and output (M9)
 
-## M3 — Settings, UI kit, SDK (next)
+## M3 — Settings, UI kit, SDK (done)
 
-- [ ] `@newos/ui`: window chrome with traffic lights, sidebar, toolbar, lists, sheets,
-      popovers, toggles, sliders
-- [ ] `@newos/sdk`: assistant client, live settings store, typed IPC
-- [ ] Settings app: Wi-Fi, Bluetooth, Displays, Sound, Battery, Keyboard, Trackpad,
-      Appearance, Wallpaper, Desktop & Dock, Notifications, Focus, Users & Spaces, Assistant
-      (API key into the keyring, local model), Privacy, Software Update, About
-- [ ] `services/syslib` grows D-Bus access (NetworkManager, BlueZ, UPower) for Settings
+- [x] `@newos/ui`: window chrome with traffic lights, sidebar, toolbar, grouped lists, sheets,
+      popovers, switches, sliders, segmented controls, pop-up menus, search field
+- [x] `@newos/sdk`: typed calls to the app backend, live settings store shared with the shell,
+      assistant client (status, one-shot tasks, streamed chat, embeddings), theming, React
+      hooks, and a mock backend for browser development
+- [x] Settings app: Wi-Fi, Bluetooth, Network, Notifications, Focus, Sound, Appearance,
+      Wallpaper, Desktop & Dock, Displays (with a revert timer), Battery, Assistant (API key
+      into the keyring, cloud and on-device models), Privacy & Security, Users & Spaces
+      (account and fingerprints; spaces arrive in M5), Keyboard, Trackpad, Software Update,
+      About
+- [x] `services/syslib`: Wi-Fi scan and join, Bluetooth pairing, audio devices, monitors,
+      power profiles, battery health, Hyprland input options, accounts, fingerprints, updates,
+      hardware summary; parsers tested against output from the HP laptop
+- [x] `services/appkit`: shared app backend (settings file and watcher, assistant config and
+      keyring, assistantd client over the unix socket)
+- [x] Settings persists input and display choices in `~/.config/newos/hyprland-settings.conf`
+- [ ] Verified as a native window on the laptop (needs `webkit2gtk-4.1`; see DEVELOPING.md)
+
+Changed from the plan: system integration uses the standard command-line tools behind a
+tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` (M5).
 
 ## M4 — Core apps
 

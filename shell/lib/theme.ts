@@ -18,7 +18,7 @@ import launcher from "../style/launcher.css"
 import notifications from "../style/notifications.css"
 import assistant from "../style/assistant.css"
 import { config } from "./config"
-import { resolveTheme, type Theme } from "./config-schema"
+import { resolveTheme, type Theme } from "@newos/sdk/settings-schema"
 import { minute } from "./clock"
 
 const STYLES = [base, bar, island, dock, panels, launcher, notifications, assistant].join("\n")

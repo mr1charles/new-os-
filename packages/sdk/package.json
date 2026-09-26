@@ -1,0 +1,33 @@
+{
+  "name": "@newos/sdk",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NewOS app SDK: typed calls to the app's Rust backend, the live settings store, the assistant client, theming, and React hooks.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react.ts",
+    "./mock": "./src/mock.ts",
+    "./settings-schema": "./src/settings-schema.ts",
+    "./settings-pages": "./src/settings-pages.ts",
+    "./sse": "./src/sse.ts",
+    "./assistant-protocol": "./src/assistant-protocol.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": "^19"
+  },
+  "dependencies": {
+    "@newos/design-tokens": "workspace:*",
+    "@tauri-apps/api": "^2.11.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "^19.3.0"
+  }
+}

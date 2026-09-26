@@ -1,0 +1,24 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+GenericName=System Settings
+Comment=Wi-Fi, Bluetooth, displays, sound, appearance, the assistant, and more
+Exec=newos-settings
+Icon=newos-settings
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=preferences;wifi;bluetooth;display;sound;wallpaper;dock;battery;keyboard;trackpad;assistant;privacy;update;about;
+SingleMainWindow=true
+Actions=wifi;bluetooth;displays;
+
+[Desktop Action wifi]
+Name=Wi-Fi
+Exec=newos-settings --page wifi
+
+[Desktop Action bluetooth]
+Name=Bluetooth
+Exec=newos-settings --page bluetooth
+
+[Desktop Action displays]
+Name=Displays
+Exec=newos-settings --page displays

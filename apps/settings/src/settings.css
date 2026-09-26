@@ -1,0 +1,386 @@
+/* Settings-specific styles. Shared components live in @newos/ui. */
+
+code,
+kbd {
+  font-family: var(--newos-font-mono);
+  font-size: 0.92em;
+  user-select: text;
+}
+
+code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--newos-color-control);
+}
+
+.settings-muted {
+  color: var(--newos-color-fg-secondary);
+}
+
+.settings-accent {
+  color: var(--newos-accent);
+}
+
+.settings-success {
+  color: var(--newos-color-success);
+}
+
+.settings-warning {
+  color: var(--newos-color-warning);
+}
+
+.settings-spacer {
+  flex: 1;
+}
+
+.settings-footnote {
+  margin-top: var(--newos-space-4);
+  padding: 0 var(--newos-space-2);
+  font-size: var(--newos-font-size-footnote);
+  color: var(--newos-color-fg-secondary);
+  line-height: 1.45;
+}
+
+.settings-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--newos-space-2);
+  color: var(--newos-color-fg-secondary);
+  padding: var(--newos-space-4);
+}
+
+.settings-no-results {
+  padding: var(--newos-space-4);
+  text-align: center;
+  color: var(--newos-color-fg-secondary);
+}
+
+.settings-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--newos-space-2);
+  font-size: var(--newos-font-size-footnote);
+}
+
+.settings-short-field {
+  width: 180px;
+}
+
+.settings-details {
+  margin: 0 calc(-1 * var(--newos-space-3));
+}
+
+.settings-signal {
+  width: 20px;
+  height: 16px;
+}
+
+.settings-signal path {
+  fill: var(--newos-color-fg-tertiary);
+}
+
+.settings-signal path.on {
+  fill: var(--newos-color-fg);
+}
+
+.nx-sheet .nx-callout {
+  margin-top: var(--newos-space-3);
+}
+
+.settings-app-list {
+  margin-top: var(--newos-space-3);
+  max-height: 320px;
+  overflow-y: auto;
+  border-radius: var(--newos-radius-sm);
+  box-shadow: 0 0 0 1px var(--newos-color-separator);
+}
+
+.settings-kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--newos-color-control);
+  box-shadow: inset 0 -1px 0 var(--newos-color-separator);
+  color: var(--newos-color-fg);
+  white-space: nowrap;
+}
+
+/* Account card at the top of the sidebar ------------------------------------------------- */
+
+.settings-account {
+  display: flex;
+  align-items: center;
+  gap: var(--newos-space-3);
+  width: 100%;
+  margin-bottom: var(--newos-space-3);
+  padding: var(--newos-space-2);
+  border: 0;
+  border-radius: var(--newos-radius-sm);
+  background: transparent;
+  text-align: left;
+}
+
+.settings-account:hover {
+  background: var(--newos-color-control);
+}
+
+.settings-account--selected,
+.settings-account--selected:hover {
+  background: var(--newos-accent);
+  color: var(--newos-color-fg-on-accent);
+}
+
+.settings-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #a1a1a6, #6e6e73);
+  color: #fff;
+  font-size: 16px;
+  font-weight: var(--newos-font-weight-semibold);
+}
+
+.settings-avatar--large {
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+}
+
+.settings-account__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.settings-account__name {
+  font-weight: var(--newos-font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-account__detail {
+  font-size: var(--newos-font-size-footnote);
+  opacity: 0.7;
+}
+
+.settings-account-title {
+  font-size: var(--newos-font-size-callout);
+  font-weight: var(--newos-font-weight-semibold);
+}
+
+/* Appearance ----------------------------------------------------------------------------- */
+
+.settings-theme-picker {
+  display: flex;
+  gap: var(--newos-space-4);
+  padding: var(--newos-space-1) 0;
+}
+
+.settings-theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: var(--newos-font-size-footnote);
+}
+
+.settings-theme-preview {
+  display: block;
+  width: 84px;
+  height: 56px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 0 0 1px var(--newos-color-separator);
+  transition: box-shadow var(--newos-motion-fast);
+}
+
+.settings-theme-option--selected .settings-theme-preview {
+  box-shadow:
+    0 0 0 1px var(--newos-color-bg-elevated),
+    0 0 0 3.5px var(--newos-accent);
+}
+
+.settings-theme-preview--light {
+  background: linear-gradient(160deg, #9fd3ff, #d7c7ff);
+}
+
+.settings-theme-preview--dark {
+  background: linear-gradient(160deg, #1d2a5a, #3e2465);
+}
+
+.settings-theme-preview--auto {
+  background: linear-gradient(110deg, #9fd3ff 0 50%, #1d2a5a 50% 100%);
+}
+
+.settings-theme-preview__window {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.settings-theme-preview--dark .settings-theme-preview__window {
+  background: rgba(40, 40, 40, 0.95);
+}
+
+.settings-theme-preview--auto .settings-theme-preview__window {
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.92) 0 45%,
+    rgba(40, 40, 40, 0.95) 45% 100%
+  );
+}
+
+.settings-theme-preview__bar {
+  display: block;
+  height: 7px;
+  background: rgba(127, 127, 127, 0.25);
+}
+
+.settings-theme-preview__accent {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  width: 22px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--newos-accent);
+}
+
+.settings-swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-swatch {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.settings-swatch--selected::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* Wallpaper ------------------------------------------------------------------------------ */
+
+.settings-wallpapers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--newos-space-3);
+  width: 100%;
+}
+
+.settings-wallpaper {
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--newos-color-control);
+  box-shadow: 0 0 0 1px var(--newos-color-separator);
+}
+
+.settings-wallpaper--selected {
+  box-shadow:
+    0 0 0 2px var(--newos-color-bg-elevated),
+    0 0 0 4.5px var(--newos-accent);
+}
+
+.settings-wallpaper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* About ---------------------------------------------------------------------------------- */
+
+.settings-about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--newos-space-1);
+  padding: var(--newos-space-4) 0 var(--newos-space-6);
+  text-align: center;
+}
+
+.settings-about-logo {
+  width: 88px;
+  height: 64px;
+  margin-bottom: var(--newos-space-3);
+  border-radius: 8px;
+  background: linear-gradient(
+      160deg,
+      var(--newos-accent),
+      color-mix(in srgb, var(--newos-accent) 40%, #7a3cff)
+    )
+    padding-box;
+  box-shadow:
+    inset 0 0 0 3px #1c1c1e,
+    0 6px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.settings-about-logo::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  bottom: -8px;
+  height: 8px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(#c7c7cc, #8e8e93);
+}
+
+.settings-about-model {
+  font-size: var(--newos-font-size-title2);
+  font-weight: var(--newos-font-weight-bold);
+}
+
+.settings-about-os {
+  color: var(--newos-color-fg-secondary);
+}
+
+.settings-storage {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.settings-storage__bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--newos-color-track-off);
+  overflow: hidden;
+}
+
+.settings-storage__bar span {
+  display: block;
+  height: 100%;
+  background: var(--newos-accent);
+}
+
+.settings-storage__text {
+  font-size: var(--newos-font-size-footnote);
+  color: var(--newos-color-fg-secondary);
+}

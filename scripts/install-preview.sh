@@ -39,5 +39,7 @@ Categories=System;Emulator;
 Keywords=helixos;preview;test;os;
 StartupWMClass=org.helixos.Preview
 ENTRY
-command -v update-desktop-database >/dev/null && update-desktop-database -q "$(dirname "$DESKTOP")" || true
+if command -v update-desktop-database >/dev/null; then
+  update-desktop-database -q "$(dirname "$DESKTOP")" || true
+fi
 echo "HelixOS Preview is in your app menu (or run: helixos-preview)."

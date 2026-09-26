@@ -5,7 +5,7 @@ reused; the shell, assistant, login, apps, and installer are built here.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ Apps: Tauri 2 + React (Settings; Files, Notes, Terminal, Mail, ... next)   │  apps/
+│ Apps: Tauri 2 + React: Settings, Files, Notes, Terminal, Calculator        │  apps/
 │ @newos/ui (window chrome, controls) · @newos/sdk (IPC, settings, assistant)│  packages/
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Shell: AGS/Astal, TypeScript, GTK4 layer-shell                             │  shell/
@@ -15,7 +15,7 @@ reused; the shell, assistant, login, apps, and installer are built here.
 │ Services (Rust)                                                            │  services/
 │ newos-assistantd: models, tools, memory, local API                         │
 │ newos-syslib: audio, display, network, Bluetooth, power, input, windows    │
-│ newos-appkit: settings file, assistant client and config, keyring (apps)   │
+│ newos-appkit: settings, assistant, notes, files, PTY, shared Tauri setup   │
 │ (spacesd for Dual Space in M5)                                             │
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Platform: Hyprland · greetd · PipeWire/WirePlumber · NetworkManager ·      │
@@ -129,6 +129,16 @@ System integration goes through command-line tools (`nmcli`, `bluetoothctl`, `wp
 Each parser is unit tested against real output captured on the target laptop, and the tools
 are the same ones a user would run to debug. D-Bus (zbus) is used where a tool is not enough:
 `spacesd` in milestone 5.
+
+The apps and what they add on top of that:
+
+| App | Binary | Backend logic | Assistant features |
+|---|---|---|---|
+| Settings | `newos-settings` | syslib (system tools) | model and key setup |
+| Files | `newos-files` | `appkit::files` (listing, copy/move, Trash, drives via UDisks, search, `pdftoppm`/`pdftotext`) | plain-language search, summarize a document |
+| Notes | `newos-notes` | `appkit::notes` (Markdown in `~/Notes`, pins, search, watcher) | summarize, rewrite, continue writing, ask my notes |
+| Terminal | `newos-terminal` | `appkit::pty` (`portable-pty`) | English to a command, explain output |
+| Calculator | `newos-calculator` | none (math in `@newos/sdk/math`) | words to an expression |
 
 Settings (`apps/settings`, binary `newos-settings`) opens a page with `--page <id>`; ids are
 shared with the shell's Spotlight search in `packages/sdk/src/settings-pages.ts`. A second

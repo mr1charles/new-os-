@@ -177,6 +177,65 @@ export interface NoteSearchHit {
   score: number
 }
 
+export type FileKind =
+  | "folder"
+  | "image"
+  | "video"
+  | "audio"
+  | "pdf"
+  | "document"
+  | "spreadsheet"
+  | "presentation"
+  | "text"
+  | "code"
+  | "archive"
+  | "app"
+  | "other"
+
+export interface FileEntry {
+  name: string
+  path: string
+  kind: FileKind
+  /** Bytes for files, item count for folders, null when unreadable. */
+  size: number | null
+  /** Milliseconds since the Unix epoch. */
+  modified: number
+  hidden: boolean
+  symlink: boolean
+}
+
+export interface Place {
+  id: string
+  name: string
+  path: string
+}
+
+export interface Drive {
+  device: string
+  name: string
+  size: number
+  mount_point: string | null
+  removable: boolean
+  filesystem: string
+}
+
+export interface TrashItem {
+  id: string
+  name: string
+  original_path: string
+  deleted: string
+  kind: FileKind
+  size: number | null
+}
+
+export interface FileSearch {
+  words: string[]
+  kinds: FileKind[]
+  modified_after: number | null
+  modified_before: number | null
+  contents: boolean
+}
+
 /** Emitted when anything in the notes folder changes (this app, the assistant, an editor). */
 export const NOTES_CHANGED_EVENT = "newos://notes-changed"
 
@@ -257,6 +316,26 @@ export interface Commands {
   term_resize: [{ id: number; cols: number; rows: number }, null]
   term_kill: [{ id: number }, null]
   term_cwd: [{ id: number }, string]
+
+  // Files (appkit::files)
+  files_places: [Record<string, never>, Place[]]
+  files_list: [{ path: string; showHidden: boolean }, FileEntry[]]
+  files_info: [{ path: string }, FileEntry]
+  files_drives: [Record<string, never>, Drive[]]
+  files_mount: [{ device: string }, string]
+  files_eject: [{ device: string; powerOff: boolean }, null]
+  files_create_folder: [{ dir: string; name: string }, FileEntry]
+  files_rename: [{ path: string; name: string }, FileEntry]
+  files_transfer: [{ sources: string[]; dest: string; moveFiles: boolean }, string[]]
+  files_trash: [{ paths: string[] }, null]
+  files_trash_list: [Record<string, never>, TrashItem[]]
+  files_trash_restore: [{ id: string }, string]
+  files_trash_empty: [Record<string, never>, number]
+  files_open: [{ path: string }, null]
+  files_preview_text: [{ path: string }, string | null]
+  files_document_text: [{ path: string }, string | null]
+  files_pdf_thumbnail: [{ path: string }, string]
+  files_search: [{ root: string; query: FileSearch; limit: number }, FileEntry[]]
 
   // Apps
   apps: [Record<string, never>, DesktopEntry[]]

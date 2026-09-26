@@ -98,6 +98,7 @@ They share `@newos/ui` for the look and `@newos/sdk` for everything that talks t
 ```bash
 # The interface in any browser, against sample data (no Tauri, no Linux desktop needed)
 pnpm --filter @newos/settings dev            # http://localhost:1420, ?page=wifi opens a page
+pnpm --filter @newos/calculator dev          # :1421   (notes :1422, terminal :1423, files :1424)
 
 # The real app, talking to this machine (needs webkit2gtk-4.1)
 pnpm --filter @newos/settings tauri dev
@@ -110,10 +111,19 @@ Settings changes the real system: Wi-Fi, Bluetooth, volume, brightness, displays
 and Hyprland input options (applied live and saved to `~/.config/newos/hyprland-settings.conf`).
 Display changes revert after 15 seconds unless you keep them.
 
+A new app: draw `apps/<id>/src-tauri/icons/icon.svg`, then run
+`scripts/new-app.py <id> --title ... --port 14xx --comment ... --categories ...`. It writes the
+Tauri side (manifest, config, capabilities, `main.rs` on `newos_appkit::tauri_app`, rendered
+icons, the `.desktop` file). Copy `package.json`, `index.html`, `vite.config.ts` (with the
+port), and `tsconfig.json` from an existing app, start `src/main.tsx` with `startApp(App)`
+from `@newos/ui/start`, and add the crate to the workspace in `Cargo.toml`. Every app gets the
+settings and assistant commands for free.
+
 To add a backend command: write the logic in `services/syslib` or `services/appkit` with a
 test, wrap it in `apps/<app>/src-tauri/src/commands.rs`, register it in `main.rs`, type it in
-`packages/sdk/src/commands.ts`, and add it to the mock in `packages/sdk/src/mock.ts`.
-`apps/settings/src/backend.test.ts` fails until all four agree.
+`packages/sdk/src/commands.ts`, and add it to the mock in `packages/sdk/src/mock.ts`. Each
+app's `src/backend.test.ts` checks that every command its frontend calls is registered, that
+everything registered is typed in the SDK, and that the mock covers the SDK.
 
 `cargo run -p newos-syslib --example probe` prints what Settings reads on the current machine
 (networks, audio devices, monitors, battery, Hyprland options), which helps when a parser meets

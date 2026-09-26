@@ -9,8 +9,8 @@ the laptop or a VM.
 | M1 | Desktop shell: bar, Dynamic Island, Dock, launcher, panels | Done |
 | M2 | Assistant daemon and assistant UI | Done |
 | M3 | Settings app, `@newos/ui` kit, `@newos/sdk` | Done |
-| M4 | Files, Notes, Terminal, Calculator | Next |
-| M5 | Dual Space login, lock screen, biometrics | Planned |
+| M4 | Files, Notes, Terminal, Calculator | Done |
+| M5 | Dual Space login, lock screen, biometrics | Next |
 | M6 | Mail (Gmail, iCloud), Messages, Calendar | Planned |
 | M7 | App Store (Flatpak, EXE, APK), Browser, Photos, Music, Clock | Planned |
 | M8 | Bootable ISO, installer, HP tweaks, ISO built in CI | Planned |
@@ -56,6 +56,13 @@ the laptop or a VM.
 - [x] Shell: assistant panel (Super+Space), island states, launcher hand-off
 - [ ] Voice input and output (M9)
 
+## Testing mode (done)
+
+- [x] `scripts/live.sh`: the whole desktop in a rootless Arch container on the laptop, in a
+      window or full screen, with the real Wi-Fi, Bluetooth, sound, GPU, and fingerprint reader
+- [x] First run found and fixed: Hyprland 0.56 rule syntax, the Mission Control binding without
+      its plugin, and a Control Center crash on start
+
 ## M3 — Settings, UI kit, SDK (done)
 
 - [x] `@newos/ui`: window chrome with traffic lights, sidebar, toolbar, grouped lists, sheets,
@@ -79,10 +86,26 @@ the laptop or a VM.
 Changed from the plan: system integration uses the standard command-line tools behind a
 tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` (M5).
 
-## M4 — Core apps
+## M4 — Core apps (done)
 
-Files (list/column/icon views, Trash, Quick Look, natural-language search), Notes (Markdown in
-`~/Notes`, summarize, rewrite, "ask my notes"), Terminal (tabs, English to command), Calculator.
+- [x] Shared app backend in `newos-appkit` (`tauri_app`): settings and assistant commands, the
+      settings watcher, and the NewOS window; `scripts/new-app.py` scaffolds a new app
+- [x] **Files**: places, drives (mount and eject through UDisks), list and icon views, sorting,
+      multi-select, inline rename, copy/cut/paste with Finder-style names, context menu, the
+      Trash (put back, empty), Quick Look for images, PDFs, and text, and search in plain
+      language ("the pdf about taxes from March") locally or through the assistant; "Summarize"
+      for documents and PDFs
+- [x] **Notes**: Markdown in `~/Notes` shared with the assistant, folders, pins, clickable
+      checklists, search, live reload when the assistant writes a note; Summarize, Rewrite in a
+      tone, Continue Writing, and Ask My Notes (answers grounded in your notes, with sources)
+- [x] **Terminal**: your shell in a real PTY, tabs that open in the same folder, themes that
+      follow appearance and accent; Ctrl+Space turns English into a command (with a warning for
+      destructive ones) and "Explain Output" explains the last error
+- [x] **Calculator**: basic, scientific (degrees or radians), unit conversion, history, and
+      everyday questions ("15% tip on 84", "5 km in miles"); the assistant only turns words
+      into an expression, the math happens locally
+- [ ] Column view and drag and drop in Files; embedding-based "ask my notes" (keyword retrieval
+      for now)
 
 ## M5 — Dual Space
 

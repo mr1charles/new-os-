@@ -12,7 +12,13 @@ import type {
   PowerProfile,
   WifiNetwork,
 } from "./commands"
-import { NOTES_CHANGED_EVENT, type NoteMeta } from "./commands"
+import {
+  NOTES_CHANGED_EVENT,
+  type FileEntry,
+  type FileKind,
+  type NoteMeta,
+  type TrashItem,
+} from "./commands"
 import { emitMockEvent, type MockBackend } from "./ipc"
 import { applyPatch, SETTINGS_CHANGED_EVENT } from "./settings"
 
@@ -196,6 +202,106 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
     [...noteTexts.keys()]
       .map(noteMeta)
       .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.modified - a.modified)
+
+  // Files: a small in-memory home folder.
+  const HOME = "/home/a"
+  const day = 86_400_000
+  const fsNodes = new Map<
+    string,
+    { dir: boolean; modified: number; text?: string; size?: number }
+  >()
+  const addNode = (
+    path: string,
+    dir: boolean,
+    ageDays: number,
+    extra: { text?: string; size?: number } = {},
+  ) => fsNodes.set(path, { dir, modified: Date.now() - ageDays * day, ...extra })
+  for (const d of [
+    "",
+    "/Desktop",
+    "/Documents",
+    "/Documents/Work",
+    "/Downloads",
+    "/Pictures",
+    "/Music",
+    "/Videos",
+    "/Notes",
+  ]) {
+    addNode(HOME + d, true, 10)
+  }
+  addNode(`${HOME}/Documents/Taxes 2026.pdf`, false, 200, { size: 482_113 })
+  addNode(`${HOME}/Documents/Resume.docx`, false, 40, { size: 38_200 })
+  addNode(`${HOME}/Documents/Budget.xlsx`, false, 12, { size: 21_004 })
+  addNode(`${HOME}/Documents/Work/Q4 plan.md`, false, 1, {
+    text: "# Q4 plan\n\nShip the NewOS installer and Dual Space.\n",
+  })
+  addNode(`${HOME}/Documents/ideas.txt`, false, 3, {
+    text: "Ideas\n- A Dynamic Island for timers\n- Ask my notes\n",
+  })
+  addNode(`${HOME}/Downloads/archlinux.iso`, false, 5, { size: 1_234_567_890 })
+  addNode(`${HOME}/Downloads/installer.exe`, false, 2, { size: 5_300_000 })
+  addNode(`${HOME}/Pictures/Beach.jpg`, false, 30, { size: 2_400_000 })
+  addNode(`${HOME}/Pictures/Screenshot 2026-09-26.png`, false, 0, { size: 380_000 })
+  addNode(`${HOME}/Music/Song.flac`, false, 90, { size: 31_000_000 })
+  addNode(`${HOME}/.bashrc`, false, 300, { text: "# bash config\n" })
+  const trashed: (TrashItem & {
+    node: { dir: boolean; modified: number; text?: string; size?: number }
+  })[] = []
+  const baseName = (p: string) => p.slice(p.lastIndexOf("/") + 1)
+  const parentOf = (p: string) => p.slice(0, p.lastIndexOf("/")) || "/"
+  const extKind = (name: string, dir: boolean): FileKind => {
+    if (dir) return "folder"
+    const ext = name.includes(".") ? name.slice(name.lastIndexOf(".") + 1).toLowerCase() : ""
+    const map: Record<string, FileKind> = {
+      pdf: "pdf",
+      docx: "document",
+      xlsx: "spreadsheet",
+      md: "text",
+      txt: "text",
+      iso: "archive",
+      exe: "app",
+      jpg: "image",
+      png: "image",
+      flac: "audio",
+      bashrc: "other",
+    }
+    return map[ext] ?? "other"
+  }
+  const fileEntry = (path: string): FileEntry => {
+    const node = fsNodes.get(path)!
+    const name = baseName(path)
+    const children = [...fsNodes.keys()].filter((p) => parentOf(p) === path).length
+    return {
+      name,
+      path,
+      kind: extKind(name, node.dir),
+      size: node.dir ? children : (node.size ?? node.text?.length ?? 0),
+      modified: node.modified,
+      hidden: name.startsWith("."),
+      symlink: false,
+    }
+  }
+  const freePath = (dir: string, name: string) => {
+    if (!fsNodes.has(`${dir}/${name}`)) return `${dir}/${name}`
+    const dot = name.lastIndexOf(".")
+    const [stem, ext] = dot > 0 ? [name.slice(0, dot), name.slice(dot)] : [name, ""]
+    for (let n = 2; ; n++)
+      if (!fsNodes.has(`${dir}/${stem} ${n}${ext}`)) return `${dir}/${stem} ${n}${ext}`
+  }
+  const moveTree = (from: string, to: string, keep: boolean) => {
+    for (const [path, node] of [...fsNodes.entries()]) {
+      if (path === from || path.startsWith(`${from}/`)) {
+        fsNodes.set(to + path.slice(from.length), {
+          ...node,
+          modified: keep ? node.modified : Date.now(),
+        })
+        if (!keep) fsNodes.delete(path)
+      }
+    }
+  }
+  const byName = (a: FileEntry, b: FileEntry) =>
+    Number(b.kind === "folder") - Number(a.kind === "folder") ||
+    a.name.localeCompare(b.name, undefined, { numeric: true })
 
   // Terminal: a pretend shell that echoes what you type.
   const mockPrompt = "\x1b[1;34m~\x1b[0m $ "
@@ -489,6 +595,113 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       noteFolders.delete(String(name))
       notesChanged()
       return null
+    },
+
+    files_places: () =>
+      [
+        ["home", "Home", ""],
+        ["desktop", "Desktop", "/Desktop"],
+        ["documents", "Documents", "/Documents"],
+        ["downloads", "Downloads", "/Downloads"],
+        ["pictures", "Pictures", "/Pictures"],
+        ["music", "Music", "/Music"],
+        ["videos", "Videos", "/Videos"],
+      ].map(([id, name, sub]) => ({ id: id!, name: name!, path: HOME + sub })),
+    files_list: ({ path, showHidden }) => {
+      if (!fsNodes.get(String(path))?.dir) throw new Error(`${String(path)} is not a folder`)
+      return [...fsNodes.keys()]
+        .filter((p) => parentOf(p) === path)
+        .map(fileEntry)
+        .filter((e) => showHidden || !e.hidden)
+        .sort(byName)
+    },
+    files_info: ({ path }) => {
+      if (!fsNodes.has(String(path))) throw new Error(`${String(path)} does not exist`)
+      return fileEntry(String(path))
+    },
+    files_drives: () => [
+      {
+        device: "/dev/sda1",
+        name: "USB STICK",
+        size: 32_000_000_000,
+        mount_point: null,
+        removable: true,
+        filesystem: "vfat",
+      },
+    ],
+    files_mount: () => "/run/media/a/USB STICK",
+    files_eject: () => null,
+    files_create_folder: ({ dir, name }) => {
+      const path = freePath(String(dir), String(name))
+      addNode(path, true, 0)
+      return fileEntry(path)
+    },
+    files_rename: ({ path, name }) => {
+      const target = `${parentOf(String(path))}/${String(name)}`
+      if (fsNodes.has(target)) throw new Error(`“${String(name)}” already exists here.`)
+      moveTree(String(path), target, false)
+      return fileEntry(target)
+    },
+    files_transfer: ({ sources, dest, moveFiles }) =>
+      (sources as string[]).map((source) => {
+        const target =
+          moveFiles && parentOf(source) === dest ? source : freePath(String(dest), baseName(source))
+        if (target !== source) moveTree(source, target, !moveFiles)
+        return target
+      }),
+    files_trash: ({ paths }) => {
+      for (const path of paths as string[]) {
+        const node = fsNodes.get(path)
+        if (!node) continue
+        trashed.unshift({
+          id: `${baseName(path)}.${trashed.length}`,
+          name: baseName(path),
+          original_path: path,
+          deleted: new Date().toISOString().slice(0, 19),
+          kind: extKind(baseName(path), node.dir),
+          size: node.size ?? null,
+          node,
+        })
+        for (const p of [...fsNodes.keys()])
+          if (p === path || p.startsWith(`${path}/`)) fsNodes.delete(p)
+      }
+      return null
+    },
+    files_trash_list: () => trashed.map(({ node: _node, ...item }) => item),
+    files_trash_restore: ({ id }) => {
+      const i = trashed.findIndex((t) => t.id === id)
+      if (i < 0) throw new Error("Not in the Trash")
+      const item = trashed.splice(i, 1)[0]!
+      const target = freePath(parentOf(item.original_path), item.name)
+      fsNodes.set(target, item.node)
+      return target
+    },
+    files_trash_empty: () => trashed.splice(0).length,
+    files_open: () => null,
+    files_preview_text: ({ path }) => fsNodes.get(String(path))?.text ?? null,
+    files_document_text: ({ path }) => fsNodes.get(String(path))?.text ?? null,
+    files_pdf_thumbnail: () => {
+      throw new Error("No thumbnails in the sample data")
+    },
+    files_search: ({ root, query, limit }) => {
+      const q = query as {
+        words: string[]
+        kinds: FileKind[]
+        modified_after: number | null
+        modified_before: number | null
+      }
+      return [...fsNodes.keys()]
+        .filter((p) => p.startsWith(`${String(root)}/`))
+        .map(fileEntry)
+        .filter((e) => !e.hidden)
+        .filter((e) => q.words.every((w) => e.name.toLowerCase().includes(w.toLowerCase())))
+        .filter((e) => q.kinds.length === 0 || q.kinds.includes(e.kind))
+        .filter(
+          (e) =>
+            (q.modified_after ?? 0) <= e.modified && e.modified <= (q.modified_before ?? Infinity),
+        )
+        .sort((a, b) => b.modified - a.modified)
+        .slice(0, Number(limit))
     },
 
     term_write: ({ id, data }) => {

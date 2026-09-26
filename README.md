@@ -28,7 +28,7 @@ see and touch is built in this repo.
 
 | Layer | Technology | Where |
 |---|---|---|
-| Apps | Tauri 2 + React + TypeScript | [`apps/`](apps) (Settings so far) |
+| Apps | Tauri 2 + React + TypeScript | [`apps/`](apps): Settings, Files, Notes, Terminal, Calculator |
 | App UI kit and SDK | React components; typed IPC, settings, assistant | [`packages/ui/`](packages/ui), [`packages/sdk/`](packages/sdk) |
 | Desktop shell | AGS/Astal (TypeScript, GTK4, layer-shell) | [`shell/`](shell) |
 | Assistant | Rust daemon, Claude API + Ollama | [`services/assistantd/`](services/assistantd) |
@@ -45,8 +45,8 @@ Node 22 and Rust (plus WebKitGTK 4.1 for the app backends):
 
 ```bash
 pnpm install
-pnpm check             # design tokens, typecheck, lint, format, 122 unit tests
-cargo test --workspace # daemon, system libraries, app backends: 116 tests
+pnpm check             # design tokens, typecheck, lint, format, 181 unit tests
+cargo test --workspace # daemon, system libraries, app backends: 137 tests
 ```
 
 The Settings app's interface also runs in any browser against sample data:

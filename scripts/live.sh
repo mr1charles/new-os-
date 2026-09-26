@@ -39,7 +39,7 @@ PACKAGES=(
   hyprland hypridle xdg-desktop-portal-hyprland mesa vulkan-intel
   gtk3 gtk4 gtk4-layer-shell libadwaita librsvg gobject-introspection webkit2gtk-4.1
   wireplumber networkmanager bluez-utils upower power-profiles-daemon python-gobject
-  brightnessctl fprintd pacman-contrib
+  brightnessctl fprintd pacman-contrib poppler udisks2
   libsecret gnome-keyring libnotify libcanberra playerctl
   grim slurp wl-clipboard xdg-utils
   inter-font ttf-jetbrains-mono noto-fonts noto-fonts-emoji adwaita-icon-theme
@@ -214,14 +214,20 @@ update() {
     cd "$NEWOS_REPO"
     export CARGO_TARGET_DIR="$HOME/.cache/newos-target"
     [ -d node_modules ] || { echo "error: run pnpm install on the host first" >&2; exit 1; }
+    # Tools added after the container was created.
+    sudo pacman -S --needed --noconfirm poppler udisks2 >/dev/null 2>&1 || true
     node packages/design-tokens/src/build.mjs >/dev/null
     cargo build --release -p newos-assistantd
-    (cd apps/settings && node_modules/.bin/vite build --logLevel warn)
-    cargo build --release -p newos-settings --features tauri/custom-protocol
     sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-assistantd" /usr/local/bin/newos-assistantd
-    sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-settings" /usr/local/bin/newos-settings
-    sudo install -Dm644 apps/settings/newos-settings.desktop /usr/local/share/applications/newos-settings.desktop
-    sudo install -Dm644 apps/settings/src-tauri/icons/icon.svg /usr/local/share/icons/hicolor/scalable/apps/newos-settings.svg
+    for app in settings calculator notes terminal files; do
+      echo "Building $app"
+      (cd "apps/$app" && node_modules/.bin/vite build --logLevel warn)
+      cargo build --release -p "newos-$app" --features tauri/custom-protocol
+      sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-$app" "/usr/local/bin/newos-$app"
+      sudo install -Dm644 "apps/$app/newos-$app.desktop" "/usr/local/share/applications/newos-$app.desktop"
+      sudo install -Dm644 "apps/$app/src-tauri/icons/icon.svg" "/usr/local/share/icons/hicolor/scalable/apps/newos-$app.svg"
+    done
+    sudo gtk-update-icon-cache -q -t /usr/local/share/icons/hicolor 2>/dev/null || true
   '
 }
 

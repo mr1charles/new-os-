@@ -63,9 +63,12 @@ in_userns() {
   local uid_start uid_count gid_start gid_count
   read -r uid_start uid_count < <(subid_range /etc/subuid) || true
   read -r gid_start gid_count < <(subid_range /etc/subgid) || true
-  [ -n "${uid_start:-}" ] && [ "${uid_count:-0}" -ge 65536 ] ||
-    die "no subordinate uid range for $USER_NAME in /etc/subuid (need 65536; run: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER_NAME)"
-  [ "$HOST_UID" = 1000 ] && [ "$HOST_GID" = 1000 ] || die "testing mode expects uid and gid 1000"
+  if [ -z "${uid_start:-}" ] || [ "${uid_count:-0}" -lt 65536 ] || [ -z "${gid_start:-}" ] || [ "${gid_count:-0}" -lt 65536 ]; then
+    die "no subordinate uid/gid range for $USER_NAME in /etc/subuid and /etc/subgid (need 65536; run: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER_NAME)"
+  fi
+  if [ "$HOST_UID" != 1000 ] || [ "$HOST_GID" != 1000 ]; then
+    die "testing mode expects uid and gid 1000"
+  fi
   unshare \
     --map-users="0:$uid_start:1000" --map-users="1000:$HOST_UID:1" --map-users="1001:$((uid_start + 1001)):64535" \
     --map-groups="0:$gid_start:1000" --map-groups="1000:$HOST_GID:1" --map-groups="1001:$((gid_start + 1001)):64535" \
@@ -117,7 +120,7 @@ inner() {
   local host_runtime="${HOST_RUNTIME:-}"
   if [ -n "$host_runtime" ]; then
     for sock in "${HOST_WAYLAND:-}" pipewire-0 pipewire-0-manager; do
-      [ -n "$sock" ] && [ -S "$host_runtime/$sock" ] || continue
+      if [ -z "$sock" ] || [ ! -S "$host_runtime/$sock" ]; then continue; fi
       touch "$ROOT$runtime/$sock"
       mount --bind "$host_runtime/$sock" "$ROOT$runtime/$sock"
     done
@@ -148,7 +151,9 @@ enter() { # root|user command...
 }
 
 create() {
-  command -v unshare >/dev/null && command -v newuidmap >/dev/null || die "needs unshare and newuidmap (util-linux, shadow)"
+  if ! command -v unshare >/dev/null || ! command -v newuidmap >/dev/null; then
+    die "needs unshare and newuidmap (util-linux, shadow)"
+  fi
   mkdir -p "$BASE"
   if [ ! -x "$ROOT/usr/bin/bash" ]; then
     if [ ! -f "$BASE/bootstrap.tar.zst" ]; then
@@ -209,6 +214,7 @@ SETUP
 # Build this checkout inside the container and install it there.
 update() {
   say "Building NewOS from $REPO"
+  # shellcheck disable=SC2016 # expanded inside the container, not here
   enter user bash -c '
     set -e
     cd "$NEWOS_REPO"
@@ -252,6 +258,7 @@ session() {
   local newos_conf="$NEWOS_REPO/shell/hypr/newos.conf"
   if [ -n "${WAYLAND_DISPLAY:-}" ]; then
     # Nested in a window: the host compositor keeps Super, so NewOS shortcuts use Alt.
+    # shellcheck disable=SC2016 # $mod is Hyprland's variable, not the shell's
     sed 's/^\$mod = SUPER/$mod = ALT/' "$newos_conf" > "$conf_dir/newos.conf"
     newos_conf="$conf_dir/newos.conf"
   fi
@@ -281,7 +288,7 @@ exec_in_session() {
   done
   [ -n "$pid" ] || die "NewOS is not running. Start it with: scripts/live.sh run"
   local signature
-  signature="$(ls "/proc/$pid/root/run/user/1000/hypr" 2>/dev/null | head -1)"
+  signature="$(find "/proc/$pid/root/run/user/1000/hypr" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | head -1)"
   nsenter --target "$pid" --user --mount --root --wd=/ --setuid 1000 --setgid 1000 --preserve-credentials \
     /usr/bin/env -i -C "/home/$USER_NAME" PATH=/usr/local/bin:/usr/bin HOME="/home/$USER_NAME" XDG_RUNTIME_DIR=/run/user/1000 \
     HYPRLAND_INSTANCE_SIGNATURE="$signature" WAYLAND_DISPLAY=wayland-1 "$@"

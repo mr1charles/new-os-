@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { buildResults, fuzzyScore, looksLikeRequest, type SearchableApp } from "./search"
+import {
+  buildResults,
+  flathubAppId,
+  fuzzyScore,
+  looksLikeRequest,
+  type SearchableApp,
+} from "./search"
 
 const apps: SearchableApp[] = [
   {
@@ -96,5 +102,27 @@ describe("looksLikeRequest", () => {
     expect(looksLikeRequest("weather?")).toBe(true)
     expect(looksLikeRequest("firefox")).toBe(false)
     expect(looksLikeRequest("set")).toBe(false)
+  })
+})
+
+describe("Flathub", () => {
+  it("offers to install from a pasted Flathub link", () => {
+    expect(flathubAppId("https://flathub.org/apps/com.spotify.Client")).toBe("com.spotify.Client")
+    expect(flathubAppId("https://flathub.org/en/apps/details/org.gimp.GIMP?x=1")).toBe(
+      "org.gimp.GIMP",
+    )
+    expect(flathubAppId("appstream://org.gimp.GIMP.desktop")).toBe("org.gimp.GIMP")
+    expect(flathubAppId("https://flathub.org/apps/search?q=x")).toBeNull()
+    expect(flathubAppId("spotify")).toBeNull()
+    const results = buildResults("https://flathub.org/apps/com.spotify.Client", [])
+    expect(results[0]).toMatchObject({
+      kind: "install",
+      target: "https://flathub.org/apps/com.spotify.Client",
+    })
+  })
+
+  it("suggests Flathub for apps that aren't installed", () => {
+    expect(buildResults("spotify", []).some((r) => r.id === "flathub")).toBe(true)
+    expect(buildResults("firefox", apps).some((r) => r.id === "flathub")).toBe(false)
   })
 })

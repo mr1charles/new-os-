@@ -2795,6 +2795,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "newos-opener"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "futures-util",
+ "newos-appkit",
+ "newos-syslib",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
 name = "newos-settings"
 version = "0.1.0"
 dependencies = [

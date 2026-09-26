@@ -1,0 +1,25 @@
+# HelixOS defaults: installers and apps from anywhere open with newos-open (the Installer),
+# which asks first, shows progress in the Dynamic Island, and says when it is done.
+# Installed to /etc/xdg/mimeapps.list; a user's own ~/.config/mimeapps.list wins.
+[Default Applications]
+application/x-ms-dos-executable=newos-open.desktop
+application/x-msdownload=newos-open.desktop
+application/x-msdos-program=newos-open.desktop
+application/x-ms-shortcut=newos-open.desktop
+application/x-msi=newos-open.desktop
+application/x-ms-installer=newos-open.desktop
+application/x-wine-extension-msi=newos-open.desktop
+application/x-bat=newos-open.desktop
+application/vnd.microsoft.portable-executable=newos-open.desktop
+application/vnd.flatpak.ref=newos-open.desktop
+application/vnd.flatpak.repo=newos-open.desktop
+application/vnd.flatpak=newos-open.desktop
+application/x-appimage=newos-open.desktop
+application/vnd.appimage=newos-open.desktop
+application/x-iso9660-appimage=newos-open.desktop
+application/x-alpm-package=newos-open.desktop
+application/vnd.debian.binary-package=newos-open.desktop
+application/x-deb=newos-open.desktop
+application/x-rpm=newos-open.desktop
+application/vnd.android.package-archive=newos-open.desktop
+x-scheme-handler/appstream=newos-open.desktop

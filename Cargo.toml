@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["services/syslib", "services/assistantd", "services/appkit", "services/spacesd", "apps/settings/src-tauri", "apps/calculator/src-tauri", "apps/notes/src-tauri", "apps/terminal/src-tauri", "apps/files/src-tauri"]
+members = ["services/syslib", "services/assistantd", "services/appkit", "services/spacesd", "services/opener", "apps/settings/src-tauri", "apps/calculator/src-tauri", "apps/notes/src-tauri", "apps/terminal/src-tauri", "apps/files/src-tauri"]
 
 [workspace.package]
 version = "0.1.0"

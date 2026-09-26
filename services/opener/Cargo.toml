@@ -1,0 +1,25 @@
+[package]
+name = "newos-opener"
+description = "Opens anything: Windows programs (Wine), Flathub links and .flatpakref files, AppImages, Arch packages, and Android apps (Waydroid), with a confirmation and progress in the Dynamic Island."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "newos-open"
+path = "src/main.rs"
+
+[dependencies]
+newos-syslib = { path = "../syslib" }
+newos-appkit = { path = "../appkit" }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+zbus = { workspace = true }
+futures-util = "0.3"
+
+[dev-dependencies]
+tempfile = "3"

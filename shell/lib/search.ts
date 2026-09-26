@@ -53,6 +53,16 @@ export type SearchResult =
       prompt: string
     }
   | {
+      /** Install from a Flathub link (newos-open). */
+      kind: "install"
+      id: string
+      title: string
+      subtitle: string
+      iconName: string
+      score: number
+      target: string
+    }
+  | {
       kind: "web"
       id: string
       title: string
@@ -118,6 +128,15 @@ export interface BuildOptions {
   maxSettings?: number
 }
 
+/** The app id in a Flathub link or appstream:// URL (same rules as newos-open). */
+export function flathubAppId(text: string): string | null {
+  const match =
+    /^(?:https?:\/\/(?:www\.)?flathub\.org\/(?:[a-z-]+\/)?apps\/(?:details\/)?|appstream:(?:\/\/)?)([A-Za-z_][\w-]*(?:\.[\w-]+){2,})(?:\.desktop)?\/?(?:[?#].*)?$/.exec(
+      text.trim(),
+    )
+  return match ? match[1]!.replace(/\.desktop$/, "") : null
+}
+
 export function buildResults(
   query: string,
   apps: SearchableApp[],
@@ -127,6 +146,19 @@ export function buildResults(
   if (q.length === 0) return []
   const { assistantName = "Assistant", maxApps = 6, maxSettings = 3 } = options
   const results: SearchResult[] = []
+
+  const flathub = flathubAppId(q)
+  if (flathub) {
+    results.push({
+      kind: "install",
+      id: "install",
+      title: `Install ${flathub}`,
+      subtitle: "From Flathub",
+      iconName: "system-software-install",
+      score: 3,
+      target: q,
+    })
+  }
 
   if (looksLikeMath(q)) {
     const value = evaluate(q)
@@ -201,6 +233,19 @@ export function buildResults(
     score: request ? 1.5 : 0.1,
     prompt: q,
   })
+
+  // Not installed? Offer Flathub, where most Linux apps are.
+  if (appResults.length === 0 && !flathub && !request && q.length >= 3) {
+    results.push({
+      kind: "web",
+      id: "flathub",
+      title: `Get “${q}” from Flathub`,
+      subtitle: "Find and install apps",
+      iconName: "system-software-install",
+      score: 0.08,
+      url: `https://flathub.org/apps/search?q=${encodeURIComponent(q)}`,
+    })
+  }
 
   results.push({
     kind: "web",

@@ -7,7 +7,7 @@ import { appList, toSearchable } from "../lib/apps"
 import { buildResults, type SearchResult } from "../lib/search"
 import { hidePopup, launcherMode, showPopup } from "../lib/popups"
 import { config } from "../lib/config"
-import { copyToClipboard, openSettings, openUrl } from "../lib/system"
+import { copyToClipboard, openSettings, openUrl, spawn } from "../lib/system"
 import { send } from "../lib/assistant-session"
 import { setImageSource } from "../lib/icons"
 import type AstalApps from "gi://AstalApps"
@@ -36,6 +36,9 @@ function activateResult(result: SearchResult) {
       break
     case "web":
       openUrl(result.url)
+      break
+    case "install":
+      spawn(["newos-open", result.target])
       break
   }
 }

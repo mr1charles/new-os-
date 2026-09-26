@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Installer
+GenericName=Open Apps and Installers
+Comment=Open Windows programs, Flatpaks, AppImages, packages, and Android apps
+Exec=newos-open %U
+Icon=system-software-install
+Terminal=false
+NoDisplay=true
+Categories=System;PackageManager;
+MimeType=application/x-ms-dos-executable;application/x-msdownload;application/x-msdos-program;application/x-ms-shortcut;application/x-msi;application/x-ms-installer;application/x-wine-extension-msi;application/x-bat;application/vnd.microsoft.portable-executable;application/vnd.flatpak.ref;application/vnd.flatpak.repo;application/vnd.flatpak;application/x-appimage;application/vnd.appimage;application/x-iso9660-appimage;application/x-alpm-package;application/vnd.debian.binary-package;application/x-deb;application/x-rpm;application/vnd.android.package-archive;x-scheme-handler/appstream;

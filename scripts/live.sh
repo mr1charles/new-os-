@@ -227,7 +227,7 @@ update() {
     export CARGO_TARGET_DIR="$HOME/.cache/newos-target"
     [ -d node_modules ] || { echo "error: run pnpm install on the host first" >&2; exit 1; }
     # Tools added after the container was created.
-    sudo pacman -S --needed --noconfirm poppler udisks2 clang wtype >/dev/null 2>&1 || true
+    sudo pacman -S --needed --noconfirm poppler udisks2 clang wtype flatpak >/dev/null 2>&1 || true
     # The lock screen needs a password to unlock: "newos" (this container only).
     echo "$USER:newos" | sudo chpasswd
     cargo build --release -p newos-spacesd
@@ -236,6 +236,11 @@ update() {
     node packages/design-tokens/src/build.mjs >/dev/null
     cargo build --release -p newos-assistantd
     sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-assistantd" /usr/local/bin/newos-assistantd
+    cargo build --release -p newos-opener
+    sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-open" /usr/local/bin/newos-open
+    sudo install -Dm644 distro/applications/newos-open.desktop /usr/local/share/applications/newos-open.desktop
+    sudo install -Dm644 distro/configs/xdg/mimeapps.list /etc/xdg/mimeapps.list
+    sudo update-desktop-database -q /usr/local/share/applications 2>/dev/null || true
     for app in settings calculator notes terminal files; do
       echo "Building $app"
       (cd "apps/$app" && node_modules/.bin/vite build --logLevel warn)
@@ -253,6 +258,10 @@ session() {
   local conf_dir="$XDG_RUNTIME_DIR/newos-live" logs="$HOME/.local/state/newos-live"
   mkdir -p "$conf_dir" "$logs" "$HOME/.config/newos"
   touch "$HOME/.config/newos/hyprland-settings.conf" "$HOME/.config/newos/hyprland-user.conf"
+  # Window layout rules; the shell rewrites this from Settings. Floating windows until then.
+  [ -s "$HOME/.config/newos/hyprland-windows.conf" ] ||
+    printf 'windowrule = float on, match:class .*\nwindowrule = center on, match:float true\n' \
+      > "$HOME/.config/newos/hyprland-windows.conf"
   # Use a model the host's Ollama already has, unless the tester chose one.
   if [ ! -f "$HOME/.config/newos/assistant.toml" ]; then
     local installed model="" want
@@ -276,6 +285,7 @@ session() {
   cat > "$conf_dir/hyprland.conf" <<CONF
 monitor = , preferred, auto, 1
 source = $newos_conf
+source = $HOME/.config/newos/hyprland-windows.conf
 source = $HOME/.config/newos/hyprland-settings.conf
 env = XCURSOR_SIZE, 24
 # Dual Space in testing mode: a demo spacesd on the session bus with two mock spaces, "Work"
@@ -284,7 +294,7 @@ env = NEWOS_SPACES_BUS, session
 exec-once = sh -c 'newos-spacesd --session --demo > "$logs/spacesd.log" 2>&1'
 exec-once = gnome-keyring-daemon --start --components=secrets
 exec-once = sh -c 'newos-assistantd > "$logs/assistantd.log" 2>&1'
-exec-once = sh -c 'cd "$NEWOS_REPO/shell" && ags run --gtk 4 app.ts > "$logs/shell.log" 2>&1'
+exec-once = sh -c 'cd "$NEWOS_REPO/shell" && XDG_DATA_DIRS="\$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share" exec ags run --gtk 4 app.ts > "$logs/shell.log" 2>&1'
 source = $HOME/.config/newos/hyprland-user.conf
 CONF
   echo "NewOS testing mode. Logs: ${NEWOS_LIVE_ROOT_HINT:-}$logs"

@@ -100,7 +100,6 @@ export default function Greeter({
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
   return (
     <window
-      visible
       name={`greeter-${gdkmonitor.connector}`}
       namespace="newos-greeter"
       class="greeter-window"
@@ -110,6 +109,8 @@ export default function Greeter({
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={primary ? Astal.Keymode.EXCLUSIVE : Astal.Keymode.NONE}
+      // Shown last: Astal applies the layer only before the window is mapped.
+      visible
     >
       <overlay>
         <Gtk.Picture

@@ -21,7 +21,6 @@ export default function Wallpaper({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
   return (
     <window
-      visible
       name={`wallpaper-${gdkmonitor.connector}`}
       namespace="newos-wallpaper"
       class="wallpaper-window"
@@ -31,6 +30,8 @@ export default function Wallpaper({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.NONE}
+      // Shown last: Astal applies the layer only before the window is mapped.
+      visible
     >
       <Gtk.Picture
         class="wallpaper"

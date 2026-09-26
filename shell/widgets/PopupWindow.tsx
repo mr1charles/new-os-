@@ -55,7 +55,6 @@ export default function PopupWindow(props: PopupWindowProps) {
       namespace={props.namespace}
       class={dimClass}
       application={app}
-      visible={isOpen(props.name)}
       layer={Astal.Layer.OVERLAY}
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
@@ -63,6 +62,8 @@ export default function PopupWindow(props: PopupWindowProps) {
       onNotifyVisible={(self) => {
         if (self.visible) props.onShow?.()
       }}
+      // Shown last: Astal applies the layer only before the window is mapped.
+      visible={isOpen(props.name)}
     >
       <Gtk.EventControllerKey
         onKeyPressed={(_controller, keyval, _code, state) => {

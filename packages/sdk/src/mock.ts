@@ -197,6 +197,14 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       .map(noteMeta)
       .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.modified - a.modified)
 
+  // Terminal: a pretend shell that echoes what you type.
+  const mockPrompt = "\x1b[1;34m~\x1b[0m $ "
+  const mockTerminals = new Map<
+    number,
+    { line: string; emit: (e: { type: string; text?: string }) => void }
+  >()
+  let nextTerminal = 1
+
   const find = (address: unknown) => {
     const device = [...devices, ...nearby].find((d) => d.address === address)
     if (!device) throw new Error(`no device ${String(address)}`)
@@ -483,6 +491,39 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       return null
     },
 
+    term_write: ({ id, data }) => {
+      const session = mockTerminals.get(Number(id))
+      if (!session) throw new Error(`no terminal ${String(id)}`)
+      for (const ch of String(data)) {
+        if (ch === "\r") {
+          const line = session.line.trim()
+          session.line = ""
+          const reply = line === "" ? "" : line === "exit" ? null : `mock shell: ran “${line}”\r\n`
+          if (reply === null) {
+            session.emit({ type: "exit" })
+            mockTerminals.delete(Number(id))
+            return null
+          }
+          session.emit({ type: "data", text: `\r\n${reply}${mockPrompt}` })
+        } else if (ch === "\x7f") {
+          if (session.line) {
+            session.line = session.line.slice(0, -1)
+            session.emit({ type: "data", text: "\b \b" })
+          }
+        } else if (ch >= " ") {
+          session.line += ch
+          session.emit({ type: "data", text: ch })
+        }
+      }
+      return null
+    },
+    term_resize: () => null,
+    term_kill: ({ id }) => {
+      mockTerminals.delete(Number(id))
+      return null
+    },
+    term_cwd: () => "/home/a",
+
     apps: () =>
       [
         ["newos-files", "Files"],
@@ -543,6 +584,19 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
     ...backend,
     // Streaming chat for the mock: a short reply in two chunks.
     ...({
+      term_spawn: ({ onEvent }: { onEvent: (e: { type: string; text?: string }) => void }) => {
+        const id = nextTerminal++
+        mockTerminals.set(id, { line: "", emit: onEvent })
+        setTimeout(
+          () =>
+            onEvent({
+              type: "data",
+              text: `Welcome to the NewOS Terminal (sample shell).\r\n${mockPrompt}`,
+            }),
+          0,
+        )
+        return id
+      },
       assistant_stream: async ({ onChunk }: { onChunk: (chunk: string) => void }) => {
         onChunk(
           'event: start\ndata: {"conversation_id":"mock","provider":"local","model":"mock"}\n\n',

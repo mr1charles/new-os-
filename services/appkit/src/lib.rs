@@ -9,6 +9,7 @@ pub mod assistant_config;
 pub mod keyring;
 pub mod notes;
 pub mod paths;
+pub mod pty;
 pub mod settings;
 #[cfg(feature = "tauri")]
 pub mod tauri_app;

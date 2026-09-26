@@ -252,6 +252,12 @@ export interface Commands {
   notes_folder_create: [{ name: string }, string]
   notes_folder_delete: [{ name: string }, null]
 
+  // Terminal (appkit::pty). Sessions start with `terminal.spawn` (streaming).
+  term_write: [{ id: number; data: string }, null]
+  term_resize: [{ id: number; cols: number; rows: number }, null]
+  term_kill: [{ id: number }, null]
+  term_cwd: [{ id: number }, string]
+
   // Apps
   apps: [Record<string, never>, DesktopEntry[]]
 

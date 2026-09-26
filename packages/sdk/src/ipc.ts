@@ -23,6 +23,11 @@ export function setMockBackend(backend: MockBackend | null) {
   mockBackend = backend
 }
 
+/** The mock's handler for a command, when the mock backend is active. */
+export function getMockHandler(command: string): MockHandler | undefined {
+  return (mockBackend as Record<string, MockHandler> | null)?.[command]
+}
+
 /** Deliver an event to `listen()` subscribers when running on the mock backend. */
 export function emitMockEvent<T>(event: string, payload: T) {
   for (const listener of mockListeners.get(event) ?? []) listener(payload)

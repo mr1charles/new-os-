@@ -47,6 +47,7 @@ import {
   type SortKey,
 } from "./logic"
 import { QuickLook } from "./QuickLook"
+import { transfer } from "./transfer"
 import { TrashView } from "./TrashView"
 import { useBrowser, type Location } from "./useBrowser"
 
@@ -251,11 +252,7 @@ function Browser({
   const paste = async () => {
     if (!b.clipboard || b.location.kind !== "folder") return
     try {
-      const done = await call("files_transfer", {
-        sources: b.clipboard.paths,
-        dest: b.location.path,
-        moveFiles: b.clipboard.cut,
-      })
+      const done = await transfer(b.clipboard.paths, b.location.path, b.clipboard.cut)
       if (b.clipboard.cut) b.setClipboard(null)
       await b.reload()
       b.setSelected(done)
@@ -416,11 +413,7 @@ function Browser({
             {
               label: "Paste Into Folder",
               run: () =>
-                void call("files_transfer", {
-                  sources: b.clipboard!.paths,
-                  dest: entry.path,
-                  moveFiles: b.clipboard!.cut,
-                })
+                void transfer(b.clipboard!.paths, entry.path, b.clipboard!.cut)
                   .then(() => b.reload())
                   .catch(fail),
             },

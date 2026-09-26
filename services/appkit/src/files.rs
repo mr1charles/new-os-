@@ -346,7 +346,36 @@ pub fn rename(path: &Path, new_name: &str) -> Result<FileEntry> {
     info(&target)
 }
 
-fn copy_recursive(from: &Path, to: &Path) -> std::io::Result<()> {
+/// Bytes in regular files under `paths` (symlinks count as nothing), for progress.
+pub fn total_size(paths: &[PathBuf]) -> u64 {
+    fn walk(path: &Path) -> u64 {
+        match std::fs::symlink_metadata(path) {
+            Ok(m) if m.is_dir() => std::fs::read_dir(path).map(|entries| entries.flatten().map(|e| walk(&e.path())).sum()).unwrap_or(0),
+            Ok(m) if m.is_file() => m.len(),
+            _ => 0,
+        }
+    }
+    paths.iter().map(|p| walk(p)).sum()
+}
+
+/// Copies in chunks so a single big file still reports progress.
+fn copy_file(from: &Path, to: &Path, progress: &mut dyn FnMut(u64)) -> std::io::Result<()> {
+    use std::io::{Read, Write};
+    let mut input = std::fs::File::open(from)?;
+    let mut output = std::fs::File::create(to)?;
+    let mut buffer = vec![0u8; 4 << 20];
+    loop {
+        let n = input.read(&mut buffer)?;
+        if n == 0 {
+            break;
+        }
+        output.write_all(&buffer[..n])?;
+        progress(n as u64);
+    }
+    output.set_permissions(input.metadata()?.permissions())
+}
+
+fn copy_recursive(from: &Path, to: &Path, progress: &mut dyn FnMut(u64)) -> std::io::Result<()> {
     let meta = std::fs::symlink_metadata(from)?;
     if meta.file_type().is_symlink() {
         std::os::unix::fs::symlink(std::fs::read_link(from)?, to)
@@ -354,11 +383,11 @@ fn copy_recursive(from: &Path, to: &Path) -> std::io::Result<()> {
         std::fs::create_dir(to)?;
         for entry in std::fs::read_dir(from)? {
             let entry = entry?;
-            copy_recursive(&entry.path(), &to.join(entry.file_name()))?;
+            copy_recursive(&entry.path(), &to.join(entry.file_name()), progress)?;
         }
         std::fs::set_permissions(to, meta.permissions())
     } else {
-        std::fs::copy(from, to).map(|_| ())
+        copy_file(from, to, progress)
     }
 }
 
@@ -366,9 +395,19 @@ fn copy_recursive(from: &Path, to: &Path) -> std::io::Result<()> {
 /// Finder. Moving within one file system is a rename; across drives it is copy-then-delete.
 /// Returns the new paths.
 pub fn transfer(sources: &[PathBuf], dest: &Path, move_files: bool) -> Result<Vec<String>> {
+    transfer_with_progress(sources, dest, move_files, &mut |_| {})
+}
+
+/// [`transfer`], calling `progress` with the bytes handled so far (out of [`total_size`]).
+pub fn transfer_with_progress(sources: &[PathBuf], dest: &Path, move_files: bool, progress: &mut dyn FnMut(u64)) -> Result<Vec<String>> {
     if !dest.is_dir() {
         return Err(AppError::Invalid(format!("{} is not a folder", dest.display())));
     }
+    let mut handled = 0u64;
+    let mut step = |n: u64| {
+        handled += n;
+        progress(handled);
+    };
     let mut done = Vec::new();
     for source in sources {
         let name = source.file_name().ok_or_else(|| AppError::Invalid("can’t copy the root folder".into()))?;
@@ -382,10 +421,10 @@ pub fn transfer(sources: &[PathBuf], dest: &Path, move_files: bool) -> Result<Ve
         let target = free_name(dest, &name.to_string_lossy());
         if move_files {
             match std::fs::rename(source, &target) {
-                Ok(()) => {}
+                Ok(()) => step(total_size(std::slice::from_ref(&target))),
                 // EXDEV: another drive. Copy, then remove the original.
                 Err(e) if e.raw_os_error() == Some(18) => {
-                    copy_recursive(source, &target)?;
+                    copy_recursive(source, &target, &mut step)?;
                     if source.is_dir() {
                         std::fs::remove_dir_all(source)?;
                     } else {
@@ -395,7 +434,7 @@ pub fn transfer(sources: &[PathBuf], dest: &Path, move_files: bool) -> Result<Ve
                 Err(e) => return Err(e.into()),
             }
         } else {
-            copy_recursive(source, &target)?;
+            copy_recursive(source, &target, &mut step)?;
         }
         done.push(target.to_string_lossy().into_owned());
     }
@@ -730,6 +769,13 @@ mod tests {
         assert!(rename(&b.join("notes.txt"), "doc 2.txt").is_err(), "taken");
         assert!(rename(&b.join("notes.txt"), "a/b").is_err());
         assert_eq!(create_folder(&b, "sub").unwrap().name, "sub 2");
+        // Progress counts every byte, ending at the total.
+        let sources = [a.join("sub")];
+        let total = total_size(&sources);
+        let mut seen = Vec::new();
+        transfer_with_progress(&sources, &b, false, &mut |n| seen.push(n)).unwrap();
+        assert_eq!(total, 4);
+        assert_eq!(seen.last(), Some(&total));
     }
 
     #[test]

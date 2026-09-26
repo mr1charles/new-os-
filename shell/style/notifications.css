@@ -98,3 +98,22 @@ button.notification-close:hover {
   font-size: 15px;
   margin: 40px 0;
 }
+
+/* Per-app stacks: a sliver of the next card peeks out under the newest one. */
+.nc-group-header {
+  padding: 0 4px;
+}
+
+.nc-group-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.nc-stack-edge {
+  margin: -12px 10px 0;
+  min-height: 8px;
+  border-radius: 0 0 12px 12px;
+  background: var(--newos-color-material-thick);
+  border: 1px solid var(--newos-color-separator);
+  border-top: none;
+}

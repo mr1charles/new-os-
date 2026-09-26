@@ -2,7 +2,7 @@
 //! the settings watcher, and the main window with NewOS chrome. An app adds its own commands
 //! with [`with_common_commands`] and calls [`setup`] from its `.setup()` hook.
 //!
-//! The frontend reaches these through `@newos/sdk` (`settings`, `assistant`).
+//! The frontend reaches these through `@newos/sdk` (`settings`, `assistant`, `island`).
 
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -99,6 +99,21 @@ pub async fn assistant_restart(common: State<'_, Common>) -> Result<()> {
     crate::assistant_client::restart_daemon(&common.runner).await
 }
 
+#[tauri::command]
+pub async fn island_show(id: String, activity: crate::island::Activity) -> Result<()> {
+    crate::island::show(&id, &activity).await
+}
+
+#[tauri::command]
+pub async fn island_end(id: String) -> Result<()> {
+    crate::island::end(&id).await
+}
+
+#[tauri::command]
+pub async fn notify(notification: crate::island::Notification) -> Result<u32> {
+    crate::island::notify(&notification).await
+}
+
 /// The shared commands, by name. Kept in step with the handler below by a test.
 pub const COMMANDS: &[&str] = &[
     "settings_read",
@@ -111,6 +126,9 @@ pub const COMMANDS: &[&str] = &[
     "assistant_key_store",
     "assistant_key_clear",
     "assistant_restart",
+    "island_show",
+    "island_end",
+    "notify",
 ];
 
 fn common_handler<R: Runtime>() -> impl Fn(Invoke<R>) -> bool + Send + Sync + 'static {
@@ -125,6 +143,9 @@ fn common_handler<R: Runtime>() -> impl Fn(Invoke<R>) -> bool + Send + Sync + 's
         assistant_key_store,
         assistant_key_clear,
         assistant_restart,
+        island_show,
+        island_end,
+        notify,
     ]
 }
 

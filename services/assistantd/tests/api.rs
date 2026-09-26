@@ -339,3 +339,31 @@ async fn rejects_empty_messages() {
     assert_eq!(status, StatusCode::BAD_REQUEST);
     assert!(body.contains("empty"));
 }
+
+#[tokio::test]
+async fn change_look_applies_a_preset_and_tweaks_through_the_shell() {
+    let cloud = ScriptedProvider::new(
+        ProviderKind::Cloud,
+        vec![
+            reply(
+                vec![tool_call("toolu_1", "change_look", json!({"preset": "windows", "changes": {"appearance": {"accent": "green"}}}))],
+                StopReason::ToolUse,
+            ),
+            reply(vec![Block::text("It now looks like Windows, in green.")], StopReason::EndTurn),
+        ],
+    );
+    let h = harness(Some(cloud), ScriptedProvider::new(ProviderKind::Local, vec![]), ONLINE);
+    h.runner
+        .respond(CommandOutput::ok(r#"[{"path":"dock.style","from":"dock","to":"taskbar"}]"#))
+        .respond(CommandOutput::ok(r#"[{"path":"appearance.accent","from":"blue","to":"green"}]"#));
+    let (status, body) = request(&h.state, "POST", "/v1/chat", Some(json!({"message": "make it look like windows but green"}))).await;
+    assert_eq!(status, StatusCode::OK);
+    let events = sse(&body);
+    let result = events.iter().find(|(e, _)| e == "tool_result").unwrap();
+    assert_eq!(result.1["ok"], true);
+    let output = result.1["output"].as_str().unwrap();
+    assert!(output.contains("dock.style") && output.contains("appearance.accent"), "{output}");
+    let calls = h.runner.calls();
+    assert_eq!(calls[0], ["ags", "request", "-i", "newos", "look", "preset", "windows"]);
+    assert_eq!(calls[1], ["ags", "request", "-i", "newos", "look", "apply", r#"{"appearance":{"accent":"green"}}"#]);
+}

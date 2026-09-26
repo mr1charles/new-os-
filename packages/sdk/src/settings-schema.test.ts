@@ -44,3 +44,21 @@ describe("config", () => {
     expect(resolveTheme("dark", new Date(2026, 0, 1, 12))).toBe("dark")
   })
 })
+
+describe("choices and ranges", () => {
+  it("keeps only allowed choices and clamps numbers", () => {
+    const config = mergeConfig(DEFAULT_CONFIG, {
+      dock: { position: "top", style: "taskbar", iconSize: 400 },
+      windows: { layout: "tiling", rounding: -3.6, gaps: Number.NaN, controls: "windows" },
+    })
+    expect(config.dock.position).toBe("bottom")
+    expect(config.dock.style).toBe("taskbar")
+    expect(config.dock.iconSize).toBe(72)
+    expect(config.windows).toMatchObject({
+      layout: "tiling",
+      rounding: 0,
+      gaps: 12,
+      controls: "windows",
+    })
+  })
+})

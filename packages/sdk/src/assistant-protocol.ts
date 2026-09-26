@@ -53,6 +53,7 @@ export interface ChatRequest {
 }
 
 export type CompletionTask =
+  | "customize"
   | "summarize"
   | "rewrite"
   | "classify"

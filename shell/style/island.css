@@ -1,13 +1,15 @@
 /* Dynamic Island: always black, like the hardware it imitates. */
 
+/* Docked in the menu bar: flush with the top edge, square on top, rounded below, the bar's
+   height at rest. It grows downward, and only casts a shadow once it leaves the bar. */
 .island {
   background: #000000;
   color: #ffffff;
-  border-radius: 19px;
+  border-radius: 0 0 14px 14px;
   min-width: 190px;
-  min-height: 34px;
-  padding: 0 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  min-height: 30px;
+  padding: 0 14px;
+  box-shadow: none;
   transition:
     min-width 450ms cubic-bezier(0.2, 0.9, 0.2, 1.05),
     min-height 450ms cubic-bezier(0.2, 0.9, 0.2, 1.05),
@@ -17,21 +19,27 @@
 
 .island.compact.kind-media,
 .island.compact.kind-timer,
-.island.compact.kind-install {
+.island.compact.kind-install,
+.island.compact.kind-activity {
   min-width: 250px;
+}
+
+.activity-title {
+  margin-left: 6px;
 }
 
 .island.expanded {
   min-width: 400px;
   min-height: 66px;
-  border-radius: 30px;
+  border-radius: 0 0 28px 28px;
   padding: 10px 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .island.expanded.kind-idle {
   min-width: 320px;
   min-height: 40px;
-  border-radius: 20px;
+  border-radius: 0 0 20px 20px;
   padding: 4px 16px;
 }
 
@@ -39,14 +47,15 @@
 .island.expanded.kind-brightness {
   min-width: 330px;
   min-height: 42px;
-  border-radius: 21px;
+  border-radius: 0 0 21px 21px;
   padding: 4px 18px;
 }
 
 .island.large {
   min-width: 540px;
   min-height: 120px;
-  border-radius: 36px;
+  border-radius: 0 0 36px 36px;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.4);
   padding: 16px 22px;
 }
 

@@ -1,6 +1,17 @@
-import type { DesktopEntry } from "@newos/sdk"
+import type { BarPosition, DesktopEntry, DockPosition, DockStyle } from "@newos/sdk"
 import { useCommand, useSettings } from "@newos/sdk/react"
-import { Button, EmptyState, Group, Page, Row, SearchField, Sheet, Toggle } from "@newos/ui"
+import {
+  Button,
+  EmptyState,
+  Group,
+  Page,
+  Row,
+  SearchField,
+  SegmentedControl,
+  Sheet,
+  Slider,
+  Toggle,
+} from "@newos/ui"
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react"
 import { useMemo, useState } from "react"
 
@@ -66,8 +77,69 @@ export function DockPage() {
     setPinned(next)
   }
 
+  const taskbar = settings.dock.style === "taskbar"
+  const [iconSize, setIconSize] = useState(settings.dock.iconSize)
   return (
     <Page>
+      <Group
+        footer={
+          taskbar
+            ? "The taskbar holds Start, your apps, and the clock and status icons, like Windows. The menu bar is hidden."
+            : undefined
+        }
+      >
+        <Row label="Style">
+          <SegmentedControl<DockStyle>
+            label="Dock style"
+            value={settings.dock.style}
+            options={[
+              { value: "dock", label: "Dock" },
+              { value: "taskbar", label: "Taskbar" },
+            ]}
+            onChange={(style) => void update({ dock: { style } })}
+          />
+        </Row>
+        {!taskbar && (
+          <Row label="Position on screen">
+            <SegmentedControl<DockPosition>
+              label="Dock position"
+              value={settings.dock.position}
+              options={[
+                { value: "left", label: "Left" },
+                { value: "bottom", label: "Bottom" },
+                { value: "right", label: "Right" },
+              ]}
+              onChange={(position) => void update({ dock: { position } })}
+            />
+          </Row>
+        )}
+        {!taskbar && (
+          <Row label="Menu bar">
+            <SegmentedControl<BarPosition>
+              label="Menu bar position"
+              value={settings.bar.position}
+              options={[
+                { value: "top", label: "Top" },
+                { value: "bottom", label: "Bottom" },
+              ]}
+              onChange={(position) => void update({ bar: { position } })}
+            />
+          </Row>
+        )}
+        <Row label="Size">
+          <Slider
+            label="Icon size"
+            value={iconSize}
+            min={28}
+            max={72}
+            step={2}
+            start="Small"
+            end="Large"
+            onChange={setIconSize}
+            onCommit={(size) => void update({ dock: { iconSize: size } })}
+          />
+        </Row>
+      </Group>
       <Group>
         <Row label="Magnification" description="Icons grow as the pointer moves over them.">
           <Toggle

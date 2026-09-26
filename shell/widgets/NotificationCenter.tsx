@@ -1,6 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0"
 import Pango from "gi://Pango?version=1.0"
-import { createBinding, createComputed, For } from "ags"
+import { createBinding, createComputed, createState, For, type Accessor } from "ags"
 import PopupWindow from "./PopupWindow"
 import { notifd, AstalNotifd } from "../lib/services"
 import { config, updateConfig } from "../lib/config"
@@ -9,6 +9,7 @@ import { formatLongDate, formatTime, timeAgo } from "../lib/format"
 import { setImageSource } from "../lib/icons"
 import { runningTimers } from "../lib/timers"
 import { formatCountdown } from "../lib/format"
+import { groupNotifications, type NotificationGroup } from "../lib/notification-groups"
 
 const VERTICAL = Gtk.Orientation.VERTICAL
 
@@ -93,6 +94,58 @@ function NotificationCard({ notification }: { notification: AstalNotifd.Notifica
   )
 }
 
+type Group = NotificationGroup<AstalNotifd.Notification>
+
+/**
+ * One app's notifications as a stack: the newest shows, the rest fold out on "Show N More".
+ * The group is looked up by key so it stays the same widget while notifications come and go.
+ */
+function NotificationStack({ groups, groupKey }: { groups: Accessor<Group[]>; groupKey: string }) {
+  const items = groups.as((gs) => gs.find((g) => g.key === groupKey)?.items ?? [])
+  const [expanded, setExpanded] = createState(false)
+  const newest = items.as((list) => list.slice(0, 1))
+  const rest = items.as((list) => list.slice(1))
+  return (
+    <box class="nc-group" orientation={VERTICAL} spacing={6}>
+      <box class="nc-group-header" spacing={6} visible={items.as((l) => l.length > 1)}>
+        <label
+          class="nc-group-title"
+          label={items.as((l) => l[0]?.appName || "Notifications")}
+          hexpand
+          xalign={0}
+        />
+        <button
+          class="pill"
+          label={createComputed(() => (expanded() ? "Show Less" : `Show ${rest().length} More`))}
+          onClicked={() => setExpanded(!expanded.peek())}
+        />
+        <button
+          class="notification-close"
+          tooltipText="Clear"
+          onClicked={() => items.peek().forEach((n) => n.dismiss())}
+        >
+          <image iconName="window-close-symbolic" pixelSize={12} />
+        </button>
+      </box>
+      <For each={newest} id={(n) => n.id}>
+        {(n) => <NotificationCard notification={n} />}
+      </For>
+      <revealer
+        revealChild={expanded}
+        transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+        transitionDuration={200}
+      >
+        <box orientation={VERTICAL} spacing={6}>
+          <For each={rest} id={(n) => n.id}>
+            {(n) => <NotificationCard notification={n} />}
+          </For>
+        </box>
+      </revealer>
+      <box class="nc-stack-edge" visible={createComputed(() => !expanded() && rest().length > 0)} />
+    </box>
+  )
+}
+
 function TodayHeader() {
   const time = createComputed(() => formatTime(new Date(now()), config().bar.clock24h))
   const date = now.as((t) => formatLongDate(new Date(t)))
@@ -111,13 +164,11 @@ function TodayHeader() {
   )
 }
 
-/** Notification Center: today's date and calendar, timers, and notification history. */
+/** Notification Center: today's date and calendar, timers, and notifications stacked by app. */
 export default function NotificationCenter() {
-  const list = notifd
-    ? createBinding(notifd, "notifications").as((items) =>
-        [...items].sort((a, b) => b.time - a.time),
-      )
-    : null
+  const list = notifd ? createBinding(notifd, "notifications") : null
+  const groups = list ? list.as((items) => groupNotifications(items)) : null
+  const keys = groups ? groups.as((gs) => gs.map((g) => g.key)) : null
   const dnd = config.as((c) => c.notifications.doNotDisturb)
 
   return (
@@ -155,9 +206,9 @@ export default function NotificationCenter() {
         </box>
         <scrolledwindow vexpand hscrollbarPolicy={Gtk.PolicyType.NEVER}>
           <box orientation={VERTICAL} spacing={8}>
-            {list ? (
-              <For each={list} id={(n) => n.id}>
-                {(n) => <NotificationCard notification={n} />}
+            {groups && keys ? (
+              <For each={keys} id={(key) => key}>
+                {(key) => <NotificationStack groups={groups} groupKey={key} />}
               </For>
             ) : (
               <box />

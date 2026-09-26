@@ -26,6 +26,9 @@ done
 SETTINGS_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/newos/hyprland-settings.conf"
 mkdir -p "$(dirname "$SETTINGS_CONF")"
 touch "$SETTINGS_CONF"
+WINDOWS_CONF="$(dirname "$SETTINGS_CONF")/hyprland-windows.conf"
+[ -s "$WINDOWS_CONF" ] ||
+  printf 'windowrule = float on, match:class .*\nwindowrule = center on, match:float true\n' > "$WINDOWS_CONF"
 
 # Apps built from this checkout (pnpm --filter @newos/settings tauri build --debug --no-bundle)
 # are found under their installed names, so Super+, and the shell's Settings buttons open them.
@@ -40,6 +43,7 @@ CONF="$RUNTIME/hyprland.conf"
 cat > "$CONF" <<CONF
 monitor = , preferred, auto, 1
 source = $ROOT/shell/hypr/newos.conf
+source = $WINDOWS_CONF
 source = $SETTINGS_CONF
 exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE
 exec-once = sh -c 'cd "$ROOT" && cargo run --quiet -p newos-assistantd 2>&1 | tee "$RUNTIME/assistantd.log"'

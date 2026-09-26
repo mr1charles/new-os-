@@ -55,6 +55,47 @@ export function TrafficLights({ inactive = false }: { inactive?: boolean }) {
   )
 }
 
+/**
+ * Minimize, maximize, and close on the right, like Windows. Shown instead of the traffic
+ * lights when Settings → Windows → Buttons is "Windows" (`data-controls` on the root).
+ */
+export function WindowControls() {
+  return (
+    <div className="nx-wincontrols">
+      <button
+        type="button"
+        className="nx-wincontrols__btn"
+        aria-label="Minimize"
+        onClick={() => void windowAction("minimize")}
+      >
+        <svg viewBox="0 0 10 10" aria-hidden="true">
+          <path d="M1 5h8" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        className="nx-wincontrols__btn"
+        aria-label="Maximize"
+        onClick={() => void windowAction("zoom")}
+      >
+        <svg viewBox="0 0 10 10" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="7" height="7" rx="1" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        className="nx-wincontrols__btn nx-wincontrols__close"
+        aria-label="Close"
+        onClick={() => void windowAction("close")}
+      >
+        <svg viewBox="0 0 10 10" aria-hidden="true">
+          <path d="M1.5 1.5l7 7M8.5 1.5l-7 7" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
 export interface WindowProps {
   /** Left column (usually a {@link Sidebar}). Omit for a single-pane window. */
   sidebar?: ReactNode
@@ -84,6 +125,7 @@ export function Window({ sidebar, sidebarWidth = 240, children, className }: Win
         </div>
       )}
       <main className="nx-window__content">{children}</main>
+      <WindowControls />
     </div>
   )
 }

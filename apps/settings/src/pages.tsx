@@ -12,6 +12,7 @@ import {
   Image,
   Info,
   Keyboard,
+  LayoutGrid,
   LayoutPanelTop,
   Monitor,
   Moon,
@@ -22,6 +23,7 @@ import {
   SquareMousePointer,
   Users,
   Volume2,
+  Wand2,
   Wifi,
   type LucideIcon,
 } from "lucide-react"
@@ -32,6 +34,7 @@ import { AssistantPage } from "./pages/Assistant"
 import { BatteryPage } from "./pages/Battery"
 import { BluetoothPage } from "./pages/Bluetooth"
 import { DisplaysPage } from "./pages/Displays"
+import { CustomizePage } from "./pages/Customize"
 import { DockPage } from "./pages/Dock"
 import { FocusPage } from "./pages/Focus"
 import { KeyboardPage } from "./pages/Keyboard"
@@ -44,6 +47,7 @@ import { TrackpadPage } from "./pages/Trackpad"
 import { UpdatePage } from "./pages/Update"
 import { WallpaperPage } from "./pages/Wallpaper"
 import { WifiPage } from "./pages/Wifi"
+import { WindowsPage } from "./pages/Windows"
 
 interface PageView {
   icon: LucideIcon
@@ -55,7 +59,7 @@ interface PageView {
 export const SECTIONS: string[][] = [
   ["wifi", "bluetooth", "network"],
   ["notifications", "focus", "sound"],
-  ["appearance", "wallpaper", "dock", "displays", "battery"],
+  ["customize", "appearance", "wallpaper", "dock", "windows", "displays", "battery"],
   ["assistant", "privacy", "spaces"],
   ["keyboard", "trackpad"],
   ["update", "about"],
@@ -71,6 +75,8 @@ const VIEWS: Record<string, PageView> = {
   appearance: { icon: Palette, color: "#48484a", component: AppearancePage },
   wallpaper: { icon: Image, color: "#32ade6", component: WallpaperPage },
   dock: { icon: LayoutPanelTop, color: "#48484a", component: DockPage },
+  windows: { icon: LayoutGrid, color: "#0a84ff", component: WindowsPage },
+  customize: { icon: Wand2, color: "#af52de", component: CustomizePage },
   displays: { icon: Monitor, color: "#0a84ff", component: DisplaysPage },
   battery: { icon: Battery, color: "#34c759", component: BatteryPage },
   assistant: { icon: Sparkles, color: "#af52de", component: AssistantPage },

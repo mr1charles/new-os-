@@ -251,6 +251,27 @@ export const NOTES_CHANGED_EVENT = "newos://notes-changed"
 
 type Json = unknown
 
+/** A live activity in the Dynamic Island (shell: org.newos.Island1). */
+export interface IslandActivity {
+  /** The app's window class, so clicking the island brings the app forward. */
+  app: string
+  icon: string
+  title: string
+  subtitle: string
+  /** 0..1, or null while the amount of work is unknown. */
+  progress: number | null
+}
+
+export interface AppNotification {
+  app_name: string
+  icon: string
+  summary: string
+  body: string
+  /** An earlier notification's id to replace, or 0. */
+  replaces: number
+  urgent: boolean
+}
+
 /** Command name → [arguments, result]. */
 export interface Commands {
   // Settings file (appkit::settings)
@@ -265,6 +286,11 @@ export interface Commands {
   assistant_key_store: [{ key: string }, null]
   assistant_key_clear: [Record<string, never>, null]
   assistant_restart: [Record<string, never>, null]
+
+  // Dynamic Island and notifications (appkit::island)
+  island_show: [{ id: string; activity: IslandActivity }, null]
+  island_end: [{ id: string }, null]
+  notify: [{ notification: AppNotification }, number]
 
   // Network
   wifi_status: [Record<string, never>, WifiStatus]

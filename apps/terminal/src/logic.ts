@@ -74,3 +74,62 @@ export function tabTitle(title: string): string {
   const colon = /^[\w.-]+@[\w.-]+:\s*(.+)$/.exec(t)
   return (colon ? colon[1]! : t).slice(0, 40)
 }
+
+export interface FinishedCommand {
+  command: string
+  exitCode: number | null
+  durationMs: number
+}
+
+/** Commands that run this long show in the Dynamic Island, and notify when done if unseen. */
+export const LONG_COMMAND_MS = 10_000
+
+function safeDecode(text: string): string {
+  try {
+    return decodeURIComponent(text)
+  } catch {
+    return text
+  }
+}
+
+/**
+ * Follows shell-integration marks (OSC 133): `C` when a command starts (fish adds
+ * `cmdline_url=<command>`), `D;<exit>` when it ends. Returns what happened.
+ */
+export class CommandTracker {
+  private started: { at: number; command: string } | null = null
+
+  handle(
+    data: string,
+    now = Date.now(),
+  ): { started: string } | { finished: FinishedCommand } | null {
+    const [mark, ...params] = data.split(";")
+    if (mark === "C") {
+      const url = params.find((p) => p.startsWith("cmdline_url="))?.slice("cmdline_url=".length)
+      const command = safeDecode(url ?? "")
+      this.started = { at: now, command: command.trim() }
+      return { started: this.started.command }
+    }
+    if (mark === "D" && this.started) {
+      const code = Number.parseInt(params[0] ?? "", 10)
+      const finished = {
+        command: this.started.command,
+        exitCode: Number.isNaN(code) ? null : code,
+        durationMs: now - this.started.at,
+      }
+      this.started = null
+      return { finished }
+    }
+    return null
+  }
+}
+
+/** The notification for a finished command, e.g. "cargo build finished" / "failed (exit 101)". */
+export function finishedMessage(f: FinishedCommand, fallbackTitle: string) {
+  const name = f.command.split(/\s+/).slice(0, 3).join(" ") || fallbackTitle || "Command"
+  const seconds = Math.round(f.durationMs / 1000)
+  const took = seconds >= 60 ? `${Math.floor(seconds / 60)} min ${seconds % 60} s` : `${seconds} s`
+  return f.exitCode === null || f.exitCode === 0
+    ? { summary: `${name} finished`, body: `Took ${took}.`, urgent: false }
+    : { summary: `${name} failed`, body: `Exit code ${f.exitCode} after ${took}.`, urgent: false }
+}

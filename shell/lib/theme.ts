@@ -33,8 +33,24 @@ export const theme = createComputed<Theme>(() =>
 )
 export const accent = createComputed(() => accentColor(config().appearance.accent, theme()))
 export const reduceTransparency = createComputed(() => config().appearance.reduceTransparency)
+const dockIconSize = createComputed(() => config().dock.iconSize)
 
-export function buildCss(current: Theme, accentHex: string, solid: boolean): string {
+/** Dock icon sizes from Settings (base size, then three magnification steps). */
+export function dockSizeCss(iconSize: number): string {
+  const size = Math.round(iconSize)
+  const [m1, m2, m3] = [1.14, 1.32, 1.5].map((f) => Math.round(size * f))
+  const shelf = Math.round(size * 1.5) + 26
+  return [
+    `.dock-icon { -gtk-icon-size: ${size}px; }`,
+    `button.dock-item.mag-1 .dock-icon { -gtk-icon-size: ${m1}px; }`,
+    `button.dock-item.mag-2 .dock-icon { -gtk-icon-size: ${m2}px; }`,
+    `button.dock-item.mag-3 .dock-icon { -gtk-icon-size: ${m3}px; }`,
+    `.dock-shelf.dock-bottom { min-height: ${shelf}px; }`,
+    `.dock-shelf.dock-left, .dock-shelf.dock-right { min-width: ${shelf}px; }`,
+  ].join("\n")
+}
+
+export function buildCss(current: Theme, accentHex: string, solid: boolean, iconSize = 44): string {
   const tokens = current === "dark" ? tokensDark : tokensLight
   const overrides = [`:root { --newos-accent: ${accentHex}; }`]
   if (solid) {
@@ -42,7 +58,7 @@ export function buildCss(current: Theme, accentHex: string, solid: boolean): str
       ":root { --newos-color-material-thin: var(--newos-color-bg-elevated); --newos-color-material-regular: var(--newos-color-bg-elevated); --newos-color-material-bar: var(--newos-color-bg-window); }",
     )
   }
-  return `${tokens}\n${overrides.join("\n")}\n${STYLES}`
+  return `${tokens}\n${overrides.join("\n")}\n${STYLES}\n${dockSizeCss(iconSize)}`
 }
 
 function applyColorScheme(current: Theme) {
@@ -67,7 +83,7 @@ function applyColorScheme(current: Theme) {
 export function setupTheme() {
   createEffect(() => {
     const current = theme()
-    app.apply_css(buildCss(current, accent(), reduceTransparency()), true)
+    app.apply_css(buildCss(current, accent(), reduceTransparency(), dockIconSize()), true)
     applyColorScheme(current)
   })
 }

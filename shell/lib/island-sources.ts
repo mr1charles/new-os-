@@ -56,7 +56,15 @@ function setupNotifications() {
         urgency,
         actions: n.actions.map((a) => ({ id: a.id, label: a.label })),
       },
-      { id: `notification:${id}`, ttlMs: urgency === "critical" ? 12_000 : undefined },
+      {
+        id: `notification:${id}`,
+        // Questions (buttons besides the default action) stay until answered or timed out.
+        ttlMs: n.actions.some((a) => a.id !== "default")
+          ? 60_000
+          : urgency === "critical"
+            ? 12_000
+            : undefined,
+      },
     )
   })
   server.connect("resolved", (_server, id) => island.dismiss(`notification:${id}`))

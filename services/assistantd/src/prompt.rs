@@ -85,6 +85,9 @@ pub fn completion_prompt(task: &str, input: &str, options: &serde_json::Map<Stri
             }
             format!("Extract these fields from the text below: {}. Output only a JSON object with exactly those keys, using null when a field is missing.", fields.join(", "))
         }
+        "customize" => "You customize the look and behavior of the user's desktop. The text below has their request, the settings you can change with their allowed values, built-in looks, and the current settings. \
+Answer with only a JSON object: {\"patch\": {...}, \"summary\": \"...\"}. The patch holds only the settings to change, nested by section (e.g. {\"dock\": {\"style\": \"taskbar\"}}), using only listed settings and allowed values. \
+The summary is one short sentence in plain words, e.g. \"Moved the apps to a taskbar and put window buttons on the right.\" If the request can't be done with these settings, return an empty patch and say what isn't possible in the summary.".to_string(),
         "title" => "Write a short title (at most six words) for the text below. Output only the title.".to_string(),
         "continue" => "Continue the text below in the same voice, language, and format: one or two more paragraphs, or more items if it ends in a list. Output only the new text, without repeating what is already there.".to_string(),
         other => return Err(format!("unknown task: {other}")),

@@ -11,11 +11,14 @@ import { stepVolume, toggleMute } from "./audio"
 import { stepBrightness } from "./brightness"
 import { showBrightnessOsd, showVolumeOsd } from "./island-sources"
 import { updateConfig, config } from "./config"
+import type { ShellConfig } from "@newos/sdk/settings-schema"
 import { island } from "./island"
 import { cycleSwitcher } from "./switcher"
 import { send } from "./assistant-session"
 import { startTimer } from "./timers"
 import { parseDuration } from "./format"
+import { arrangeWorkspace, snap } from "./windows"
+import { diffConfig, patchConfig, PRESETS } from "@newos/sdk/customize"
 
 const HELP = `NewOS shell commands:
   launcher | launchpad            open Spotlight search or the app grid
@@ -28,6 +31,9 @@ const HELP = `NewOS shell commands:
   dnd on|off|toggle               Do Not Disturb
   lock                            Lock the screen
   timer <duration> [label]        start a timer, e.g. "timer 10m tea"
+  snap left|right|up|down|<zone>  snap the window (halves, quarters, thirds, maximize)
+  arrange                         tile every window on the desktop by how many there are
+  look preset <id>|apply <json>|undo   change the look (presets: ${PRESETS.map((p) => p.id).join(", ")})
   island dismiss                  clear the island
   close                           close any open panel`
 
@@ -111,6 +117,12 @@ function dispatch(command: string, args: string[]): string {
       if (duration === null) return "usage: timer <duration> [label], e.g. timer 10m tea"
       return startTimer(duration, args.slice(1).join(" "))
     }
+    case "look":
+      return look(args)
+    case "snap":
+      return snap(args[0] ?? "")
+    case "arrange":
+      return arrangeWorkspace()
     case "island":
       if (args[0] === "dismiss") {
         const current = island.current()
@@ -122,6 +134,47 @@ function dispatch(command: string, args: string[]): string {
     default:
       return HELP
   }
+}
+
+let beforeLook: ShellConfig | null = null
+
+/**
+ * Change many settings at once (the assistant's change_look tool, Settings → Customize).
+ * Values go through the settings schema, so only real settings with allowed values change.
+ * Prints the changes as JSON.
+ */
+function look(args: string[]): string {
+  const [action, ...rest] = args
+  const current = config.peek()
+  let next: ShellConfig
+  if (action === "undo") {
+    if (!beforeLook) return "error: nothing to undo"
+    next = beforeLook
+    beforeLook = null
+  } else if (action === "preset") {
+    const preset = PRESETS.find((p) => p.id === rest[0])
+    if (!preset) return `error: unknown preset (${PRESETS.map((p) => p.id).join(", ")})`
+    next = patchConfig(current, preset.patch)
+    beforeLook = current
+  } else if (action === "apply") {
+    let patch: unknown
+    try {
+      patch = JSON.parse(rest.join(" "))
+    } catch {
+      return "error: apply needs a JSON object"
+    }
+    // Pinned apps and the assistant's own setup are not part of the look.
+    const safe = { ...(patch as Record<string, unknown>) }
+    delete safe.assistant
+    next = patchConfig(current, safe)
+    next.dock.pinned = current.dock.pinned
+    beforeLook = current
+  } else {
+    return "usage: look preset <id> | look apply <json> | look undo"
+  }
+  const changes = diffConfig(current, next)
+  if (changes.length > 0) updateConfig((draft) => Object.assign(draft, next))
+  return JSON.stringify(changes)
 }
 
 function togglePopupMode(mode: "search" | "grid") {

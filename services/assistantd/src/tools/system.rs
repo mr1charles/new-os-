@@ -55,6 +55,28 @@ pub fn tools() -> Vec<Tool> {
             set_do_not_disturb,
         ),
         tool(
+            "change_look",
+            "Change how the desktop looks and behaves, all at once, live. Use a preset for requests like \"make it look like Windows\" (preset windows), \"like a Mac\" (helix), \"tiling\" or \"minimal\"; use changes for specific tweaks, or both (changes apply on top of the preset). \
+Settings you can change, nested by section: appearance {theme: dark|light|auto, accent: blue|purple|pink|red|orange|yellow|green|graphite, reduceTransparency: bool}; \
+dock {position: bottom|left|right, style: dock|taskbar, iconSize: 28-72, magnification: bool, showRecents: bool}; bar {position: top|bottom, clock24h: bool, showSeconds: bool, showBatteryPercent: bool}; \
+windows {layout: floating|arrange|tiling (arrange = automatic halves and quarters), rounding: 0-28, gaps: 0-40, blur: bool, animations: full|reduced|off, controls: mac|windows (window buttons left or right)}; nightShift {enabled: bool, temperature: 2500-6500}. \
+Tell the user what changed and that they can say \"undo that\".",
+            object_schema(
+                json!({
+                    "preset": {"type": "string", "enum": ["helix", "windows", "tiling", "minimal"]},
+                    "changes": {"type": "object", "description": "Nested settings to change, e.g. {\"dock\": {\"position\": \"left\"}, \"windows\": {\"rounding\": 4}}"}
+                }),
+                &[],
+            ),
+            change_look,
+        ),
+        tool(
+            "undo_look_change",
+            "Undo the last change_look, putting the previous look back.",
+            object_schema(json!({}), &[]),
+            undo_look_change,
+        ),
+        tool(
             "lock_screen",
             "Lock the screen immediately. Call this when the user says \"lock my computer\" or is stepping away.",
             object_schema(json!({}), &[]),
@@ -149,6 +171,41 @@ fn set_do_not_disturb<'a>(ctx: &'a ToolContext, input: Value) -> BoxFuture<'a, a
         let enabled = bool_arg(&input, "enabled")?;
         shell::shell_request(ctx.runner.as_ref(), &["dnd", if enabled { "on" } else { "off" }]).await?;
         Ok(format!("Do Not Disturb is {}.", if enabled { "on" } else { "off" }))
+    })
+}
+
+fn change_look<'a>(ctx: &'a ToolContext, input: Value) -> BoxFuture<'a, anyhow::Result<String>> {
+    Box::pin(async move {
+        let runner = ctx.runner.as_ref();
+        let mut changed: Vec<Value> = vec![];
+        if let Some(preset) = input.get("preset").and_then(Value::as_str) {
+            let out = shell::shell_request(runner, &["look", "preset", preset]).await?;
+            changed.extend(parse_changes(&out)?);
+        }
+        if let Some(changes) = input.get("changes").filter(|c| c.as_object().is_some_and(|o| !o.is_empty())) {
+            let json = serde_json::to_string(changes)?;
+            let out = shell::shell_request(runner, &["look", "apply", &json]).await?;
+            changed.extend(parse_changes(&out)?);
+        }
+        if changed.is_empty() {
+            return Ok("Nothing changed: those settings already had those values, or they aren't settings that exist.".into());
+        }
+        Ok(format!("Changed: {}", serde_json::to_string(&changed)?))
+    })
+}
+
+fn parse_changes(out: &str) -> anyhow::Result<Vec<Value>> {
+    if let Some(error) = out.strip_prefix("error: ") {
+        anyhow::bail!("{error}");
+    }
+    Ok(serde_json::from_str::<Vec<Value>>(out).unwrap_or_default())
+}
+
+fn undo_look_change<'a>(ctx: &'a ToolContext, _input: Value) -> BoxFuture<'a, anyhow::Result<String>> {
+    Box::pin(async move {
+        let out = shell::shell_request(ctx.runner.as_ref(), &["look", "undo"]).await?;
+        let changed = parse_changes(&out)?;
+        Ok(format!("Put back the previous look ({} settings).", changed.len()))
     })
 }
 

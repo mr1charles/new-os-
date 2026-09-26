@@ -405,3 +405,68 @@ code {
   font-size: var(--newos-font-size-footnote);
   color: var(--newos-color-fg-secondary);
 }
+
+.settings-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.settings-slider-value {
+  min-width: 42px;
+  text-align: right;
+  color: var(--newos-color-fg-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-kbd {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--newos-color-control);
+  border: 1px solid var(--newos-color-separator);
+}
+
+.settings-customize {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.settings-customize > :first-child {
+  flex: 1;
+}
+
+.settings-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+
+.settings-chip {
+  border: 1px solid var(--newos-color-separator);
+  background: var(--newos-color-control);
+  color: var(--newos-color-fg);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.settings-chip:hover:not(:disabled) {
+  background: var(--newos-color-control-hover);
+}
+
+.settings-customize-result {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.settings-customize-result ul {
+  margin: 0;
+  padding-left: 18px;
+}

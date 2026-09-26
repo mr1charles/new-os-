@@ -26,3 +26,4 @@ apps/*/src-tauri/gen/
 !.vscode/extensions.json
 *.swp
 *.log
+__pycache__/

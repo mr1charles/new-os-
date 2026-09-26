@@ -23,5 +23,8 @@ export function applyTheme(settings: Settings, root: HTMLElement = document.docu
   root.style.setProperty("--newos-accent", accent)
   root.style.colorScheme = theme
   root.toggleAttribute("data-reduce-transparency", settings.appearance.reduceTransparency)
+  // Window buttons: traffic lights on the left, or Windows-style on the right (@newos/ui).
+  root.dataset.controls = settings.windows.controls
+  root.style.setProperty("--newos-window-radius", `${settings.windows.rounding}px`)
   return { theme, accent }
 }

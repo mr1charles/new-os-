@@ -2,11 +2,12 @@
  * One terminal tab: xterm.js connected to a shell session. It keeps running while hidden, so
  * switching tabs never interrupts a program.
  */
-import { terminal as pty, type PtyEvent } from "@newos/sdk"
+import { island, notify, terminal as pty, type PtyEvent } from "@newos/sdk"
 import { FitAddon } from "@xterm/addon-fit"
 import { Terminal, type ITheme } from "@xterm/xterm"
 import "@xterm/xterm/css/xterm.css"
 import { useEffect, useImperativeHandle, useRef, type Ref } from "react"
+import { CommandTracker, finishedMessage, LONG_COMMAND_MS } from "./logic"
 
 const DARK: ITheme = {
   background: "#1e1e1e",
@@ -152,7 +153,54 @@ export function TerminalView({
       }
       return callbacks.current.onShortcut?.(e) ?? true
     })
-    t.onTitleChange((title) => callbacks.current.onTitle(title))
+    let title = ""
+    t.onTitleChange((next) => {
+      title = next
+      callbacks.current.onTitle(next)
+    })
+
+    // Long commands: a live activity in the Dynamic Island while they run, and a notification
+    // when they finish if Terminal isn't in front.
+    const tracker = new CommandTracker()
+    const activityId = `command-${Math.random().toString(36).slice(2)}`
+    let activityTimer: ReturnType<typeof setTimeout> | null = null
+    let activityShown = false
+    const endActivity = () => {
+      if (activityTimer) clearTimeout(activityTimer)
+      activityTimer = null
+      if (activityShown) void island.end(activityId).catch(() => {})
+      activityShown = false
+    }
+    const osc = t.parser.registerOscHandler(133, (data) => {
+      const event = tracker.handle(data)
+      if (!event) return false
+      if ("started" in event) {
+        endActivity()
+        const command = event.started
+        activityTimer = setTimeout(() => {
+          activityShown = true
+          void island
+            .show(activityId, {
+              app: "org.newos.Terminal",
+              icon: "utilities-terminal",
+              title: command || title || "Running a command",
+              subtitle: "Running in Terminal",
+              progress: null,
+            })
+            .catch(() => {})
+        }, LONG_COMMAND_MS)
+      } else {
+        endActivity()
+        if (event.finished.durationMs >= LONG_COMMAND_MS && !document.hasFocus()) {
+          const message = finishedMessage(event.finished, title)
+          void notify({ app_name: "Terminal", icon: "utilities-terminal", ...message }).catch(
+            () => {},
+          )
+        }
+      }
+      // Let xterm see the mark too (it ignores 133).
+      return false
+    })
 
     let disposed = false
     const onEvent = (event: PtyEvent) => {
@@ -194,6 +242,8 @@ export function TerminalView({
 
     return () => {
       disposed = true
+      osc.dispose()
+      endActivity()
       observer.disconnect()
       input.dispose()
       resize.dispose()

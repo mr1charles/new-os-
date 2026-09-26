@@ -91,6 +91,12 @@ impl Ptys {
         cmd.env("TERM", "xterm-256color");
         cmd.env("COLORTERM", "truecolor");
         cmd.env("TERM_PROGRAM", "NewOS Terminal");
+        if program.is_none() && shell.ends_with("/bash") {
+            // Mark where commands start and end (OSC 133, which fish and others emit on their
+            // own), so Terminal can say when a long command finishes.
+            cmd.env("PS0", "\x1b]133;C\x07");
+            cmd.env("PROMPT_COMMAND", "printf '\\033]133;D;%s\\007' \"$?\"");
+        }
         let child = pty.slave.spawn_command(cmd).map_err(|e| AppError::Invalid(format!("cannot start {shell}: {e}")))?;
         drop(pty.slave);
         let mut reader = pty.master.try_clone_reader().map_err(|e| AppError::Invalid(e.to_string()))?;

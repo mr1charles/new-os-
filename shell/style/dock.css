@@ -87,3 +87,87 @@ button.dock-item.launching .dock-icon {
 .dock-menu {
   min-width: 200px;
 }
+
+/* Side docks: a vertical shelf, the running dot beside the icon. */
+.dock-shelf.dock-left .dock,
+.dock-shelf.dock-right .dock {
+  padding: 8px 4px;
+  margin: 12px 0;
+}
+
+.dock-shelf.dock-left button.dock-item,
+.dock-shelf.dock-right button.dock-item {
+  padding: 3px 0;
+}
+
+.dock-shelf.dock-left button.dock-item.divider,
+.dock-shelf.dock-right button.dock-item.divider {
+  margin: 6px 0 0 0;
+  padding: 9px 0 0 0;
+  border-left: none;
+  border-top: 1px solid var(--newos-color-separator);
+}
+
+/* Taskbar: a full-width strip; apps show a bar under them instead of a dot. */
+window.taskbar-window {
+  background: var(--newos-color-material-bar);
+  border-top: 1px solid var(--newos-color-separator);
+}
+
+.taskbar {
+  min-height: 48px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+button.taskbar-button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  min-height: 0;
+}
+
+button.taskbar-button:hover {
+  background: var(--newos-color-control-hover);
+}
+
+.taskbar-apps.dock {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+.taskbar-apps button.dock-item {
+  padding: 4px 8px 0 8px;
+  border-radius: 6px;
+}
+
+.taskbar-apps button.dock-item:hover {
+  background: var(--newos-color-control-hover);
+}
+
+.taskbar-apps button.dock-item.mag-1 .dock-icon,
+.taskbar-apps button.dock-item.mag-2 .dock-icon,
+.taskbar-apps button.dock-item.mag-3 .dock-icon {
+  -gtk-icon-size: inherit;
+}
+
+.taskbar-apps .running-dot {
+  min-width: 6px;
+  min-height: 3px;
+}
+
+.taskbar-apps button.dock-item.running .running-dot {
+  min-width: 16px;
+  background: var(--newos-accent);
+}
+
+.taskbar-apps button.dock-item.divider {
+  border-left: none;
+  margin-left: 0;
+  padding-left: 8px;
+}

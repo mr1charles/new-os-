@@ -3,6 +3,7 @@
  * createMockBackend())`. State changes stick for the session, so toggles, pairing, and
  * connecting behave like the real thing. The sample data is the HP 14-dq2xxx NewOS targets.
  */
+import { PRESETS } from "./customize"
 import type { AssistantSettings } from "./assistant"
 import type {
   AudioDevices,
@@ -38,6 +39,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
   let brightness = 0.7
   let powerProfile: PowerProfile = "balanced"
   let hasKey = false
+  let notificationId = 0
   let assistantSettings: AssistantSettings = {
     mode: "auto",
     name: "Assistant",
@@ -374,6 +376,17 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       }
       if (path === "/v1/complete") {
         const input = String((body as { input?: string })?.input ?? "")
+        if ((body as { task?: string })?.task === "customize") {
+          // Sample data: "Windows" in the request picks the Windows look.
+          const windows = /windows/i.test(input.split("\n")[0] ?? "")
+          const patch = windows
+            ? PRESETS.find((p) => p.id === "windows")!.patch
+            : { windows: { animations: "reduced" } }
+          const summary = windows
+            ? "Moved your apps to a taskbar, put window buttons on the right, and turned on auto-arranging."
+            : "Made animations quicker."
+          return { output: JSON.stringify({ patch, summary }), provider: "local", model: "mock" }
+        }
         return { output: `(mock) ${input.slice(0, 60)}`, provider: "local", model: "mock" }
       }
       throw new Error(`the assistant is not running (mock: ${String(path)})`)
@@ -396,6 +409,10 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       return null
     },
     assistant_restart: () => null,
+
+    island_show: () => null,
+    island_end: () => null,
+    notify: () => ++notificationId,
 
     wifi_status: () => {
       const active = networks.find((n) => n.in_use)

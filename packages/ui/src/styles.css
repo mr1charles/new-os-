@@ -168,6 +168,51 @@ p {
   background: var(--newos-color-control-active);
 }
 
+/* Windows-style buttons, top right. Only one set of window buttons shows at a time. */
+.nx-wincontrols {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 20;
+}
+
+:root[data-controls="windows"] .nx-wincontrols {
+  display: flex;
+}
+
+:root[data-controls="windows"] .nx-traffic {
+  display: none;
+}
+
+.nx-wincontrols__btn {
+  width: 46px;
+  height: 32px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--newos-color-fg);
+  display: grid;
+  place-items: center;
+}
+
+.nx-wincontrols__btn svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.nx-wincontrols__btn:hover {
+  background: var(--newos-color-control-hover);
+}
+
+.nx-wincontrols__close:hover {
+  background: #c42b1c;
+  color: #fff;
+}
+
 /* ------------------------------------------------------------------------------------------
  * Sidebar
  * ---------------------------------------------------------------------------------------- */

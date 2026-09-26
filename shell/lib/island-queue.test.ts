@@ -5,6 +5,10 @@ import {
   resolveIslandSize,
   type LevelPayload,
   type MediaPayload,
+  contextualSize,
+  restingWidth,
+  sameApp,
+  visibleOverFullscreen,
 } from "./island-queue"
 
 const media: MediaPayload = {
@@ -137,5 +141,42 @@ describe("island sizing", () => {
     const activity = q.upsert("confirm", { requestId: "1", tool: "run_shell", summary: "ls" })
     expect(resolveIslandSize(activity, false)).toBe("large")
     expect(islandPageName(activity, "large")).toBe("confirm")
+  })
+})
+
+describe("island in context", () => {
+  const q = new IslandQueue()
+  const activity = q.upsert("activity", {
+    app: "newos-files",
+    icon: "",
+    title: "Copying 3 items",
+    subtitle: "",
+    progress: 0.4,
+  })
+
+  it("keeps an app's activity compact while that app is in front", () => {
+    expect(contextualSize(activity, false, "newos-files")).toBe("compact")
+    expect(contextualSize(activity, false, "org.newos.Files".replace("Files", "files"))).toBe(
+      "compact",
+    )
+    expect(contextualSize(activity, true, "newos-files")).toBe("expanded")
+    expect(contextualSize(activity, false, "firefox")).toBe("compact")
+  })
+
+  it("matches apps across class and desktop id spellings", () => {
+    expect(sameApp("newos-files.desktop", "NewOS-Files")).toBe(true)
+    expect(sameApp("", "")).toBe(false)
+  })
+
+  it("hides over fullscreen apps unless it needs attention", () => {
+    expect(visibleOverFullscreen(activity)).toBe(false)
+    const confirm = q.upsert("confirm", { requestId: "1", tool: "run_shell", summary: "rm x" })
+    expect(visibleOverFullscreen(confirm)).toBe(true)
+    expect(visibleOverFullscreen(null)).toBe(false)
+  })
+
+  it("reserves room in the menu bar", () => {
+    expect(restingWidth(null)).toBe(190)
+    expect(restingWidth(activity)).toBe(250)
   })
 })

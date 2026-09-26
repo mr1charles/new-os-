@@ -21,9 +21,9 @@ import { setImageSource } from "../lib/icons"
 function toDockClient(client: AstalHyprland.Client): DockClient {
   return {
     address: client.address,
-    class: client.class,
-    initialClass: client.initialClass,
-    title: client.title,
+    class: client.class ?? "",
+    initialClass: client.initialClass ?? "",
+    title: client.title ?? "",
     focusHistoryId: client.focusHistoryId,
   }
 }
@@ -134,7 +134,13 @@ function ContextMenu(props: {
   )
 }
 
-function DockIcon(props: {
+const POPOVER_SIDE = {
+  bottom: Gtk.PositionType.TOP,
+  left: Gtk.PositionType.RIGHT,
+  right: Gtk.PositionType.LEFT,
+} as const
+
+export function DockIcon(props: {
   item: ShownItem
   index: Accessor<number>
   hovered: Accessor<number | null>
@@ -175,9 +181,12 @@ function DockIcon(props: {
   const setup = (button: Gtk.Button) => {
     popover = new Gtk.Popover({
       hasArrow: true,
-      position: Gtk.PositionType.TOP,
+      position: POPOVER_SIDE[config.peek().dock.position],
       cssClasses: ["dock-popover"],
     })
+    onCleanup(
+      config.subscribe(() => popover?.set_position(POPOVER_SIDE[config.peek().dock.position])),
+    )
     popover.set_parent(button)
     popover.set_child(ContextMenu({ item, onLaunch: launched, popover }) as Gtk.Widget)
     onCleanup(() => popover?.unparent())
@@ -217,27 +226,48 @@ function DockIcon(props: {
  */
 export default function Dock({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   const [hovered, setHovered] = createState<number | null>(null)
+  const { BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
+  const position = config.as((c) => c.dock.position)
+  const vertical = position.as((p) => p !== "bottom")
+  const orientation = vertical.as((v) =>
+    v ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL,
+  )
   const launchpadLevel = createComputed(() =>
     config().dock.magnification ? magnifyLevel(0, hovered()) : 0,
   )
 
   return (
     <window
-      visible
       name={`dock-${gdkmonitor.connector}`}
       namespace="newos-dock"
       class="dock-window"
       gdkmonitor={gdkmonitor}
       application={app}
       layer={Astal.Layer.TOP}
-      anchor={Astal.WindowAnchor.BOTTOM}
+      anchor={position.as((p) => (p === "left" ? LEFT : p === "right" ? RIGHT : BOTTOM))}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       keymode={Astal.Keymode.NONE}
-      marginBottom={6}
+      marginBottom={position.as((p) => (p === "bottom" ? 6 : 0))}
+      marginStart={position.as((p) => (p === "left" ? 6 : 0))}
+      marginEnd={position.as((p) => (p === "right" ? 6 : 0))}
+      // Shown last: Astal applies the layer only before the window is mapped.
+      visible={config.as((c) => c.dock.style === "dock")}
     >
-      {/* Fixed-height shelf: magnified icons grow inside it, so the reserved screen area never changes. */}
-      <box class="dock-shelf" valign={Gtk.Align.FILL}>
-        <box class="dock" valign={Gtk.Align.END} halign={Gtk.Align.CENTER}>
+      {/* Fixed-size shelf: magnified icons grow inside it, so the reserved screen area never changes. */}
+      <box
+        class={createComputed(
+          () => `dock-shelf dock-${position()} icons-${config().dock.iconSize}`,
+        )}
+        orientation={orientation}
+      >
+        <box
+          class="dock"
+          orientation={orientation}
+          valign={position.as((p) => (p === "bottom" ? Gtk.Align.END : Gtk.Align.CENTER))}
+          halign={position.as((p) =>
+            p === "left" ? Gtk.Align.START : p === "right" ? Gtk.Align.END : Gtk.Align.CENTER,
+          )}
+        >
           <Gtk.EventControllerMotion onLeave={() => setHovered(null)} />
           <button
             class={launchpadLevel.as((l) => `dock-item launchpad mag-${l}`)}

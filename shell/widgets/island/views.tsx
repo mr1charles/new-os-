@@ -5,13 +5,13 @@
 import Gtk from "gi://Gtk?version=4.0"
 import Pango from "gi://Pango?version=1.0"
 import { createBinding, createComputed, type Accessor } from "ags"
-import { payloadOf } from "../../lib/island"
+import { island, payloadOf } from "../../lib/island"
 import { now } from "../../lib/clock"
 import { formatCountdown, formatPercent, formatTime } from "../../lib/format"
 import { markdownToPango } from "../../lib/markdown"
 import { setImageSource } from "../../lib/icons"
 import { config } from "../../lib/config"
-import { battery, network, mpris } from "../../lib/services"
+import { battery, network, mpris, notifd } from "../../lib/services"
 import { networkIcon } from "../bar/StatusArea"
 import { cancelTimer } from "../../lib/timers"
 import { answerConfirmation } from "../../lib/assistant-session"
@@ -86,38 +86,73 @@ export function NotificationPage() {
   })
   return (
     <Page name="notification" class="notification">
-      <DynamicImage
-        class="notification-image"
-        pixelSize={40}
-        source={payload.as((p) => p.image || p.appIcon)}
-        fallback="preferences-system-notifications-symbolic"
-      />
-      <box orientation={VERTICAL} hexpand valign={CENTER}>
-        <box spacing={6}>
-          <label
-            class="island-caption"
-            label={payload.as((p) => p.appName || "Notification")}
-            xalign={0}
-            hexpand
+      <box orientation={VERTICAL} hexpand spacing={8}>
+        <box spacing={12}>
+          <DynamicImage
+            class="notification-image"
+            pixelSize={40}
+            source={payload.as((p) => p.image || p.appIcon)}
+            fallback="preferences-system-notifications-symbolic"
           />
-          <label class="island-caption" label="now" />
+          <box orientation={VERTICAL} hexpand valign={CENTER}>
+            <box spacing={6}>
+              <label
+                class="island-caption"
+                label={payload.as((p) => p.appName || "Notification")}
+                xalign={0}
+                hexpand
+              />
+              <label class="island-caption" label="now" />
+            </box>
+            <label
+              class="island-title"
+              label={payload.as((p) => p.summary)}
+              xalign={0}
+              ellipsize={Pango.EllipsizeMode.END}
+              maxWidthChars={40}
+            />
+            <label
+              class="island-body"
+              label={payload.as((p) => p.body.replace(/<[^>]+>/g, ""))}
+              visible={payload.as((p) => p.body.length > 0)}
+              xalign={0}
+              wrap
+              lines={2}
+              ellipsize={Pango.EllipsizeMode.END}
+              maxWidthChars={48}
+            />
+          </box>
         </box>
-        <label
-          class="island-title"
-          label={payload.as((p) => p.summary)}
-          xalign={0}
-          ellipsize={Pango.EllipsizeMode.END}
-          maxWidthChars={40}
-        />
-        <label
-          class="island-body"
-          label={payload.as((p) => p.body.replace(/<[^>]+>/g, ""))}
-          visible={payload.as((p) => p.body.length > 0)}
-          xalign={0}
-          wrap
-          lines={2}
-          ellipsize={Pango.EllipsizeMode.END}
-          maxWidthChars={48}
+        {/* Buttons like "Install" / "Cancel", answered right in the island. */}
+        <box
+          class="island-actions"
+          spacing={8}
+          homogeneous
+          visible={payload.as((p) => p.actions.some((a) => a.id !== "default"))}
+          $={(self) => {
+            const render = () => {
+              for (let child = self.get_first_child(); child; child = self.get_first_child())
+                self.remove(child)
+              const p = payload.peek()
+              p.actions
+                .filter((a) => a.id !== "default")
+                .forEach((action, index) => {
+                  const button = new Gtk.Button({
+                    label: action.label,
+                    cssClasses: index === 0 ? ["pill", "suggested"] : ["pill"],
+                  })
+                  button.connect("clicked", () => {
+                    const n =
+                      p.notificationId !== null ? notifd?.get_notification(p.notificationId) : null
+                    n?.invoke(action.id)
+                    island.dismiss(`notification:${p.notificationId}`)
+                  })
+                  self.append(button)
+                })
+            }
+            render()
+            payload.subscribe(render)
+          }}
         />
       </box>
     </Page>
@@ -454,6 +489,79 @@ export function SpacePage() {
       <box orientation={VERTICAL} hexpand valign={CENTER}>
         <label class="island-caption" label={payload.as((p) => p.greeting)} xalign={0} />
         <label class="island-title" label={payload.as((p) => p.name)} xalign={0} />
+      </box>
+    </Page>
+  )
+}
+
+const activityFallback = {
+  app: "",
+  icon: "",
+  title: "",
+  subtitle: "",
+  progress: null as number | null,
+}
+
+/** An app's live activity, resting in the menu bar: its icon and how far along it is. */
+export function ActivityCompactPage() {
+  const payload = payloadOf("activity", activityFallback)
+  return (
+    <Page name="activity-compact" class="activity-compact">
+      <DynamicImage
+        pixelSize={18}
+        source={payload.as((p) => p.icon || p.app)}
+        fallback="emblem-synchronizing-symbolic"
+      />
+      <label
+        class="island-caption activity-title"
+        label={payload.as((p) => p.title)}
+        xalign={0}
+        hexpand
+        ellipsize={Pango.EllipsizeMode.END}
+        maxWidthChars={18}
+      />
+      <label
+        class="island-caption"
+        label={payload.as((p) => (p.progress === null ? "" : formatPercent(p.progress)))}
+        visible={payload.as((p) => p.progress !== null)}
+      />
+      <Gtk.Spinner spinning visible={payload.as((p) => p.progress === null)} />
+    </Page>
+  )
+}
+
+export function ActivityPage() {
+  const payload = payloadOf("activity", activityFallback)
+  return (
+    <Page name="activity" class="activity">
+      <DynamicImage
+        pixelSize={36}
+        source={payload.as((p) => p.icon || p.app)}
+        fallback="emblem-synchronizing-symbolic"
+      />
+      <box orientation={VERTICAL} hexpand valign={CENTER} spacing={2}>
+        <label
+          class="island-title"
+          label={payload.as((p) => p.title)}
+          xalign={0}
+          ellipsize={Pango.EllipsizeMode.END}
+          maxWidthChars={40}
+        />
+        <label
+          class="island-body"
+          label={payload.as((p) => p.subtitle)}
+          visible={payload.as((p) => p.subtitle.length > 0)}
+          xalign={0}
+          ellipsize={Pango.EllipsizeMode.END}
+          maxWidthChars={44}
+        />
+        <levelbar
+          class="island-level"
+          minValue={0}
+          maxValue={1}
+          value={payload.as((p) => p.progress ?? 0)}
+          visible={payload.as((p) => p.progress !== null)}
+        />
       </box>
     </Page>
   )

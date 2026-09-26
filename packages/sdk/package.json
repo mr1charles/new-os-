@@ -13,6 +13,7 @@
     "./settings-schema": "./src/settings-schema.ts",
     "./math": "./src/math.ts",
     "./settings-pages": "./src/settings-pages.ts",
+    "./customize": "./src/customize.ts",
     "./sse": "./src/sse.ts",
     "./testing/commands": "./src/testing/commands.ts",
     "./assistant-protocol": "./src/assistant-protocol.ts"

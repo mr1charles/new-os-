@@ -3,11 +3,15 @@
  * stack page as gnim accessors, and schedules a single timer for the next expiry.
  */
 import GLib from "gi://GLib?version=2.0"
-import { createComputed, createState } from "ags"
+import { hyprland } from "./services"
+import { config } from "./config"
+import { createBinding, createComputed, createState, type Accessor } from "ags"
 import {
+  contextualSize,
   IslandQueue,
   islandPageName,
-  resolveIslandSize,
+  restingWidth,
+  visibleOverFullscreen,
   type Activity,
   type IslandKind,
   type IslandPayloads,
@@ -50,7 +54,40 @@ function refresh() {
 
 island.subscribe(refresh)
 
-export const size = createComputed(() => resolveIslandSize(current(), hovered()))
+/** The focused window's app class, and whether its workspace is fullscreen. */
+const focusedApp: Accessor<string> = hyprland
+  ? createBinding(hyprland, "focusedClient").as((c) => c?.class ?? "")
+  : createState("")[0]
+const [fullscreen, setFullscreen] = createState(false)
+if (hyprland) {
+  const h = hyprland
+  const check = () => setFullscreen(h.focusedWorkspace?.hasFullscreen ?? false)
+  // Fullscreen toggles, workspace switches, and focus changes can all change it.
+  h.connect("event", (_self, event) => {
+    if (
+      event === "fullscreen" ||
+      event === "workspace" ||
+      event === "workspacev2" ||
+      event === "activewindowv2"
+    )
+      check()
+  })
+  check()
+}
+
+export const size = createComputed(() => contextualSize(current(), hovered(), focusedApp()))
+/**
+ * Hidden over fullscreen apps unless something needs attention. Without the menu bar at the
+ * top (taskbar, or the bar at the bottom) it only drops in while something is happening.
+ */
+export const islandVisible = createComputed(() => {
+  const c = config()
+  const docked = c.dock.style !== "taskbar" && c.bar.position === "top"
+  if (!docked && current() === null) return false
+  return !fullscreen() || visibleOverFullscreen(current())
+})
+/** Width the menu bar keeps free in its middle for the resting island. */
+export const islandFootprint = current.as((a) => restingWidth(a) + 24)
 export const page = createComputed(() => islandPageName(current(), size()))
 
 /** While hovered, transient activities stay; they leave shortly after the pointer does. */

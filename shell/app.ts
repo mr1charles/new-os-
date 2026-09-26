@@ -15,6 +15,7 @@ import { setupNightShift } from "./lib/nightshift"
 import { assetPath } from "./lib/icons"
 import Bar from "./widgets/Bar"
 import Dock from "./widgets/Dock"
+import Taskbar from "./widgets/Taskbar"
 import Wallpaper from "./widgets/Wallpaper"
 import Island from "./widgets/island/Island"
 import Launcher from "./widgets/Launcher"
@@ -23,6 +24,8 @@ import NotificationCenter from "./widgets/NotificationCenter"
 import AppSwitcher from "./widgets/AppSwitcher"
 import AssistantPanel from "./widgets/AssistantPanel"
 import { followLogind } from "./widgets/LockScreen"
+import { serveIsland } from "./lib/island-service"
+import { setupWindowManagement } from "./lib/windows"
 
 const destroy = (window: GObject.Object) => (window as Gtk.Window).destroy()
 
@@ -44,6 +47,11 @@ app.start({
     })
     For({ each: monitors, cleanup: destroy, children: (monitor) => Bar({ gdkmonitor: monitor }) })
     For({ each: monitors, cleanup: destroy, children: (monitor) => Dock({ gdkmonitor: monitor }) })
+    For({
+      each: monitors,
+      cleanup: destroy,
+      children: (monitor) => Taskbar({ gdkmonitor: monitor }),
+    })
 
     Island()
     Launcher()
@@ -52,5 +60,7 @@ app.start({
     AppSwitcher()
     AssistantPanel()
     followLogind()
+    serveIsland()
+    setupWindowManagement()
   },
 })

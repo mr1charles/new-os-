@@ -34,12 +34,24 @@ export function reloadApps() {
   })
 }
 
+const USER_APPS = GLib.build_filenamev([GLib.get_user_data_dir(), "applications"])
+const USER_FLATPAK_APPS = GLib.build_filenamev([
+  GLib.get_user_data_dir(),
+  "flatpak",
+  "exports",
+  "share",
+  "applications",
+])
 const APP_DIRS = [
   ...GLib.get_system_data_dirs().map((d) => GLib.build_filenamev([d, "applications"])),
-  GLib.build_filenamev([GLib.get_user_data_dir(), "applications"]),
+  USER_APPS,
   "/var/lib/flatpak/exports/share/applications",
-  GLib.build_filenamev([GLib.get_user_data_dir(), "flatpak", "exports", "share", "applications"]),
+  USER_FLATPAK_APPS,
 ]
+
+// Watch where Flatpak, AppImage, and Wine installs land even before the first one exists, so
+// new apps appear in Launchpad right away.
+for (const dir of [USER_APPS, USER_FLATPAK_APPS]) GLib.mkdir_with_parents(dir, 0o755)
 
 export const appMonitors: Gio.FileMonitor[] = []
 for (const dir of new Set(APP_DIRS)) {

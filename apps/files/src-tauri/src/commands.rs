@@ -3,7 +3,7 @@
 use std::path::{Path, PathBuf};
 
 use newos_appkit::files::{self, Drive, FileEntry, Place, SearchQuery, TrashItem};
-use newos_appkit::{paths, AppError};
+use newos_appkit::{island, paths, AppError};
 use newos_syslib::SystemRunner;
 use tauri::State;
 
@@ -80,12 +80,35 @@ pub fn files_rename(path: String, name: String) -> Result<FileEntry> {
     files::rename(&absolute(&path)?, &name)
 }
 
-/// Copy or move; big copies run off the main thread.
+/// Copy or move off the main thread. Anything slow shows its progress in the Dynamic Island.
 #[tauri::command]
 pub async fn files_transfer(sources: Vec<String>, dest: String, move_files: bool) -> Result<Vec<String>> {
     let sources = sources.iter().map(|s| absolute(s)).collect::<Result<Vec<_>>>()?;
     let dest = absolute(&dest)?;
-    blocking(move || files::transfer(&sources, &dest, move_files)).await
+    let activity = island::Activity {
+        app: "org.newos.Files".into(),
+        icon: "folder".into(),
+        title: transfer_title(&sources, move_files),
+        subtitle: format!("to {}", dest.file_name().map_or_else(|| dest.display().to_string(), |n| n.to_string_lossy().into_owned())),
+        progress: None,
+    };
+    let (tx, rx) = tokio::sync::watch::channel(None);
+    let work = blocking(move || {
+        let total = files::total_size(&sources).max(1);
+        files::transfer_with_progress(&sources, &dest, move_files, &mut |done| {
+            let _ = tx.send(Some(done as f64 / total as f64));
+        })
+    });
+    let id = format!("transfer-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos()));
+    island::while_working(&id, activity, rx, work).await
+}
+
+fn transfer_title(sources: &[PathBuf], move_files: bool) -> String {
+    let verb = if move_files { "Moving" } else { "Copying" };
+    match sources {
+        [one] => format!("{verb} “{}”", one.file_name().unwrap_or_default().to_string_lossy()),
+        many => format!("{verb} {} items", many.len()),
+    }
 }
 
 #[tauri::command]

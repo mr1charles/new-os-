@@ -2,10 +2,13 @@ import app from "ags/gtk4/app"
 import Astal from "gi://Astal?version=4.0"
 import Gtk from "gi://Gtk?version=4.0"
 import { createComputed } from "ags"
-import { current, island, page, setHovered, size } from "../../lib/island"
+import { current, island, islandVisible, page, setHovered, size } from "../../lib/island"
+import { hyprland } from "../../lib/services"
 import { showPopup } from "../../lib/popups"
 import { mpris, notifd } from "../../lib/services"
 import {
+  ActivityCompactPage,
+  ActivityPage,
   AssistantPage,
   BatteryPage,
   ConfirmPage,
@@ -55,20 +58,29 @@ function activate() {
     case "space":
       island.dismiss(activity.id)
       break
+    case "activity":
+      // Bring the app that owns the activity to the front.
+      if (activity.payload.app)
+        hyprland?.dispatch(
+          "focuswindow",
+          `class:^(${activity.payload.app.replace(/[^\w.-]/g, "")})$`,
+        )
+      break
     default:
       break
   }
 }
 
 /**
- * The Dynamic Island: a black pill at the top center that morphs to show what is going on.
- * Sizes animate through CSS transitions on min-width/min-height; content crossfades.
+ * The Dynamic Island: part of the menu bar, like a notch that hangs from the top edge. It
+ * rests at the bar's height (the bar keeps that room free) and grows downward with a spring
+ * when something happens; content crossfades. It stays compact for an app's own activity while
+ * that app is in front, and hides over fullscreen apps unless something needs attention.
  */
 export default function Island() {
   const cls = createComputed(() => `island ${size()} kind-${current()?.kind ?? "idle"}`)
   return (
     <window
-      visible
       name="island"
       namespace="newos-island"
       class="island-window"
@@ -77,7 +89,9 @@ export default function Island() {
       anchor={Astal.WindowAnchor.TOP}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.NONE}
-      marginTop={4}
+      marginTop={0}
+      // Shown last: Astal applies the layer only before the window is mapped.
+      visible={islandVisible}
     >
       <box class={cls} halign={Gtk.Align.CENTER} valign={Gtk.Align.START}>
         <Gtk.EventControllerMotion
@@ -107,6 +121,8 @@ export default function Island() {
           <TimerPage />
           <InstallCompactPage />
           <InstallPage />
+          <ActivityCompactPage />
+          <ActivityPage />
           <AssistantPage />
           <ConfirmPage />
           <SpacePage />

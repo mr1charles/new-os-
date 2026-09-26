@@ -80,6 +80,17 @@ export interface SpacePayload {
   greeting: string
 }
 
+/** A live activity from an app (org.newos.Island1 Show): a copy, a download, a build. */
+export interface AppActivityPayload {
+  /** The app's window class or desktop id, e.g. "newos-files". */
+  app: string
+  icon: string
+  title: string
+  subtitle: string
+  /** 0.0 - 1.0, or null for "working on it" without a known end. */
+  progress: number | null
+}
+
 export interface IslandPayloads {
   confirm: ConfirmPayload
   assistant: AssistantPayload
@@ -90,6 +101,7 @@ export interface IslandPayloads {
   notification: NotificationPayload
   timer: TimerPayload
   install: InstallPayload
+  activity: AppActivityPayload
   media: MediaPayload
 }
 
@@ -124,6 +136,7 @@ export const PRIORITY: Record<IslandKind, number> = {
   notification: 60,
   timer: 50,
   install: 45,
+  activity: 45,
   media: 40,
 }
 
@@ -138,6 +151,7 @@ export const DEFAULT_SIZE: Record<IslandKind, IslandSize> = {
   notification: "expanded",
   timer: "compact",
   install: "compact",
+  activity: "compact",
   media: "compact",
 }
 
@@ -152,6 +166,8 @@ export const DEFAULT_TTL_MS: Record<IslandKind, number | null> = {
   notification: 5500,
   timer: null,
   install: null,
+  // Apps end their activities; this only guards against an app that crashed mid-way.
+  activity: 10 * 60_000,
   media: null,
 }
 
@@ -323,4 +339,45 @@ export function islandPageName(activity: Activity | null, size: IslandSize): str
   if (!activity) return size === "compact" ? "idle-compact" : "idle"
   if (size === "compact" && hasCompactForm(activity.kind)) return `${activity.kind}-compact`
   return activity.kind
+}
+
+/** Keys of apps as they appear in window classes and desktop ids, for matching the two. */
+export function sameApp(a: string, b: string): boolean {
+  const norm = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/\.desktop$/, "")
+      .replace(/^org\.newos\./, "newos-")
+  return a !== "" && b !== "" && norm(a) === norm(b)
+}
+
+/**
+ * Size in context: an app's own activity stays compact while that app is in front (the app
+ * shows it already), unless the pointer is over the island.
+ */
+export function contextualSize(
+  activity: Activity | null,
+  hovered: boolean,
+  focusedApp: string,
+): IslandSize {
+  if (activity?.kind === "activity" && !hovered && sameApp(activity.payload.app, focusedApp))
+    return "compact"
+  return resolveIslandSize(activity, hovered)
+}
+
+/** Over a fullscreen app the island hides, except for what needs you now. */
+export function visibleOverFullscreen(activity: Activity | null): boolean {
+  if (!activity) return false
+  if (activity.kind === "confirm" || activity.kind === "volume" || activity.kind === "brightness")
+    return true
+  return activity.kind === "notification" && activity.payload.urgency === "critical"
+}
+
+/**
+ * How wide the island is when it rests in the menu bar, so the bar keeps that much room free
+ * in the middle (the island never covers status icons).
+ */
+export function restingWidth(activity: Activity | null): number {
+  if (!activity) return 190
+  return activity.size === "compact" && hasCompactForm(activity.kind) ? 250 : 190
 }

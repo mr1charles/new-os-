@@ -7,6 +7,7 @@
 pub mod assistant_client;
 pub mod assistant_config;
 pub mod files;
+pub mod island;
 pub mod keyring;
 pub mod notes;
 pub mod paths;

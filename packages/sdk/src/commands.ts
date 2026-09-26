@@ -159,6 +159,27 @@ export interface Wallpaper {
   name: string
 }
 
+export interface NoteMeta {
+  /** Relative to the notes folder, e.g. "Work/Plan.md". */
+  path: string
+  /** "" for notes at the top level. */
+  folder: string
+  title: string
+  preview: string
+  /** Milliseconds since the Unix epoch. */
+  modified: number
+  pinned: boolean
+}
+
+export interface NoteSearchHit {
+  note: NoteMeta
+  snippet: string
+  score: number
+}
+
+/** Emitted when anything in the notes folder changes (this app, the assistant, an editor). */
+export const NOTES_CHANGED_EVENT = "newos://notes-changed"
+
 type Json = unknown
 
 /** Command name → [arguments, result]. */
@@ -217,6 +238,19 @@ export interface Commands {
   // Keyboard and trackpad (Hyprland options, see syslib::hyprconf)
   hypr_options: [Record<string, never>, Record<string, string>]
   hypr_option_set: [{ key: string; value: string }, string]
+
+  // Notes (appkit::notes)
+  notes_list: [Record<string, never>, NoteMeta[]]
+  notes_folders: [Record<string, never>, string[]]
+  notes_search: [{ query: string }, NoteSearchHit[]]
+  note_read: [{ path: string }, string]
+  note_write: [{ path: string; text: string }, NoteMeta]
+  note_create: [{ folder: string; text: string }, NoteMeta]
+  note_delete: [{ path: string }, null]
+  note_set_pinned: [{ path: string; pinned: boolean }, null]
+  note_move: [{ path: string; folder: string }, NoteMeta]
+  notes_folder_create: [{ name: string }, string]
+  notes_folder_delete: [{ name: string }, null]
 
   // Apps
   apps: [Record<string, never>, DesktopEntry[]]

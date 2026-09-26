@@ -7,6 +7,7 @@
 pub mod assistant_client;
 pub mod assistant_config;
 pub mod keyring;
+pub mod notes;
 pub mod paths;
 pub mod settings;
 #[cfg(feature = "tauri")]

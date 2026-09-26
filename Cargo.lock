@@ -2663,6 +2663,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "newos-notes"
+version = "0.1.0"
+dependencies = [
+ "newos-appkit",
+ "newos-syslib",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-single-instance",
+ "tempfile",
+ "tokio",
+]
+
+[[package]]
 name = "newos-settings"
 version = "0.1.0"
 dependencies = [

@@ -12,6 +12,7 @@ import type {
   PowerProfile,
   WifiNetwork,
 } from "./commands"
+import { NOTES_CHANGED_EVENT, type NoteMeta } from "./commands"
 import { emitMockEvent, type MockBackend } from "./ipc"
 import { applyPatch, SETTINGS_CHANGED_EVENT } from "./settings"
 
@@ -131,6 +132,70 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
     { id: 1, text: "Prefers the metric system", created_at: 1789900000 },
     { id: 2, text: "Works on the NewOS project", created_at: 1789950000 },
   ]
+
+  // Notes: path -> text, plus folders and pins, with the same naming rules as appkit::notes.
+  const noteTexts = new Map<string, { text: string; modified: number }>([
+    [
+      "Welcome.md",
+      {
+        text: "# Welcome to Notes\n\nNotes are Markdown files in ~/Notes.\n\n- [x] Write a note\n- [ ] Ask the assistant to summarize it\n",
+        modified: Date.now() - 60_000,
+      },
+    ],
+    [
+      "Groceries.md",
+      {
+        text: "# Groceries\n\n- [ ] Milk\n- [ ] Eggs\n- [x] Coffee\n",
+        modified: Date.now() - 3_600_000,
+      },
+    ],
+    [
+      "Work/Q4 plan.md",
+      {
+        text: "# Q4 plan\n\nShip the NewOS installer and Dual Space.\n",
+        modified: Date.now() - 86_400_000,
+      },
+    ],
+  ])
+  const noteFolders = new Set(["Work"])
+  const pins = new Set<string>(["Groceries.md"])
+  const noteTitle = (text: string) =>
+    text
+      .split("\n")
+      .map((l) => l.replace(/^#+/, "").trim())
+      .find(Boolean) ?? "New Note"
+  const noteMeta = (path: string): NoteMeta => {
+    const entry = noteTexts.get(path)!
+    const lines = entry.text.split("\n").filter((l) => l.trim())
+    return {
+      path,
+      folder: path.includes("/") ? path.split("/")[0]! : "",
+      title: noteTitle(entry.text),
+      preview: lines
+        .slice(1)
+        .map((l) => l.replace(/^[-*>#\s[\]x]+/, ""))
+        .join(" ")
+        .slice(0, 140),
+      modified: entry.modified,
+      pinned: pins.has(path),
+    }
+  }
+  const freeNotePath = (folder: string, title: string, current?: string) => {
+    const stem =
+      title
+        .replace(/[^\p{L}\p{N} _-]/gu, " ")
+        .replace(/\s+/g, " ")
+        .trim() || "New Note"
+    const prefix = folder ? `${folder}/` : ""
+    let path = `${prefix}${stem}.md`
+    for (let n = 2; noteTexts.has(path) && path !== current; n++) path = `${prefix}${stem} ${n}.md`
+    return path
+  }
+  const notesChanged = () => emitMockEvent(NOTES_CHANGED_EVENT, null)
+  const noteList = () =>
+    [...noteTexts.keys()]
+      .map(noteMeta)
+      .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.modified - a.modified)
 
   const find = (address: unknown) => {
     const device = [...devices, ...nearby].find((d) => d.address === address)
@@ -332,6 +397,90 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
     hypr_option_set: ({ key, value }) => {
       hypr[String(key)] = String(value)
       return String(value)
+    },
+
+    notes_list: () => noteList(),
+    notes_folders: () => [...noteFolders].sort(),
+    notes_search: ({ query }) => {
+      const words = String(query).toLowerCase().split(/\s+/).filter(Boolean)
+      if (words.length === 0) return []
+      return noteList()
+        .filter((n) => words.every((w) => noteTexts.get(n.path)!.text.toLowerCase().includes(w)))
+        .map((note) => ({
+          note,
+          snippet:
+            noteTexts
+              .get(note.path)!
+              .text.split("\n")
+              .slice(1)
+              .find((l) => l.toLowerCase().includes(words[0]!)) ?? note.preview,
+          score: note.title.toLowerCase().includes(words[0]!) ? 3 : 1,
+        }))
+        .sort((a, b) => b.score - a.score)
+    },
+    note_read: ({ path }) => {
+      const entry = noteTexts.get(String(path))
+      if (!entry) throw new Error("No such note")
+      return entry.text
+    },
+    note_write: ({ path, text }) => {
+      const current = String(path)
+      if (!noteTexts.has(current)) throw new Error("No such note")
+      const folder = current.includes("/") ? current.split("/")[0]! : ""
+      const title = noteTitle(String(text))
+      const oldStem = current.replace(/^.*\//, "").replace(/\.md$/, "")
+      const target =
+        oldStem === title ||
+        (oldStem.startsWith(`${title} `) && /^\d+$/.test(oldStem.slice(title.length + 1)))
+          ? current
+          : freeNotePath(folder, title, current)
+      noteTexts.delete(current)
+      noteTexts.set(target, { text: String(text), modified: Date.now() })
+      if (pins.delete(current)) pins.add(target)
+      notesChanged()
+      return noteMeta(target)
+    },
+    note_create: ({ folder, text }) => {
+      const body = String(text).trim() ? String(text) : "# New Note\n\n"
+      const path = freeNotePath(String(folder), noteTitle(body))
+      noteTexts.set(path, { text: body, modified: Date.now() })
+      notesChanged()
+      return noteMeta(path)
+    },
+    note_delete: ({ path }) => {
+      noteTexts.delete(String(path))
+      pins.delete(String(path))
+      notesChanged()
+      return null
+    },
+    note_set_pinned: ({ path, pinned }) => {
+      if (pinned) pins.add(String(path))
+      else pins.delete(String(path))
+      notesChanged()
+      return null
+    },
+    note_move: ({ path, folder }) => {
+      const entry = noteTexts.get(String(path))
+      if (!entry) throw new Error("No such note")
+      const target = freeNotePath(String(folder), noteTitle(entry.text))
+      noteTexts.delete(String(path))
+      noteTexts.set(target, entry)
+      if (pins.delete(String(path))) pins.add(target)
+      notesChanged()
+      return noteMeta(target)
+    },
+    notes_folder_create: ({ name }) => {
+      noteFolders.add(String(name))
+      notesChanged()
+      return String(name)
+    },
+    notes_folder_delete: ({ name }) => {
+      if ([...noteTexts.keys()].some((p) => p.startsWith(`${String(name)}/`))) {
+        throw new Error(`“${String(name)}” still has notes in it.`)
+      }
+      noteFolders.delete(String(name))
+      notesChanged()
+      return null
     },
 
     apps: () =>

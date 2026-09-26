@@ -3,8 +3,8 @@
  * else and sends input nowhere else, and if the shell dies while locked the screen stays
  * locked (Hyprland: misc:allow_session_lock_restore lets a restarted shell take over).
  *
- * Your own password unlocks. A password for another space is recognized (spacesd), and
- * switching to it comes with fast user switching.
+ * Your own password unlocks. Another space's password switches to that space when it is
+ * running (spacesd SwitchTo, logind); this one stays locked behind it.
  */
 import app from "ags/gtk4/app"
 import Gtk from "gi://Gtk?version=4.0"
@@ -14,7 +14,7 @@ import GLib from "gi://GLib?version=2.0"
 import AstalAuth from "gi://AstalAuth"
 import Gtk4SessionLock from "gi://Gtk4SessionLock?version=1.0"
 import { createState } from "ags"
-import { listSpaces, resolvePassword } from "../lib/spaces"
+import { listSpaces, switchTo } from "../lib/spaces"
 import { notify } from "../lib/system"
 import { waitMessage } from "../lib/login-flow"
 import { wallpaperPath } from "./Wallpaper"
@@ -42,20 +42,23 @@ async function attempt(password: string): Promise<Attempt> {
     unlock()
     return { ok: true }
   }
-  // Maybe it is another space's password.
-  const outcome = await resolvePassword(password)
-  if (outcome.kind === "space" && outcome.account !== GLib.get_user_name()) {
-    const other =
-      (await listSpaces()).find((s) => s.account === outcome.account)?.name ?? outcome.account
-    return {
-      ok: false,
-      info: true,
-      message: `That’s the password for “${other}”. Switching spaces from the lock screen comes in the next update: unlock this space first.`,
-    }
+  // Maybe it is another space's password: switch to it if it is running. This space stays
+  // locked behind it.
+  const outcome = await switchTo(password)
+  switch (outcome.kind) {
+    case "space":
+      return { ok: false, info: true, message: "" }
+    case "notrunning":
+      return {
+        ok: false,
+        info: true,
+        message: `That’s the password for “${outcome.name}”, which isn’t open. Unlock and log out, then open it from the login screen.`,
+      }
+    case "ratelimited":
+      return { ok: false, message: waitMessage(outcome.seconds), wait: outcome.seconds }
+    default:
+      return { ok: false, message: "Wrong password." }
   }
-  if (outcome.kind === "ratelimited")
-    return { ok: false, message: waitMessage(outcome.seconds), wait: outcome.seconds }
-  return { ok: false, message: "Wrong password." }
 }
 
 function lockWindow(monitor: Gdk.Monitor, primary: boolean): Gtk.Window {

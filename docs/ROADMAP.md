@@ -119,7 +119,8 @@ tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` 
       recognized
 - [x] Settings → Users & Spaces: add, rename, change password, make default, delete
 - [x] Testing mode runs a demo spacesd ("work-demo", "home-demo") and a lock password ("newos")
-- [ ] Switching to another running space from the lock screen (logind session activation)
+- [x] Switching to another running space from the lock screen (spacesd `SwitchTo`, logind
+      session activation; the space left behind stays locked)
 - [ ] Starting a space that is not running from the lock screen (second greeter on another VT)
 - [ ] Fingerprint login to a space (single-use token PAM module); the ELAN reader works
 - [ ] Per-space wallpaper and accent on the login screen

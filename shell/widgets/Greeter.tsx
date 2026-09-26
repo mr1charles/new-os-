@@ -45,6 +45,9 @@ async function attempt(password: string): Promise<Attempt> {
       return { ok: false, message: waitMessage(outcome.seconds), wait: outcome.seconds }
     case "unavailable":
       return { ok: false, message: outcome.message }
+    case "notrunning":
+      // Only SwitchTo reports this; the login screen uses ResolvePassword.
+      return { ok: false, message: `“${outcome.name}” can’t be opened right now.` }
     case "space": {
       const name = spaces.peek().find((s) => s.account === outcome.account)?.name ?? outcome.account
       if (PREVIEW)

@@ -56,3 +56,16 @@ export async function resolvePassword(password: string): Promise<Outcome> {
     return parseSpacesError(String(error))
   }
 }
+
+/**
+ * From the lock screen: bring the space this password opens to the screen (it stays
+ * logged in; this one stays locked). "notrunning" when that space is not logged in.
+ */
+export async function switchTo(password: string): Promise<Outcome> {
+  try {
+    const reply = await call("SwitchTo", new GLib.Variant("(s)", [password]))
+    return { kind: "space", account: reply.deep_unpack<[string]>()[0] }
+  } catch (error) {
+    return parseSpacesError(String(error))
+  }
+}

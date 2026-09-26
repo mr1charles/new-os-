@@ -11,7 +11,7 @@ other spaces cannot read them.
 |---|---|---|
 | `newos-spacesd` | root, system D-Bus `org.newos.Spaces1` | knows the spaces; tells which space a password opens; creates and removes spaces |
 | Greeter (`shell/widgets/Greeter.tsx`) | the `greeter` user under greetd | one password field; asks spacesd whose password it is, then logs that account in through greetd |
-| Lock screen | the space's user | same field; a password for another space switches to it (fast user switching) |
+| Lock screen | the space's user | same field; your password unlocks, another running space's password switches to it (`SwitchTo`) |
 | Settings → Users & Spaces | the space's user | lists spaces, creates and removes them (with administrator approval) |
 
 Spaces are recorded in `/var/lib/newos/spaces.json` (name, account, accent, which one is the
@@ -67,7 +67,8 @@ the container's root and creates and removes throwaway accounts inside the conta
 - **Biometric login to a space** (M5.1): fingerprints cannot be passed to greetd as a
   password, so a small PAM module will accept a single-use token that spacesd mints after
   fprintd verified the finger. The reader on the HP (ELAN Match-on-Chip) works with fprintd.
-- **Switching to a space that is not running yet** from the lock screen: spacesd starts a
-  second greetd on another VT and hands it the login. Spaces that are already running are
-  switched to with logind (`loginctl activate`).
+- **Starting a space that is not running yet** from the lock screen: spacesd will start a
+  second greetd on another VT and hand it the login. Switching to a space that is already
+  running works now (`SwitchTo`: logind activates its session; the one left behind stays
+  locked).
 - Encrypted homes per space (systemd-homed), M9.

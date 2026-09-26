@@ -9,6 +9,7 @@
 //! | `DeleteSpace(s account, b keep_home)` | administrators (polkit) |
 //! | `RenameSpace(s account, s name)`, `SetAccent(s account, s accent)`, `SetDefault(s account)` | administrators (polkit) |
 //! | `SetPassword(s account, s password)` | administrators (polkit) |
+//! | `SwitchTo(s password) -> s account` | root, the greeter, space accounts (rate limited) |
 //!
 //! Signal `SpacesChanged()` after any change.
 
@@ -41,6 +42,8 @@ pub enum SpacesError {
     AccessDenied(String),
     NoMatch(String),
     RateLimited(String),
+    /// The space exists but is not logged in; the message names it.
+    NotRunning(String),
     Invalid(String),
     Failed(String),
 }
@@ -150,6 +153,32 @@ impl Service {
         }
     }
 
+    /// Rate-limited password resolution shared by ResolvePassword and SwitchTo.
+    async fn resolve_for(&self, uid: u32, password: String) -> Result<String> {
+        if let Some(wait) = self.limiter.lock().await.wait(uid, Instant::now()) {
+            return Err(SpacesError::RateLimited(wait.to_string()));
+        }
+        let snapshot = self.registry.lock().await.snapshot();
+        let found = self.check_blocking(move |auth| resolve(&snapshot, auth, &password).map(|s| s.account.clone())).await?;
+        match found {
+            Some(account) => {
+                self.limiter.lock().await.success(uid);
+                let mut registry = self.registry.lock().await;
+                registry.touch(&account, now());
+                if let Err(e) = registry.save() {
+                    tracing::warn!("could not record the last login: {e}");
+                }
+                tracing::info!(account, "password matched a space");
+                Ok(account)
+            }
+            None => {
+                self.limiter.lock().await.failure(uid, Instant::now());
+                tracing::info!(uid, "password matched no space");
+                Err(SpacesError::NoMatch("That password doesn’t open a space.".into()))
+            }
+        }
+    }
+
     async fn save(&self, registry: &Registry, emitter: &SignalEmitter<'_>) -> Result<()> {
         registry.save()?;
         let _ = Self::spaces_changed(emitter).await;
@@ -172,26 +201,28 @@ impl Service {
         password: String,
     ) -> Result<String> {
         let uid = self.require_resolver(connection, &header).await?;
-        if let Some(wait) = self.limiter.lock().await.wait(uid, Instant::now()) {
-            return Err(SpacesError::RateLimited(wait.to_string()));
-        }
-        let snapshot = self.registry.lock().await.snapshot();
-        let found = self.check_blocking(move |auth| resolve(&snapshot, auth, &password).map(|s| s.account.clone())).await?;
-        match found {
-            Some(account) => {
-                self.limiter.lock().await.success(uid);
-                let mut registry = self.registry.lock().await;
-                registry.touch(&account, now());
-                if let Err(e) = registry.save() {
-                    tracing::warn!("could not record the last login: {e}");
-                }
-                tracing::info!(account, "password matched a space");
+        self.resolve_for(uid, password).await
+    }
+
+    /// From the lock screen: bring the space this password opens to the screen, if it is
+    /// running. Errors as ResolvePassword, plus NotRunning (message: the space's name).
+    async fn switch_to(
+        &self,
+        #[zbus(header)] header: Header<'_>,
+        #[zbus(connection)] connection: &Connection,
+        password: String,
+    ) -> Result<String> {
+        let uid = self.require_resolver(connection, &header).await?;
+        let account = self.resolve_for(uid, password).await?;
+        match accounts::desktop_session(self.runner.as_ref(), &account).await {
+            Some(session) => {
+                accounts::activate(self.runner.as_ref(), &session).await?;
+                tracing::info!(account, session, "switched to a running space");
                 Ok(account)
             }
             None => {
-                self.limiter.lock().await.failure(uid, Instant::now());
-                tracing::info!(uid, "password matched no space");
-                Err(SpacesError::NoMatch("That password doesn’t open a space.".into()))
+                let name = self.registry.lock().await.get(&account).map(|s| s.name.clone()).unwrap_or(account);
+                Err(SpacesError::NotRunning(name))
             }
         }
     }

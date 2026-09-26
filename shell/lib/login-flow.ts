@@ -7,6 +7,8 @@ export type Outcome =
   | { kind: "space"; account: string }
   | { kind: "nomatch" }
   | { kind: "ratelimited"; seconds: number }
+  /** SwitchTo: the password's space exists but is not logged in. */
+  | { kind: "notrunning"; name: string }
   | { kind: "unavailable"; message: string }
 
 /**
@@ -29,6 +31,8 @@ export function parseSpacesError(error: string): Outcome {
       return { kind: "nomatch" }
     case "RateLimited":
       return { kind: "ratelimited", seconds: Math.max(1, Number.parseInt(message!, 10) || 30) }
+    case "NotRunning":
+      return { kind: "notrunning", name: message!.trim() }
     default:
       return { kind: "unavailable", message: message!.trim() }
   }

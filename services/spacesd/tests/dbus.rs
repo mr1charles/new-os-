@@ -100,6 +100,19 @@ async fn create_resolve_and_rate_limit_over_dbus() {
     assert_eq!(account(call(&client, "ResolvePassword", &("work-secret",)).await.unwrap()), "space-work");
     assert_eq!(account(call(&client, "ResolvePassword", &("home-secret",)).await.unwrap()), "space-personal");
 
+    // SwitchTo brings a running space to the screen, and names a space that is not running.
+    runner.respond(CommandOutput::ok("7 1001 space-work seat0 900 user tty2 no -\n")); // list-sessions
+    assert_eq!(account(call(&client, "SwitchTo", &("work-secret",)).await.unwrap()), "space-work");
+    assert_eq!(runner.calls().last().unwrap(), &["loginctl", "activate", "7"]);
+    runner.respond(CommandOutput::ok("")); // no sessions
+    match call(&client, "SwitchTo", &("home-secret",)).await.unwrap_err() {
+        zbus::Error::MethodError(name, message, _) => {
+            assert_eq!(name.as_str(), "org.newos.Spaces1.Error.NotRunning");
+            assert_eq!(message.as_deref(), Some("Personal"));
+        }
+        other => panic!("unexpected {other}"),
+    }
+
     // Wrong passwords: NoMatch four times, then the fifth locks the caller out.
     for _ in 0..5 {
         let err = call(&client, "ResolvePassword", &("guess",)).await.unwrap_err();

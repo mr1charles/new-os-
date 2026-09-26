@@ -101,6 +101,42 @@ pub async fn has_session(runner: &dyn CommandRunner, account: &str) -> bool {
     out.map(|o| o.stdout.lines().any(|l| l.split_whitespace().nth(2) == Some(account))).unwrap_or(false)
 }
 
+/// A login session from `loginctl list-sessions --no-legend`:
+/// "SESSION UID USER SEAT LEADER CLASS TTY IDLE SINCE".
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Session {
+    pub id: String,
+    pub user: String,
+    pub seat: String,
+    pub class: String,
+}
+
+pub fn parse_sessions(output: &str) -> Vec<Session> {
+    output
+        .lines()
+        .filter_map(|line| {
+            let f: Vec<&str> = line.split_whitespace().collect();
+            (f.len() >= 6).then(|| Session { id: f[0].into(), user: f[2].into(), seat: f[3].into(), class: f[5].into() })
+        })
+        .collect()
+}
+
+/// The account's desktop session on seat0, if it is running.
+pub async fn desktop_session(runner: &dyn CommandRunner, account: &str) -> Option<String> {
+    let out = runner.run("loginctl", &["list-sessions".into(), "--no-legend".into()]).await.ok()?;
+    parse_sessions(&out.stdout).into_iter().find(|s| s.user == account && s.seat == "seat0" && s.class == "user").map(|s| s.id)
+}
+
+/// Bring a session to the screen (logind switches to its VT). Sessions left behind stay
+/// locked.
+pub async fn activate(runner: &dyn CommandRunner, session: &str) -> Result<()> {
+    if session.is_empty() || !session.chars().all(|c| c.is_ascii_alphanumeric()) {
+        return Err(Error::Invalid(format!("not a session id: {session}")));
+    }
+    run_checked(runner, "loginctl", &["activate", session]).await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -144,6 +180,20 @@ mod tests {
         assert!(set_password(&runner, "space-x", "has:colon").await.is_err());
         assert!(remove(&runner, "a", false).await.is_err());
         assert!(runner.calls().is_empty());
+    }
+
+    #[tokio::test]
+    async fn finds_and_activates_desktop_sessions() {
+        let out = "2 1000 a seat0 805 user tty1 no -\n3 1000 a - 830 manager - no -\n7 1001 space-work seat0 9001 user tty2 no -\n";
+        assert_eq!(parse_sessions(out).len(), 3);
+        let runner = MockRunner::new();
+        runner.respond(CommandOutput::ok(out));
+        assert_eq!(desktop_session(&runner, "space-work").await.as_deref(), Some("7"));
+        runner.respond(CommandOutput::ok("3 1000 a - 830 manager - no -\n"));
+        assert_eq!(desktop_session(&runner, "a").await, None, "the manager session is not a desktop");
+        activate(&runner, "7").await.unwrap();
+        assert_eq!(runner.calls().last().unwrap(), &["loginctl", "activate", "7"]);
+        assert!(activate(&runner, "7; reboot").await.is_err());
     }
 
     #[tokio::test]

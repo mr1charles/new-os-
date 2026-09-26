@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=HelixOS
+Description=The HelixOS logo on black. The login screen continues the animation from here.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/helixos
+ScriptFile=/usr/share/plymouth/themes/helixos/helixos.script

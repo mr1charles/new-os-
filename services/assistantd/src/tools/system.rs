@@ -56,14 +56,14 @@ pub fn tools() -> Vec<Tool> {
         ),
         tool(
             "change_look",
-            "Change how the desktop looks and behaves, all at once, live. Use a preset for requests like \"make it look like Windows\" (preset windows), \"like a Mac\" (helix), \"tiling\" or \"minimal\"; use changes for specific tweaks, or both (changes apply on top of the preset). \
-Settings you can change, nested by section: appearance {theme: dark|light|auto, accent: blue|purple|pink|red|orange|yellow|green|graphite, reduceTransparency: bool}; \
+            "Change how the desktop looks and behaves, all at once, live. Use a preset for requests like \"make it look like Windows\" (preset windows), \"like a Mac\" (helix), \"black and white\" or \"clean\" (mono), \"tiling\" or \"minimal\"; use changes for specific tweaks, or both (changes apply on top of the preset). \
+Settings you can change, nested by section: appearance {theme: dark|light|auto, accent: blue|purple|pink|red|orange|yellow|green|graphite, glass: clear|tinted, iconStyle: default|dark|clear|tinted, reduceTransparency: bool, startupAnimation: bool}; widgets {show: bool, items: list of weather|batteries|clock|calendar, side: left|right, city: string, fahrenheit: bool}; \
 dock {position: bottom|left|right, style: dock|taskbar, iconSize: 28-72, magnification: bool, showRecents: bool}; bar {position: top|bottom, clock24h: bool, showSeconds: bool, showBatteryPercent: bool}; \
 windows {layout: floating|arrange|tiling (arrange = automatic halves and quarters), rounding: 0-28, gaps: 0-40, blur: bool, animations: full|reduced|off, controls: mac|windows (window buttons left or right)}; nightShift {enabled: bool, temperature: 2500-6500}. \
 Tell the user what changed and that they can say \"undo that\".",
             object_schema(
                 json!({
-                    "preset": {"type": "string", "enum": ["helix", "windows", "tiling", "minimal"]},
+                    "preset": {"type": "string", "enum": ["helix", "mono", "windows", "tiling", "minimal"]},
                     "changes": {"type": "object", "description": "Nested settings to change, e.g. {\"dock\": {\"position\": \"left\"}, \"windows\": {\"rounding\": 4}}"}
                 }),
                 &[],

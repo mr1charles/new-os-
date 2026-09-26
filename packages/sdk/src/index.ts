@@ -16,5 +16,8 @@ export {
   type DockStyle,
   type WindowControls,
   type WindowLayout,
+  type WidgetSide,
+  type GlassStyle,
+  type IconStyle,
   type Theme,
 } from "./settings-schema"

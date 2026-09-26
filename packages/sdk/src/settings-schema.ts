@@ -15,6 +15,12 @@ export interface ShellConfig {
     wallpaperLight: string
     wallpaperDark: string
     reduceTransparency: boolean
+    /** Liquid Glass: clear (see-through, bright edges) or tinted (frosted with the accent). */
+    glass: GlassStyle
+    /** App icons in the Dock and Launchpad, and widgets: as designed, dark, clear, or tinted. */
+    iconStyle: IconStyle
+    /** The HelixOS logo animation when the computer starts. */
+    startupAnimation: boolean
   }
   dock: {
     /** Desktop ids, with or without ".desktop". Missing apps are skipped. */
@@ -52,6 +58,16 @@ export interface ShellConfig {
     enabled: boolean
     temperature: number
   }
+  widgets: {
+    /** Widgets on the desktop, behind windows. */
+    show: boolean
+    /** Kinds in order: weather, batteries, clock, calendar. Unknown kinds are skipped. */
+    items: string[]
+    side: WidgetSide
+    /** Weather location, e.g. "London". Empty until set. */
+    city: string
+    fahrenheit: boolean
+  }
   windows: {
     /**
      * floating: windows open where you put them (macOS). arrange: windows re-arrange into
@@ -69,6 +85,9 @@ export interface ShellConfig {
   }
 }
 
+export type WidgetSide = "left" | "right"
+export type GlassStyle = "clear" | "tinted"
+export type IconStyle = "default" | "dark" | "clear" | "tinted"
 export type DockPosition = "bottom" | "left" | "right"
 export type DockStyle = "dock" | "taskbar"
 export type BarPosition = "top" | "bottom"
@@ -79,12 +98,20 @@ export type WindowControls = "mac" | "windows"
 /** Allowed values of the string settings that are choices, by dotted path. */
 export const CHOICES: Record<string, readonly string[]> = {
   "appearance.theme": ["light", "dark", "auto"],
+  "appearance.glass": ["clear", "tinted"],
+  "appearance.iconStyle": ["default", "dark", "clear", "tinted"],
   "dock.position": ["bottom", "left", "right"],
   "dock.style": ["dock", "taskbar"],
   "bar.position": ["top", "bottom"],
   "windows.layout": ["floating", "arrange", "tiling"],
   "windows.animations": ["full", "reduced", "off"],
   "windows.controls": ["mac", "windows"],
+  "widgets.side": ["left", "right"],
+}
+
+/** Allowed items of list settings, by dotted path. Other items are dropped. */
+export const LIST_CHOICES: Record<string, readonly string[]> = {
+  "widgets.items": ["weather", "batteries", "clock", "calendar"],
 }
 
 /** Allowed ranges of number settings, by dotted path. Values outside are clamped. */
@@ -102,6 +129,9 @@ export const DEFAULT_CONFIG: ShellConfig = {
     wallpaperLight: "",
     wallpaperDark: "",
     reduceTransparency: false,
+    glass: "clear",
+    iconStyle: "default",
+    startupAnimation: true,
   },
   dock: {
     pinned: [
@@ -146,6 +176,13 @@ export const DEFAULT_CONFIG: ShellConfig = {
     enabled: false,
     temperature: 4500,
   },
+  widgets: {
+    show: true,
+    items: ["weather", "batteries"],
+    side: "left",
+    city: "",
+    fahrenheit: false,
+  },
   windows: {
     layout: "floating",
     rounding: 12,
@@ -173,7 +210,10 @@ export function mergeConfig<T>(base: T, override: unknown, path = ""): T {
     if (value === undefined) continue
     if (Array.isArray(defaultValue)) {
       if (Array.isArray(value) && value.every((v) => typeof v === typeof (defaultValue[0] ?? v))) {
-        result[key] = [...value]
+        const allowed = LIST_CHOICES[at]
+        result[key] = allowed
+          ? [...new Set(value)].filter((v) => allowed.includes(v as string))
+          : [...value]
       }
     } else if (isRecord(defaultValue)) {
       result[key] = mergeConfig(defaultValue, value, at)
@@ -197,10 +237,16 @@ export function cloneJson<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T
 }
 
+/** Settings saved before HelixOS was renamed from NewOS name its apps newos-*. */
+function migrate(config: ShellConfig): ShellConfig {
+  config.dock.pinned = config.dock.pinned.map((id) => id.replace(/^newos-/, "helixos-"))
+  return config
+}
+
 export function parseConfig(text: string | null): ShellConfig {
   if (!text) return cloneJson(DEFAULT_CONFIG)
   try {
-    return mergeConfig(cloneJson(DEFAULT_CONFIG), JSON.parse(text))
+    return migrate(mergeConfig(cloneJson(DEFAULT_CONFIG), JSON.parse(text)))
   } catch {
     return cloneJson(DEFAULT_CONFIG)
   }

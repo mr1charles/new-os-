@@ -72,6 +72,12 @@ export const SETTINGS_PAGES: SettingsPage[] = [
     iconName: "view-app-grid-symbolic",
   },
   {
+    page: "widgets",
+    title: "Widgets",
+    keywords: ["weather", "clock", "calendar", "batteries", "desktop widgets", "city"],
+    iconName: "view-grid-symbolic",
+  },
+  {
     page: "windows",
     title: "Windows & Snapping",
     keywords: [

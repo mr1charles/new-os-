@@ -230,10 +230,12 @@ update() {
     set -e
     cd "$HELIXOS_REPO"
     export CARGO_TARGET_DIR="$HOME/.cache/helixos-target"
-    # Renamed from NewOS: keep the build cache.
+    # A cache from before the rename to HelixOS stays where it is: build scripts recorded
+    # absolute paths into it, so moving it breaks the next build.
+    [ -d "$HOME/.cache/newos-target" ] && CARGO_TARGET_DIR="$HOME/.cache/newos-target"
+    # Renamed from NewOS: drop the old binaries and app entries.
     sudo rm -f /usr/local/bin/newos-* /usr/local/share/applications/newos-*.desktop \
       /usr/local/share/icons/hicolor/scalable/apps/newos-*.svg /etc/pam.d/newos-spaces
-    [ -d "$HOME/.cache/newos-target" ] && [ ! -e "$CARGO_TARGET_DIR" ] && mv "$HOME/.cache/newos-target" "$CARGO_TARGET_DIR"
     [ -d node_modules ] || { echo "error: run pnpm install on the host first" >&2; exit 1; }
     # Tools added after the container was created.
     sudo pacman -S --needed --noconfirm poppler udisks2 clang wtype flatpak >/dev/null 2>&1 || true
@@ -259,6 +261,8 @@ update() {
       sudo install -Dm644 "apps/$app/src-tauri/icons/icon.svg" "/usr/local/share/icons/hicolor/scalable/apps/helixos-$app.svg"
     done
     sudo gtk-update-icon-cache -q -t /usr/local/share/icons/hicolor 2>/dev/null || true
+    # HelixOS wallpapers, for Settings → Wallpaper.
+    sudo install -Dm644 -t /usr/share/helixos/wallpapers shell/assets/wallpapers/*
   '
 }
 
@@ -311,7 +315,8 @@ exec-once = sh -c 'cd "$HELIXOS_REPO/shell" && XDG_DATA_DIRS="\$HOME/.local/shar
 source = $HOME/.config/helixos/hyprland-user.conf
 CONF
   echo "HelixOS testing mode. Logs: ${HELIXOS_LIVE_ROOT_HINT:-}$logs"
-  exec dbus-run-session -- Hyprland -c "$conf_dir/hyprland.conf" > "$logs/hyprland.log" 2>&1
+  # start-hyprland adds the crash watchdog the installed session has (Hyprland warns without it).
+  exec dbus-run-session -- start-hyprland -- -c "$conf_dir/hyprland.conf" > "$logs/hyprland.log" 2>&1
 }
 
 # Join the running session's namespaces (as you, inside the container) and run a command.

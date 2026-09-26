@@ -2,6 +2,7 @@ import { useCommand } from "@helixos/sdk/react"
 import { Group, Page, Row, Value } from "@helixos/ui"
 import { LoadError } from "../components/common"
 import { cleanCpuName, cleanGpuName, formatBytes, formatMemory } from "../format"
+import logo from "../../../../shell/assets/brand/helixos-logo.svg"
 
 export const HELIXOS_VERSION = "0.1.0"
 
@@ -19,7 +20,9 @@ export function AboutPage() {
   return (
     <Page>
       <div className="settings-about-hero">
-        <div className="settings-about-logo" aria-hidden="true" />
+        <div className="settings-about-logo" aria-hidden="true">
+          <img src={logo} alt="" />
+        </div>
         <h2 className="settings-about-model">{a?.model || "This Computer"}</h2>
         <p className="settings-about-os">HelixOS {HELIXOS_VERSION}</p>
       </div>

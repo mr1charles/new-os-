@@ -7,6 +7,7 @@
 import {
   CHOICES,
   cloneJson,
+  LIST_CHOICES,
   DEFAULT_CONFIG,
   mergeConfig,
   RANGES,
@@ -31,6 +32,7 @@ export const PRESETS: Preset[] = [
     name: "HelixOS",
     description: "Floating windows, the Dock, and the menu bar with the Dynamic Island.",
     patch: {
+      appearance: { glass: "clear", iconStyle: "default", wallpaperDark: "", wallpaperLight: "" },
       dock: { position: "bottom", style: "dock", iconSize: 44, magnification: true },
       bar: { position: "top" },
       windows: {
@@ -41,6 +43,23 @@ export const PRESETS: Preset[] = [
         animations: "full",
         controls: "mac",
       },
+    },
+  },
+  {
+    id: "mono",
+    name: "Monochrome",
+    description: "Dark, graphite, and clear glass icons over a black-and-white wallpaper.",
+    patch: {
+      appearance: {
+        theme: "dark",
+        accent: "graphite",
+        glass: "clear",
+        iconStyle: "clear",
+        wallpaperDark: "builtin:helixos-mono.jpg",
+      },
+      dock: { position: "bottom", style: "dock", magnification: true },
+      widgets: { show: true },
+      windows: { layout: "floating", rounding: 14, blur: true, controls: "mac" },
     },
   },
   {
@@ -134,6 +153,8 @@ function describeSettings(value: unknown, path = ""): string[] {
   if (typeof value === "object" && value !== null && !Array.isArray(value))
     return Object.entries(value).flatMap(([k, v]) => describeSettings(v, path ? `${path}.${k}` : k))
   if (EXCLUDED.has(path)) return []
+  const items = LIST_CHOICES[path]
+  if (items) return [`- ${path}: list of ${items.map((c) => `"${c}"`).join(", ")} (in order)`]
   const choices = CHOICES[path]
   const range = RANGES[path]
   const kind = choices

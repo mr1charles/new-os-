@@ -76,4 +76,6 @@ export function defaultSpace(spaces: Space[]): Space | undefined {
 }
 
 /** The command greetd starts for a space's session. */
-export const SESSION_COMMAND = "start-hyprland -- --config /usr/share/helixos/hypr/session.conf"
+/** The login screen already played the startup animation, so the session does not repeat it. */
+export const SESSION_COMMAND =
+  "env HELIXOS_FROM_GREETER=1 start-hyprland -- --config /usr/share/helixos/hypr/session.conf"

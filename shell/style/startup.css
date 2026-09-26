@@ -1,0 +1,51 @@
+/*
+ * Startup animation (widgets/Startup.tsx). The window's step class drives it:
+ * start → logo → name → flash → out.
+ */
+window.startup-window {
+  background: #000;
+  transition: opacity 550ms ease-in;
+}
+
+.startup-logo {
+  opacity: 0;
+  transform: scale(0.72);
+  transition:
+    opacity 650ms ease-out,
+    transform 800ms cubic-bezier(0.2, 0.9, 0.2, 1.08);
+}
+
+.startup-word {
+  color: #fff;
+  font-size: 104px;
+  font-weight: 600;
+  letter-spacing: -2px;
+  margin-top: 6px;
+}
+
+.startup-flash {
+  background: #fff;
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+
+window.startup-window.step-logo .startup-logo,
+window.startup-window.step-name .startup-logo,
+window.startup-window.step-flash .startup-logo,
+window.startup-window.step-out .startup-logo {
+  opacity: 1;
+  transform: none;
+}
+
+window.startup-window.step-flash .startup-flash {
+  opacity: 0.95;
+}
+
+window.startup-window.step-out {
+  opacity: 0;
+}
+
+window.startup-window.step-out .startup-flash {
+  opacity: 0;
+  transition: opacity 450ms ease-in;
+}

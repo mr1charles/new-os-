@@ -18,6 +18,9 @@ import { send } from "./assistant-session"
 import { startTimer } from "./timers"
 import { parseDuration } from "./format"
 import { arrangeWorkspace, snap } from "./windows"
+import app from "ags/gtk4/app"
+import { playStartup } from "../widgets/Startup"
+import { editWidgets } from "../widgets/DesktopWidgets"
 import { diffConfig, patchConfig, PRESETS } from "@helixos/sdk/customize"
 
 const HELP = `HelixOS shell commands:
@@ -34,6 +37,8 @@ const HELP = `HelixOS shell commands:
   snap left|right|up|down|<zone>  snap the window (halves, quarters, thirds, maximize)
   arrange                         tile every window on the desktop by how many there are
   look preset <id>|apply <json>|undo   change the look (presets: ${PRESETS.map((p) => p.id).join(", ")})
+  widgets edit|done               add and remove desktop widgets
+  startup                         play the startup animation
   island dismiss                  clear the island
   close                           close any open panel`
 
@@ -117,6 +122,14 @@ function dispatch(command: string, args: string[]): string {
       if (duration === null) return "usage: timer <duration> [label], e.g. timer 10m tea"
       return startTimer(duration, args.slice(1).join(" "))
     }
+    case "widgets":
+      if (args[0] === "edit") editWidgets(true)
+      else if (args[0] === "done") editWidgets(false)
+      else return "usage: widgets edit|done"
+      return "ok"
+    case "startup":
+      for (const monitor of app.get_monitors()) playStartup(monitor)
+      return "ok"
     case "look":
       return look(args)
     case "snap":

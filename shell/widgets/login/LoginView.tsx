@@ -19,6 +19,8 @@ export interface LoginViewProps {
   subtitle?: Accessor<string> | string
   /** Check a password. The field is cleared after every attempt. */
   onSubmit: (password: string) => Promise<Attempt>
+  /** Between the clock and the password (the lock screen's Now Playing). */
+  middle?: JSX.Element
   /** Buttons at the bottom (Restart, Shut Down on the login screen). */
   footer?: JSX.Element
 }
@@ -96,6 +98,8 @@ export default function LoginView(props: LoginViewProps) {
     >
       <label class="login-date" label={date} />
       <label class="login-time" label={time} />
+      <box vexpand />
+      {props.middle ?? <box />}
       <box vexpand />
       <box
         class="login-card"

@@ -3,19 +3,23 @@
 A macOS-style operating system for everyday laptops, starting with an HP 14" / Pavilion x360
 (11th-gen Intel). HelixOS is a Linux distribution with its own desktop built from scratch:
 
-- **Dynamic Island.** A black pill at the top of the screen that morphs to show what's
-  happening: notifications, music, volume and brightness, charging, timers, installs, and the
-  assistant.
+- **Dynamic Island.** A notch that hangs from the menu bar and morphs to show what's
+  happening: notifications (with their buttons), music, volume and brightness, charging,
+  timers, and apps' live activities like file copies and long Terminal commands.
 - **A built-in assistant.** It uses Claude in the cloud when you're online and have a key.
   Otherwise it runs a model on the laptop through Ollama. It can change settings, open apps,
   find files, write notes, set timers, and remember things about you.
 - **Dual Space.** One password field at login: each password (or fingerprint or face) opens its
   own private space with separate apps, files, and settings.
-- **A familiar desktop.** Menu bar, Dock with magnification, Spotlight and Launchpad, Control
-  Center, Notification Center, app switcher, and light and dark wallpapers.
+- **A familiar desktop, your way.** Menu bar, Dock or a Windows-style taskbar, Spotlight and
+  Launchpad, Control Center, Notification Center, desktop widgets (weather, batteries, clock,
+  calendar), Liquid Glass (clear or tinted), and icon styles. Snap windows into halves and
+  quarters, let the desktop auto-arrange them, or tile. Ask the assistant to "make it look
+  more like Windows" and it restyles everything live.
+- **Opens anything.** Windows `.exe`/`.msi` (Wine), Flathub links and Flatpaks, AppImages, Arch
+  packages, and Android `.apk` (Waydroid), asking first and showing progress in the island.
 - **Apps with intelligence built in.** Settings, Files, Notes, Terminal, Mail (Gmail and
-  iCloud), Messages (text without a phone), Calendar, and an App Store for Flatpak, Windows
-  `.exe` (Wine), and Android `.apk` (Waydroid) apps.
+  iCloud), Messages (text without a phone), Calendar, and an App Store.
 
 > **Status:** early development. Milestones 0–2 are done: the monorepo, design system,
 > desktop shell, and assistant daemon. The bootable ISO arrives in milestone 8.

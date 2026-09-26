@@ -12,6 +12,7 @@ import {
   Image,
   Info,
   Keyboard,
+  LayoutDashboard,
   LayoutGrid,
   LayoutPanelTop,
   Monitor,
@@ -47,6 +48,7 @@ import { TrackpadPage } from "./pages/Trackpad"
 import { UpdatePage } from "./pages/Update"
 import { WallpaperPage } from "./pages/Wallpaper"
 import { WifiPage } from "./pages/Wifi"
+import { WidgetsPage } from "./pages/Widgets"
 import { WindowsPage } from "./pages/Windows"
 
 interface PageView {
@@ -59,7 +61,7 @@ interface PageView {
 export const SECTIONS: string[][] = [
   ["wifi", "bluetooth", "network"],
   ["notifications", "focus", "sound"],
-  ["customize", "appearance", "wallpaper", "dock", "windows", "displays", "battery"],
+  ["customize", "appearance", "wallpaper", "widgets", "dock", "windows", "displays", "battery"],
   ["assistant", "privacy", "spaces"],
   ["keyboard", "trackpad"],
   ["update", "about"],
@@ -75,6 +77,7 @@ const VIEWS: Record<string, PageView> = {
   appearance: { icon: Palette, color: "#48484a", component: AppearancePage },
   wallpaper: { icon: Image, color: "#32ade6", component: WallpaperPage },
   dock: { icon: LayoutPanelTop, color: "#48484a", component: DockPage },
+  widgets: { icon: LayoutDashboard, color: "#ff9f0a", component: WidgetsPage },
   windows: { icon: LayoutGrid, color: "#0a84ff", component: WindowsPage },
   customize: { icon: Wand2, color: "#af52de", component: CustomizePage },
   displays: { icon: Monitor, color: "#0a84ff", component: DisplaysPage },

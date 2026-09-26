@@ -19,6 +19,7 @@ import { notify } from "../lib/system"
 import { waitMessage } from "../lib/login-flow"
 import { wallpaperPath } from "./Wallpaper"
 import LoginView, { type Attempt } from "./login/LoginView"
+import MediaCard from "./login/MediaCard"
 
 let instance: Gtk4SessionLock.Instance | null = null
 const windows: Gtk.Window[] = []
@@ -74,7 +75,12 @@ function lockWindow(monitor: Gdk.Monitor, primary: boolean): Gtk.Window {
   overlay.set_child(picture)
   if (primary) {
     overlay.add_overlay(
-      LoginView({ title: spaceName, subtitle: "Locked", onSubmit: attempt }) as Gtk.Widget,
+      LoginView({
+        title: spaceName,
+        subtitle: "Locked",
+        onSubmit: attempt,
+        middle: MediaCard(),
+      }) as Gtk.Widget,
     )
   }
   const window = new Gtk.Window({ application: app, child: overlay })

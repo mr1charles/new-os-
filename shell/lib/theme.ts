@@ -18,13 +18,26 @@ import launcher from "../style/launcher.css"
 import notifications from "../style/notifications.css"
 import assistant from "../style/assistant.css"
 import login from "../style/login.css"
+import startup from "../style/startup.css"
+import widgets from "../style/widgets.css"
 import { config } from "./config"
+import { glassCss } from "./glass"
 import { resolveTheme, type Theme } from "@helixos/sdk/settings-schema"
 import { minute } from "./clock"
 
-const STYLES = [base, bar, island, dock, panels, launcher, notifications, assistant, login].join(
-  "\n",
-)
+const STYLES = [
+  base,
+  bar,
+  island,
+  dock,
+  panels,
+  launcher,
+  notifications,
+  assistant,
+  login,
+  startup,
+  widgets,
+].join("\n")
 
 const Adw = await import("gi://Adw?version=1").then((m) => m.default).catch(() => null)
 
@@ -34,6 +47,8 @@ export const theme = createComputed<Theme>(() =>
 export const accent = createComputed(() => accentColor(config().appearance.accent, theme()))
 export const reduceTransparency = createComputed(() => config().appearance.reduceTransparency)
 const dockIconSize = createComputed(() => config().dock.iconSize)
+const glass = createComputed(() => config().appearance.glass)
+const iconStyle = createComputed(() => config().appearance.iconStyle)
 
 /** Dock icon sizes from Settings (base size, then three magnification steps). */
 export function dockSizeCss(iconSize: number): string {
@@ -83,7 +98,17 @@ function applyColorScheme(current: Theme) {
 export function setupTheme() {
   createEffect(() => {
     const current = theme()
-    app.apply_css(buildCss(current, accent(), reduceTransparency(), dockIconSize()), true)
+    const extra = glassCss({
+      glass: glass(),
+      iconStyle: iconStyle(),
+      theme: current,
+      accentHex: accent(),
+      solid: reduceTransparency(),
+    })
+    app.apply_css(
+      `${buildCss(current, accent(), reduceTransparency(), dockIconSize())}\n${extra}`,
+      true,
+    )
     applyColorScheme(current)
   })
 }

@@ -62,3 +62,19 @@ describe("choices and ranges", () => {
     })
   })
 })
+
+describe("list choices", () => {
+  it("keeps only known widgets, once each", () => {
+    const config = mergeConfig(DEFAULT_CONFIG, {
+      widgets: { items: ["clock", "bogus", "clock", "weather"] },
+    })
+    expect(config.widgets.items).toEqual(["clock", "weather"])
+  })
+})
+
+describe("migration", () => {
+  it("renames apps pinned before HelixOS was renamed", () => {
+    const config = parseConfig(JSON.stringify({ dock: { pinned: ["newos-files", "firefox"] } }))
+    expect(config.dock.pinned).toEqual(["helixos-files", "firefox"])
+  })
+})

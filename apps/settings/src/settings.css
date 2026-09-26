@@ -340,6 +340,17 @@ code {
   position: relative;
 }
 
+.settings-about-logo {
+  display: grid;
+  place-items: center;
+  background: #0b0d14;
+}
+
+.settings-about-logo img {
+  width: 40px;
+  height: 40px;
+}
+
 .settings-about-logo::after {
   content: "";
   position: absolute;
@@ -469,4 +480,110 @@ code {
 .settings-customize-result ul {
   margin: 0;
   padding-left: 18px;
+}
+
+.settings-inline-form {
+  min-width: 220px;
+}
+
+/* Liquid Glass picker: a pane of glass over a wallpaper. */
+.settings-glass-preview {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 60px;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 70% 20%, #7aa7ff 0 18%, transparent 19%),
+    linear-gradient(135deg, #2b2bd9, #0a84ff 55%, #6f2bd9);
+  box-shadow: 0 0 0 1px var(--helixos-color-separator);
+}
+
+.settings-theme-option--selected .settings-glass-preview,
+.settings-theme-option--selected .settings-icon-preview {
+  box-shadow: 0 0 0 3px var(--helixos-accent);
+}
+
+.settings-glass-preview__pane {
+  width: 64px;
+  height: 30px;
+  border-radius: 15px;
+}
+
+.settings-glass-preview--clear .settings-glass-preview__pane {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(3px);
+}
+
+.settings-glass-preview--tinted .settings-glass-preview__pane {
+  background: rgba(40, 30, 120, 0.72);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Icon style picker: a weather icon in each style. */
+.settings-icon-preview {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: block;
+  overflow: hidden;
+}
+
+.settings-icon-preview__sun {
+  position: absolute;
+  right: 9px;
+  top: 9px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.settings-icon-preview__cloud {
+  position: absolute;
+  left: 8px;
+  bottom: 11px;
+  width: 30px;
+  height: 14px;
+  border-radius: 8px;
+}
+
+.settings-icon-preview--default {
+  background: linear-gradient(#5ab0ff, #1a6fe0);
+}
+.settings-icon-preview--default .settings-icon-preview__sun {
+  background: #ffd60a;
+}
+.settings-icon-preview--default .settings-icon-preview__cloud {
+  background: #fff;
+}
+
+.settings-icon-preview--dark {
+  background: #1c1c1e;
+}
+.settings-icon-preview--dark .settings-icon-preview__sun {
+  background: #ffd60a;
+}
+.settings-icon-preview--dark .settings-icon-preview__cloud {
+  background: #d1d1d6;
+}
+
+.settings-icon-preview--clear {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.6);
+}
+.settings-icon-preview--clear .settings-icon-preview__sun,
+.settings-icon-preview--clear .settings-icon-preview__cloud {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.settings-icon-preview--tinted {
+  background: color-mix(in srgb, var(--helixos-accent) 30%, #1c1c1e);
+}
+.settings-icon-preview--tinted .settings-icon-preview__sun,
+.settings-icon-preview--tinted .settings-icon-preview__cloud {
+  background: color-mix(in srgb, var(--helixos-accent) 70%, #fff);
 }

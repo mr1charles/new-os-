@@ -248,8 +248,8 @@ export default function Dock({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       keymode={Astal.Keymode.NONE}
       marginBottom={position.as((p) => (p === "bottom" ? 6 : 0))}
-      marginStart={position.as((p) => (p === "left" ? 6 : 0))}
-      marginEnd={position.as((p) => (p === "right" ? 6 : 0))}
+      marginLeft={position.as((p) => (p === "left" ? 6 : 0))}
+      marginRight={position.as((p) => (p === "right" ? 6 : 0))}
       // Shown last: Astal applies the layer only before the window is mapped.
       visible={config.as((c) => c.dock.style === "dock")}
     >

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1600" width="2560" height="1600">
+  <!-- HelixOS "Monochrome": soft black-and-white folds with film grain. Original artwork, MIT licensed. -->
+  <defs>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-800" y="-800" width="4160" height="3200">
+      <feGaussianBlur stdDeviation="42"/>
+    </filter>
+    <filter id="wide" filterUnits="userSpaceOnUse" x="-800" y="-800" width="4160" height="3200">
+      <feGaussianBlur stdDeviation="110"/>
+    </filter>
+    <filter id="grain" filterUnits="userSpaceOnUse" x="0" y="0" width="2560" height="1600">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.08 0"/>
+    </filter>
+  </defs>
+  <rect x="-100" y="-100" width="2760" height="1800" fill="#161616"/>
+  <g filter="url(#wide)">
+    <path fill="#8a8a8a" d="M -600 1100 C 200 820, 520 1380, 1000 1180 S 1650 560, 2100 760 S 2900 1350, 3200 1150 L 3200 2400 L -600 2400 Z"/>
+    <path fill="#050505" d="M 1850 -600 C 2150 150, 1750 450, 2050 760 C 2300 1000, 2800 900, 3200 1000 L 3200 -600 Z"/>
+  </g>
+  <g filter="url(#soft)">
+    <path fill="#f2f2f2" d="M 760 -600 C 620 150, 1180 380, 1100 660 C 1020 940, 600 1000, 690 1290 C 760 1520, 1080 1600, 1160 2300 L 1640 2300 C 1440 1560, 1190 1360, 1280 1090 C 1370 820, 1760 740, 1690 440 C 1620 150, 1360 60, 1420 -600 Z"/>
+    <path fill="#030303" d="M 1200 -600 C 1130 180, 1450 300, 1430 570 C 1410 840, 1030 920, 1085 1170 C 1130 1380, 1360 1470, 1410 2300 L 1520 2300 C 1470 1460, 1270 1340, 1320 1110 C 1370 880, 1690 770, 1620 470 C 1560 220, 1320 110, 1350 -600 Z"/>
+    <path fill="#c8c8c8" d="M -600 -600 C 120 120, 440 60, 540 330 C 620 560, 380 730, 120 800 C -150 870, -600 820, -600 820 Z"/>
+    <path fill="#2e2e2e" d="M 2150 1700 C 2250 1400, 2600 1350, 3200 1450 L 3200 2300 L 2100 2300 Z"/>
+  </g>
+  <rect width="2560" height="1600" filter="url(#grain)"/>
+</svg>

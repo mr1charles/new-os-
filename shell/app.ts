@@ -5,6 +5,8 @@
  *   ags request -i helixos help       # list commands for keybindings
  */
 import app from "ags/gtk4/app"
+import GLib from "gi://GLib?version=2.0"
+import { config } from "./lib/config"
 import type Gtk from "gi://Gtk?version=4.0"
 import type GObject from "gi://GObject?version=2.0"
 import { createBinding, For } from "ags"
@@ -16,6 +18,7 @@ import { assetPath } from "./lib/icons"
 import Bar from "./widgets/Bar"
 import Dock from "./widgets/Dock"
 import Taskbar from "./widgets/Taskbar"
+import DesktopWidgets, { WidgetGallery } from "./widgets/DesktopWidgets"
 import Wallpaper from "./widgets/Wallpaper"
 import Island from "./widgets/island/Island"
 import Launcher from "./widgets/Launcher"
@@ -26,6 +29,8 @@ import AssistantPanel from "./widgets/AssistantPanel"
 import { followLogind } from "./widgets/LockScreen"
 import { serveIsland } from "./lib/island-service"
 import { setupWindowManagement } from "./lib/windows"
+import { playStartup } from "./widgets/Startup"
+import { shouldPlayAtLogin } from "./lib/startup"
 
 const destroy = (window: GObject.Object) => (window as Gtk.Window).destroy()
 
@@ -45,6 +50,11 @@ app.start({
       cleanup: destroy,
       children: (monitor) => Wallpaper({ gdkmonitor: monitor }),
     })
+    For({
+      each: monitors,
+      cleanup: destroy,
+      children: (monitor) => DesktopWidgets({ gdkmonitor: monitor }),
+    })
     For({ each: monitors, cleanup: destroy, children: (monitor) => Bar({ gdkmonitor: monitor }) })
     For({ each: monitors, cleanup: destroy, children: (monitor) => Dock({ gdkmonitor: monitor }) })
     For({
@@ -54,6 +64,7 @@ app.start({
     })
 
     Island()
+    WidgetGallery()
     Launcher()
     ControlCenter()
     NotificationCenter()
@@ -62,5 +73,20 @@ app.start({
     followLogind()
     serveIsland()
     setupWindowManagement()
+    startupAtLogin()
   },
 })
+
+/** The startup animation once per login (the login screen plays it after a real boot). */
+function startupAtLogin() {
+  const flag = GLib.build_filenamev([GLib.get_user_runtime_dir(), "helixos", "startup-played"])
+  const play = shouldPlayAtLogin({
+    enabled: config.peek().appearance.startupAnimation,
+    alreadyPlayed: GLib.file_test(flag, GLib.FileTest.EXISTS),
+    fromGreeter: GLib.getenv("HELIXOS_FROM_GREETER") === "1",
+  })
+  if (!play) return
+  GLib.mkdir_with_parents(GLib.path_get_dirname(flag), 0o700)
+  GLib.file_set_contents(flag, "")
+  for (const monitor of app.get_monitors()) playStartup(monitor)
+}

@@ -12,6 +12,7 @@ import { createBinding, For } from "ags"
 import { setupTheme } from "./lib/theme"
 import { assetPath } from "./lib/icons"
 import Greeter from "./widgets/Greeter"
+import { playStartup } from "./widgets/Startup"
 
 app.start({
   instanceName: "helixos-greeter",
@@ -25,5 +26,8 @@ app.start({
       children: (monitor) =>
         Greeter({ gdkmonitor: monitor, primary: monitor === app.get_monitors()[0] }),
     })
+    // Right after boot the splash shows the logo; continue with "elixOS" sliding out, a
+    // flash, then the login screen.
+    for (const monitor of app.get_monitors()) playStartup(monitor, { fromBoot: true })
   },
 })

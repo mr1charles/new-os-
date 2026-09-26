@@ -13,10 +13,10 @@ export function accentColor(name: string, theme: Theme): string {
   return (accent ?? tokens.accents[tokens.defaultAccent as AccentName])[theme]
 }
 
-/** CSS custom property name for a token, e.g. cssVar("color", "fg") -> "--newos-color-fg". */
+/** CSS custom property name for a token, e.g. cssVar("color", "fg") -> "--helixos-color-fg". */
 export function cssVar(group: string, key: string): string {
   const kebab = key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()
-  return `--newos-${group}-${kebab}`
+  return `--helixos-${group}-${kebab}`
 }
 
 export default designTokens

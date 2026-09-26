@@ -1,5 +1,5 @@
-import { useSettings } from "@newos/sdk/react"
-import { Group, IconTile, Page, Row, Toggle } from "@newos/ui"
+import { useSettings } from "@helixos/sdk/react"
+import { Group, IconTile, Page, Row, Toggle } from "@helixos/ui"
 import { Moon } from "lucide-react"
 
 export function FocusPage() {

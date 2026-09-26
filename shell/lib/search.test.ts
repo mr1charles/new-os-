@@ -17,7 +17,7 @@ const apps: SearchableApp[] = [
     frequency: 20,
   },
   {
-    entry: "newos-files.desktop",
+    entry: "helixos-files.desktop",
     name: "Files",
     description: "Browse your files",
     keywords: ["folder", "manager"],
@@ -25,7 +25,7 @@ const apps: SearchableApp[] = [
     frequency: 3,
   },
   {
-    entry: "newos-terminal.desktop",
+    entry: "helixos-terminal.desktop",
     name: "Terminal",
     description: "Command line",
     keywords: ["shell", "console"],

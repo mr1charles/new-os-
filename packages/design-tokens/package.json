@@ -1,9 +1,9 @@
 {
-  "name": "@newos/design-tokens",
+  "name": "@helixos/design-tokens",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS design tokens: one tokens.json rendered to GTK CSS (shell) and web CSS variables (apps).",
+  "description": "HelixOS design tokens: one tokens.json rendered to GTK CSS (shell) and web CSS variables (apps).",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

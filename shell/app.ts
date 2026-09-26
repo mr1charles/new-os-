@@ -1,8 +1,8 @@
 /**
- * NewOS shell entry point (AGS v3, GTK4).
+ * HelixOS shell entry point (AGS v3, GTK4).
  *
  *   ags run --gtk 4 app.ts          # development
- *   ags request -i newos help       # list commands for keybindings
+ *   ags request -i helixos help       # list commands for keybindings
  */
 import app from "ags/gtk4/app"
 import type Gtk from "gi://Gtk?version=4.0"
@@ -30,7 +30,7 @@ import { setupWindowManagement } from "./lib/windows"
 const destroy = (window: GObject.Object) => (window as Gtk.Window).destroy()
 
 app.start({
-  instanceName: "newos",
+  instanceName: "helixos",
   icons: assetPath("icons"),
   requestHandler: handleRequest,
   main() {

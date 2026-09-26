@@ -1,6 +1,6 @@
-import type { AnimationLevel, WindowControls, WindowLayout } from "@newos/sdk"
-import { useSettings } from "@newos/sdk/react"
-import { Group, Page, Row, SegmentedControl, Slider, Toggle } from "@newos/ui"
+import type { AnimationLevel, WindowControls, WindowLayout } from "@helixos/sdk"
+import { useSettings } from "@helixos/sdk/react"
+import { Group, Page, Row, SegmentedControl, Slider, Toggle } from "@helixos/ui"
 import { useEffect, useState } from "react"
 
 /** A slider that applies when you let go (each change reloads the window manager). */

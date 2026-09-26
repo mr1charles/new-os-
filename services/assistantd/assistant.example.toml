@@ -1,4 +1,4 @@
-# ~/.config/newos/assistant.toml. Every setting is optional; these are the defaults.
+# ~/.config/helixos/assistant.toml. Every setting is optional; these are the defaults.
 # The Settings app (milestone 3) edits this file.
 
 # auto: Claude in the cloud when online and a key is set, otherwise the on-device model.
@@ -18,7 +18,7 @@ thinking = true
 fallbacks = true
 # The key is read from this environment variable, then the keyring, then api_key_file.
 api_key_env = "ANTHROPIC_API_KEY"
-# api_key_file = "/home/you/.config/newos/anthropic.key"
+# api_key_file = "/home/you/.config/helixos/anthropic.key"
 
 [local]
 url = "http://127.0.0.1:11434"

@@ -1,6 +1,6 @@
-import { call, type BluetoothDevice } from "@newos/sdk"
-import { useAction, useCommand } from "@newos/sdk/react"
-import { Badge, Button, EmptyState, Group, Page, Row, Spinner, Toggle } from "@newos/ui"
+import { call, type BluetoothDevice } from "@helixos/sdk"
+import { useAction, useCommand } from "@helixos/sdk/react"
+import { Badge, Button, EmptyState, Group, Page, Row, Spinner, Toggle } from "@helixos/ui"
 import {
   BluetoothOff,
   Gamepad2,

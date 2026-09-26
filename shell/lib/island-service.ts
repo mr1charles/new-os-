@@ -1,11 +1,11 @@
 /**
- * Live activities from apps: the shell owns `org.newos.Shell1` on the session bus and serves
- * `org.newos.Island1` at /org/newos/Island1.
+ * Live activities from apps: the shell owns `org.helixos.Shell1` on the session bus and serves
+ * `org.helixos.Island1` at /org/helixos/Island1.
  *
  *   Show(s id, s activity)   activity: JSON {app, icon, title, subtitle, progress: 0..1 | null}
  *   End(s id)
  *
- * Apps call it through `island` in @newos/sdk (appkit::island). Ids are scoped to the caller's
+ * Apps call it through `island` in @helixos/sdk (appkit::island). Ids are scoped to the caller's
  * bus name, so apps cannot replace or end each other's activities, and an app's activities
  * end when it disconnects.
  */
@@ -14,7 +14,7 @@ import { island } from "./island"
 import { parseActivity, scopedId } from "./island-activity"
 
 const XML = `<node>
-  <interface name="org.newos.Island1">
+  <interface name="org.helixos.Island1">
     <method name="Show">
       <arg type="s" name="id" direction="in"/>
       <arg type="s" name="activity" direction="in"/>
@@ -44,7 +44,7 @@ export function serveIsland() {
       const payload = parseActivity(json)
       if (!payload) {
         invocation.return_dbus_error(
-          "org.newos.Island1.Error.Invalid",
+          "org.helixos.Island1.Error.Invalid",
           "An activity needs at least a title.",
         )
         return
@@ -78,8 +78,8 @@ export function serveIsland() {
       invocation.return_value(null)
     },
   })
-  exported.export(bus, "/org/newos/Island1")
-  Gio.bus_own_name_on_connection(bus, "org.newos.Shell1", Gio.BusNameOwnerFlags.NONE, null, () =>
-    console.warn("newos: another shell owns org.newos.Shell1"),
+  exported.export(bus, "/org/helixos/Island1")
+  Gio.bus_own_name_on_connection(bus, "org.helixos.Shell1", Gio.BusNameOwnerFlags.NONE, null, () =>
+    console.warn("helixos: another shell owns org.helixos.Shell1"),
   )
 }

@@ -1,13 +1,13 @@
-//! The system commands the Settings frontend calls through `@newos/sdk` (`packages/sdk/src/
+//! The system commands the Settings frontend calls through `@helixos/sdk` (`packages/sdk/src/
 //! commands.ts` has the matching types). Each one is a thin wrapper: the logic and its tests
-//! live in `newos-syslib`. The settings file and assistant commands every app shares come from
-//! `newos_appkit::tauri_app`.
+//! live in `helixos-syslib`. The settings file and assistant commands every app shares come from
+//! `helixos_appkit::tauri_app`.
 
 use std::path::PathBuf;
 
-use newos_appkit::{paths, terminal, wallpapers, AppError};
-use newos_syslib::display::{Monitor, MonitorSetup};
-use newos_syslib::{about, audio, bluetooth, desktop, display, hyprconf, network, power, updates, users, SystemRunner};
+use helixos_appkit::{paths, terminal, wallpapers, AppError};
+use helixos_syslib::display::{Monitor, MonitorSetup};
+use helixos_syslib::{about, audio, bluetooth, desktop, display, hyprconf, network, power, updates, users, SystemRunner};
 use tauri::State;
 
 type Result<T> = std::result::Result<T, AppError>;
@@ -225,9 +225,9 @@ pub async fn update_in_terminal(ctx: State<'_, Ctx>) -> Result<()> {
     terminal::run_in_terminal(&ctx.runner, terminal::UPDATE_SCRIPT).await
 }
 
-// Users & Spaces (newos-spacesd) -----------------------------------------------------------------
+// Users & Spaces (helixos-spacesd) -----------------------------------------------------------------
 
-use newos_appkit::spaces::{self, Space};
+use helixos_appkit::spaces::{self, Space};
 
 #[tauri::command]
 pub async fn spaces_list() -> Result<Vec<Space>> {

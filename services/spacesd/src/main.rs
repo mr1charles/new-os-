@@ -1,4 +1,4 @@
-//! `newos-spacesd`: the Dual Space service. Installed, it runs as root on the system bus.
+//! `helixos-spacesd`: the Dual Space service. Installed, it runs as root on the system bus.
 //! `--session` runs it on the session bus for development, where it only answers its own user
 //! and nothing needs polkit.
 
@@ -6,26 +6,26 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use clap::Parser;
-use newos_spacesd::auth::MockAuthenticator;
-use newos_spacesd::callers::AccountFiles;
-use newos_spacesd::ratelimit::RateLimiter;
-use newos_spacesd::registry::{Registry, Space};
-use newos_spacesd::service::{Authorization, Service, BUS_NAME, OBJECT_PATH};
-use newos_syslib::SystemRunner;
+use helixos_spacesd::auth::MockAuthenticator;
+use helixos_spacesd::callers::AccountFiles;
+use helixos_spacesd::ratelimit::RateLimiter;
+use helixos_spacesd::registry::{Registry, Space};
+use helixos_spacesd::service::{Authorization, Service, BUS_NAME, OBJECT_PATH};
+use helixos_syslib::SystemRunner;
 use tokio::sync::Mutex;
 
 #[derive(Parser)]
-#[command(about = "NewOS Dual Space service")]
+#[command(about = "HelixOS Dual Space service")]
 struct Args {
     /// Where the list of spaces is kept.
-    #[arg(long, default_value = "/var/lib/newos/spaces.json")]
+    #[arg(long, default_value = "/var/lib/helixos/spaces.json")]
     state: PathBuf,
     /// Use the session bus (development). Management then needs no polkit, and only the
     /// service's own user may call it.
     #[arg(long)]
     session: bool,
     /// PAM service for password checks.
-    #[arg(long, default_value = "newos-spaces")]
+    #[arg(long, default_value = "helixos-spaces")]
     pam_service: String,
     /// With --session: two demo spaces with mock accounts, for trying the login screen without
     /// creating users. "Work" opens with work-demo, "Personal" with home-demo.
@@ -46,14 +46,15 @@ async fn main() -> anyhow::Result<()> {
     }
 
     #[cfg(feature = "pam")]
-    let auth: Arc<dyn newos_spacesd::auth::Authenticator> = Arc::new(newos_spacesd::auth::PamAuthenticator { service: args.pam_service });
+    let auth: Arc<dyn helixos_spacesd::auth::Authenticator> =
+        Arc::new(helixos_spacesd::auth::PamAuthenticator { service: args.pam_service });
     #[cfg(not(feature = "pam"))]
-    let auth: Arc<dyn newos_spacesd::auth::Authenticator> = {
+    let auth: Arc<dyn helixos_spacesd::auth::Authenticator> = {
         let _ = args.pam_service;
         anyhow::bail!("built without PAM support")
     };
 
-    let (registry, auth, runner): (Registry, Arc<dyn newos_spacesd::auth::Authenticator>, Arc<dyn newos_syslib::CommandRunner>) =
+    let (registry, auth, runner): (Registry, Arc<dyn helixos_spacesd::auth::Authenticator>, Arc<dyn helixos_syslib::CommandRunner>) =
         if args.demo {
             let mut registry = Registry::default();
             for (account, name, accent) in [("space-work", "Work", "blue"), ("space-personal", "Personal", "pink")] {
@@ -61,7 +62,7 @@ async fn main() -> anyhow::Result<()> {
             }
             let mock = MockAuthenticator::with(&[("space-work", "work-demo"), ("space-personal", "home-demo")]);
             tracing::warn!("demo mode: mock accounts, nothing is changed on this system");
-            (registry, Arc::new(mock), Arc::new(newos_syslib::MockRunner::new()))
+            (registry, Arc::new(mock), Arc::new(helixos_syslib::MockRunner::new()))
         } else {
             (Registry::load(&args.state)?, auth, Arc::new(SystemRunner::default()))
         };

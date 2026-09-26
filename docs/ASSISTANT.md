@@ -1,6 +1,6 @@
 # The assistant
 
-`newos-assistantd` gives NewOS its assistant. Press **Super+Space**, click the Dynamic
+`helixos-assistantd` gives HelixOS its assistant. Press **Super+Space**, click the Dynamic
 Island, or type a question into Spotlight and pick "Ask Assistant".
 
 ## Where the model runs
@@ -25,9 +25,9 @@ calls. Embeddings for search use `nomic-embed-text`.
 Get an API key from the Anthropic Console, then store it in the keyring (recommended):
 
 ```bash
-secret-tool store --label="NewOS assistant" service newos-assistant account anthropic-api-key
+secret-tool store --label="HelixOS assistant" service helixos-assistant account anthropic-api-key
 # paste the key, press Enter, then Ctrl+D
-systemctl --user restart newos-assistantd
+systemctl --user restart helixos-assistantd
 ```
 
 Two alternatives work too: set `ANTHROPIC_API_KEY` in the service environment, or point
@@ -45,7 +45,7 @@ ollama pull nomic-embed-text
 ### Check it
 
 ```bash
-curl -s --unix-socket $XDG_RUNTIME_DIR/newos/assistant.sock http://localhost/v1/status | jq
+curl -s --unix-socket $XDG_RUNTIME_DIR/helixos/assistant.sock http://localhost/v1/status | jq
 ```
 
 `active` shows `cloud`, `local`, or `none`, and `online` shows whether the network check
@@ -53,7 +53,7 @@ passed.
 
 ## Configuration
 
-`~/.config/newos/assistant.toml` is optional. See
+`~/.config/helixos/assistant.toml` is optional. See
 [`assistant.example.toml`](../services/assistantd/assistant.example.toml) for every setting
 and its default. Common changes:
 
@@ -91,7 +91,7 @@ off with `share_window_title`), battery level, and facts you asked it to remembe
 contents are never sent. In `local` mode, nothing leaves the laptop.
 
 Conversations, remembered facts, and a log of every tool call live in
-`~/.local/share/newos/assistant.db`. Delete them through the API, or remove the file.
+`~/.local/share/helixos/assistant.db`. Delete them through the API, or remove the file.
 
 ## Local API
 
@@ -125,7 +125,7 @@ are snake_case.
 Apps use these for their intelligent features.
 
 ```bash
-S=$XDG_RUNTIME_DIR/newos/assistant.sock
+S=$XDG_RUNTIME_DIR/helixos/assistant.sock
 curl -sN --unix-socket $S http://localhost/v1/chat -H 'content-type: application/json' \
   -d '{"message": "remind me to stretch in 20 minutes"}'
 curl -s --unix-socket $S http://localhost/v1/complete -H 'content-type: application/json' \

@@ -1,5 +1,5 @@
-import { useCommand } from "@newos/sdk/react"
-import { cx } from "@newos/ui"
+import { useCommand } from "@helixos/sdk/react"
+import { cx } from "@helixos/ui"
 
 /** The account at the top of the sidebar, like the Apple Account row. Opens Users & Spaces. */
 export function AccountCard({ selected, onSelect }: { selected: boolean; onSelect: () => void }) {

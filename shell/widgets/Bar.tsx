@@ -28,7 +28,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   return (
     <window
       name={`bar-${gdkmonitor.connector}`}
-      namespace="newos-bar"
+      namespace="helixos-bar"
       class="bar"
       gdkmonitor={gdkmonitor}
       application={app}

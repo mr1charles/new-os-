@@ -1,9 +1,9 @@
 {
-  "name": "newos",
+  "name": "helixos",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS: a macOS-style Linux operating system with a custom shell, Dynamic Island, smart assistant, and Dual Space login.",
+  "description": "HelixOS: a macOS-style Linux operating system with a custom shell, Dynamic Island, smart assistant, and Dual Space login.",
   "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=22"
@@ -16,7 +16,7 @@
     "test": "pnpm -r --if-present test",
     "build": "pnpm -r --if-present build",
     "check": "pnpm build:tokens && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
-    "build:tokens": "pnpm --filter @newos/design-tokens build"
+    "build:tokens": "pnpm --filter @helixos/design-tokens build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

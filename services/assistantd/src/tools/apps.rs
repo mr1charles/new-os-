@@ -1,4 +1,4 @@
-use newos_syslib::{desktop, hyprland, shell};
+use helixos_syslib::{desktop, hyprland, shell};
 use serde_json::{json, Value};
 
 use super::{object_schema, opt_str, str_arg, tool, Tool, ToolContext};

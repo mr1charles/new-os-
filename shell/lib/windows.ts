@@ -187,7 +187,7 @@ function scheduleArrange() {
     try {
       arrangeWorkspace()
     } catch (e) {
-      console.warn(`newos: arrange failed: ${e}`)
+      console.warn(`helixos: arrange failed: ${e}`)
     }
     return GLib.SOURCE_REMOVE
   })

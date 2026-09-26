@@ -2,7 +2,7 @@ use std::io::Read;
 use std::path::Path;
 use std::time::SystemTime;
 
-use newos_syslib::shell;
+use helixos_syslib::shell;
 use serde_json::{json, Value};
 use walkdir::{DirEntry, WalkDir};
 

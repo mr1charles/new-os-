@@ -65,8 +65,8 @@ export default function SystemMenu() {
   const separator = () => <Gtk.Separator class="menu-separator" />
 
   return (
-    <menubutton class="bar-item logo" tooltipText="NewOS">
-      <image iconName="newos-logo-symbolic" />
+    <menubutton class="bar-item logo" tooltipText="HelixOS">
+      <image iconName="helixos-logo-symbolic" />
       <popover
         $={(self) => (popover = self)}
         class="system-menu"
@@ -77,7 +77,7 @@ export default function SystemMenu() {
           {item("About This Computer", () => openSettings("about"))}
           {separator()}
           {item("System Settings…", () => openSettings(), "Super ,")}
-          {item("App Store…", () => openApp("newos-appstore"))}
+          {item("App Store…", () => openApp("helixos-appstore"))}
           {separator()}
           {item("Sleep", suspend)}
           {confirmable("Restart…", "restart", "Restart now?", restart)}

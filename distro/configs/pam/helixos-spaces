@@ -1,5 +1,5 @@
 #%PAM-1.0
-# NewOS Dual Space (newos-spacesd): which space a password opens. The login itself goes
+# HelixOS Dual Space (helixos-spacesd): which space a password opens. The login itself goes
 # through greetd's own stack.
 #
 # pam_faillock is left out on purpose: one password is tried against every space, and faillock

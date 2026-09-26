@@ -98,14 +98,14 @@ export default function StatusArea() {
         tooltipText="Control Center"
         onClicked={() => togglePopup("control-center")}
       >
-        <image iconName="newos-control-center-symbolic" />
+        <image iconName="helixos-control-center-symbolic" />
       </button>
       <button
         class="bar-item assistant-button"
         tooltipText="Assistant (Super+Space)"
         onClicked={() => togglePopup("assistant")}
       >
-        <image iconName="newos-sparkle-symbolic" />
+        <image iconName="helixos-sparkle-symbolic" />
       </button>
       <Clock />
     </box>

@@ -1,4 +1,4 @@
-import { Group, Page, Row, Value } from "@newos/ui"
+import { Group, Page, Row, Value } from "@helixos/ui"
 import { ActionError, LoadError } from "../components/common"
 import { HyprSlider, HyprToggle, useHyprOptions } from "../components/HyprOptions"
 

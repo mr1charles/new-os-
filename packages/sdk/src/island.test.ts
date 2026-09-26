@@ -3,7 +3,7 @@ import { LiveActivity } from "./island"
 import type { IslandActivity } from "./commands"
 
 const base: IslandActivity = {
-  app: "newos-files",
+  app: "helixos-files",
   icon: "folder",
   title: "Copying",
   subtitle: "",

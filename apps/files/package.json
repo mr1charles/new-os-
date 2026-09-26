@@ -1,9 +1,9 @@
 {
-  "name": "@newos/files",
+  "name": "@helixos/files",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS Files: browse, organize, and find files, with Quick Look, drives, the Trash, and plain-language search.",
+  "description": "HelixOS Files: browse, organize, and find files, with Quick Look, drives, the Trash, and plain-language search.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,9 +12,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@newos/design-tokens": "workspace:*",
-    "@newos/sdk": "workspace:*",
-    "@newos/ui": "workspace:*",
+    "@helixos/design-tokens": "workspace:*",
+    "@helixos/sdk": "workspace:*",
+    "@helixos/ui": "workspace:*",
     "@tauri-apps/api": "^2.11.1",
     "lucide-react": "^1.48.0",
     "react": "^19.3.0",

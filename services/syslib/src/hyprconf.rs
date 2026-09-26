@@ -1,5 +1,5 @@
 //! Hyprland settings the Settings app changes: applied live with `hyprctl keyword` and kept in
-//! `~/.config/newos/hyprland-settings.conf`, which the session config sources after the NewOS
+//! `~/.config/helixos/hyprland-settings.conf`, which the session config sources after the HelixOS
 //! defaults. Only allowlisted options can be written, each with a typed value check, so the
 //! file can never gain an `exec` or a malformed line.
 
@@ -54,7 +54,7 @@ pub fn spec(key: &str) -> Option<&'static OptionSpec> {
 
 /// Check a value against its option and return it in the form Hyprland's config expects.
 pub fn normalize(key: &str, value: &str) -> Result<String> {
-    let spec = spec(key).ok_or_else(|| SysError::Invalid(format!("not a setting NewOS manages: {key}")))?;
+    let spec = spec(key).ok_or_else(|| SysError::Invalid(format!("not a setting HelixOS manages: {key}")))?;
     let value = value.trim();
     let invalid = || SysError::Invalid(format!("invalid value for {key}: {value:?}"));
     match spec.kind {
@@ -120,7 +120,7 @@ impl HyprSettings {
     }
 
     pub fn render(&self) -> String {
-        let mut text = String::from("# Written by NewOS Settings. Changes here are overwritten; use hyprland-user.conf instead.\n");
+        let mut text = String::from("# Written by HelixOS Settings. Changes here are overwritten; use hyprland-user.conf instead.\n");
         for line in self.monitors.values() {
             text.push_str(&format!("monitor = {line}\n"));
         }
@@ -145,12 +145,12 @@ impl HyprSettings {
     }
 }
 
-/// `~/.config/newos/hyprland-settings.conf`.
+/// `~/.config/helixos/hyprland-settings.conf`.
 pub fn default_path() -> PathBuf {
     let config = std::env::var_os("XDG_CONFIG_HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(std::env::var_os("HOME").unwrap_or_default()).join(".config"));
-    config.join("newos").join("hyprland-settings.conf")
+    config.join("helixos").join("hyprland-settings.conf")
 }
 
 /// Apply an option now and remember it.
@@ -187,7 +187,7 @@ pub fn parse_getoption(json: &str) -> Option<String> {
 }
 
 pub async fn get_option(runner: &dyn CommandRunner, key: &str) -> Result<String> {
-    spec(key).ok_or_else(|| SysError::Invalid(format!("not a setting NewOS manages: {key}")))?;
+    spec(key).ok_or_else(|| SysError::Invalid(format!("not a setting HelixOS manages: {key}")))?;
     let out = run_checked(runner, "hyprctl", &["getoption", key, "-j"]).await?;
     let raw = parse_getoption(&out).ok_or(SysError::Parse { program: "hyprctl".into(), output: out })?;
     // Hyprland reports booleans as ints (0/1) on some versions.
@@ -243,7 +243,7 @@ mod tests {
     #[tokio::test]
     async fn applies_and_persists() {
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("newos/hyprland-settings.conf");
+        let path = dir.path().join("helixos/hyprland-settings.conf");
         let runner = MockRunner::new();
         runner.respond(CommandOutput::ok("ok"));
         set_option(&runner, &path, "input:touchpad:tap-to-click", "on").await.unwrap();

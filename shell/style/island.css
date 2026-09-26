@@ -93,7 +93,7 @@
 }
 
 .island .accent-icon {
-  color: var(--newos-accent);
+  color: var(--helixos-accent);
 }
 
 button.island-button {
@@ -131,7 +131,7 @@ button.island-button.destructive image {
 }
 
 .island button.pill.suggested {
-  background: var(--newos-accent);
+  background: var(--helixos-accent);
 }
 
 levelbar.island-level > trough {
@@ -180,7 +180,7 @@ image.notification-image {
   min-width: 3px;
   min-height: 4px;
   border-radius: 2px;
-  background: var(--newos-accent);
+  background: var(--helixos-accent);
 }
 
 .equalizer.playing .b1 {
@@ -246,7 +246,7 @@ image.notification-image {
 }
 
 .confirm-summary {
-  font-family: var(--newos-font-mono);
+  font-family: var(--helixos-font-mono);
   font-size: 12px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 10px;

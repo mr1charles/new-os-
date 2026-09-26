@@ -1,4 +1,4 @@
-//! The list of spaces, kept in /var/lib/newos/spaces.json. Names and accents are not secret;
+//! The list of spaces, kept in /var/lib/helixos/spaces.json. Names and accents are not secret;
 //! passwords live only in /etc/shadow, like any account's.
 
 use std::path::{Path, PathBuf};
@@ -222,7 +222,7 @@ mod tests {
     #[test]
     fn saves_and_loads() {
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("newos/spaces.json");
+        let path = dir.path().join("helixos/spaces.json");
         let mut registry = Registry::load(&path).unwrap();
         registry.add(space("space-work", 5));
         registry.rename("space-work", "Work").unwrap();

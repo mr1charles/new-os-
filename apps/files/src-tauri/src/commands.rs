@@ -1,10 +1,10 @@
-//! Files' own commands, over `newos_appkit::files` (where the logic and its tests live).
+//! Files' own commands, over `helixos_appkit::files` (where the logic and its tests live).
 
 use std::path::{Path, PathBuf};
 
-use newos_appkit::files::{self, Drive, FileEntry, Place, SearchQuery, TrashItem};
-use newos_appkit::{island, paths, AppError};
-use newos_syslib::SystemRunner;
+use helixos_appkit::files::{self, Drive, FileEntry, Place, SearchQuery, TrashItem};
+use helixos_appkit::{island, paths, AppError};
+use helixos_syslib::SystemRunner;
 use tauri::State;
 
 type Result<T> = std::result::Result<T, AppError>;
@@ -20,7 +20,7 @@ impl Ctx {
     pub fn from_env() -> Self {
         let home = paths::home();
         let cache = std::env::var_os("XDG_CACHE_HOME").map(PathBuf::from).unwrap_or_else(|| home.join(".cache"));
-        Self { runner: SystemRunner::default(), trash: files::trash_dir(&home), thumbnails: cache.join("newos/thumbnails"), home }
+        Self { runner: SystemRunner::default(), trash: files::trash_dir(&home), thumbnails: cache.join("helixos/thumbnails"), home }
     }
 }
 
@@ -86,7 +86,7 @@ pub async fn files_transfer(sources: Vec<String>, dest: String, move_files: bool
     let sources = sources.iter().map(|s| absolute(s)).collect::<Result<Vec<_>>>()?;
     let dest = absolute(&dest)?;
     let activity = island::Activity {
-        app: "org.newos.Files".into(),
+        app: "org.helixos.Files".into(),
         icon: "folder".into(),
         title: transfer_title(&sources, move_files),
         subtitle: format!("to {}", dest.file_name().map_or_else(|| dest.display().to_string(), |n| n.to_string_lossy().into_owned())),
@@ -136,7 +136,7 @@ pub async fn files_trash_empty(ctx: State<'_, Ctx>) -> Result<usize> {
 /// Open with the default app (xdg-open).
 #[tauri::command]
 pub async fn files_open(ctx: State<'_, Ctx>, path: String) -> Result<()> {
-    Ok(newos_syslib::shell::open_path(&ctx.runner, &absolute(&path)?).await?)
+    Ok(helixos_syslib::shell::open_path(&ctx.runner, &absolute(&path)?).await?)
 }
 
 /// The first 64 KB of a text file for Quick Look (null for binary files).

@@ -1,6 +1,6 @@
 [package]
-name = "newos-assistantd"
-description = "The NewOS assistant: routes requests to Claude (cloud) or Ollama (on-device), runs tools, remembers conversations, and serves a local API for the shell and apps."
+name = "helixos-assistantd"
+description = "The HelixOS assistant: routes requests to Claude (cloud) or Ollama (on-device), runs tools, remembers conversations, and serves a local API for the shell and apps."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,11 +8,11 @@ repository.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "newos-assistantd"
+name = "helixos-assistantd"
 path = "src/main.rs"
 
 [dependencies]
-newos-syslib = { path = "../syslib" }
+helixos-syslib = { path = "../syslib" }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 serde = { workspace = true }

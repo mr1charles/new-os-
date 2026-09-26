@@ -1,9 +1,9 @@
 /**
- * The page registry. Ids and titles come from `@newos/sdk/settings-pages` (shared with the
+ * The page registry. Ids and titles come from `@helixos/sdk/settings-pages` (shared with the
  * shell's Spotlight search); this file adds the icon, the sidebar section, and the component.
  */
-import { SETTINGS_PAGES, type SettingsPage } from "@newos/sdk/settings-pages"
-import { IconTile } from "@newos/ui"
+import { SETTINGS_PAGES, type SettingsPage } from "@helixos/sdk/settings-pages"
+import { IconTile } from "@helixos/ui"
 import {
   Battery,
   Bell,

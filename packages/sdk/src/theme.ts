@@ -1,8 +1,8 @@
 /**
  * Apply the user's appearance settings to an app window: light/dark (including "auto") and
- * the accent color, on top of `@newos/design-tokens/dist/tokens.css`.
+ * the accent color, on top of `@helixos/design-tokens/dist/tokens.css`.
  */
-import { accentColor } from "@newos/design-tokens"
+import { accentColor } from "@helixos/design-tokens"
 import { resolveTheme, type Theme } from "./settings-schema"
 import type { Settings } from "./settings"
 
@@ -16,15 +16,15 @@ export function themeFor(settings: Settings, now: Date = new Date()): AppliedThe
   return { theme, accent: accentColor(settings.appearance.accent, theme) }
 }
 
-/** Set `data-theme`, `--newos-accent`, and reduced transparency on the document root. */
+/** Set `data-theme`, `--helixos-accent`, and reduced transparency on the document root. */
 export function applyTheme(settings: Settings, root: HTMLElement = document.documentElement) {
   const { theme, accent } = themeFor(settings)
   root.dataset.theme = theme
-  root.style.setProperty("--newos-accent", accent)
+  root.style.setProperty("--helixos-accent", accent)
   root.style.colorScheme = theme
   root.toggleAttribute("data-reduce-transparency", settings.appearance.reduceTransparency)
-  // Window buttons: traffic lights on the left, or Windows-style on the right (@newos/ui).
+  // Window buttons: traffic lights on the left, or Windows-style on the right (@helixos/ui).
   root.dataset.controls = settings.windows.controls
-  root.style.setProperty("--newos-window-radius", `${settings.windows.rounding}px`)
+  root.style.setProperty("--helixos-window-radius", `${settings.windows.rounding}px`)
   return { theme, accent }
 }

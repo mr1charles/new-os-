@@ -5,16 +5,16 @@ use std::sync::{Arc, Mutex};
 
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
+use helixos_assistantd::config::Config;
+use helixos_assistantd::conversation::{Block, Message, Role};
+use helixos_assistantd::events::SystemEvent;
+use helixos_assistantd::memory::Memory;
+use helixos_assistantd::providers::{BoxFuture, Provider, ProviderError, ProviderKind, StopReason, StreamEvent, TurnOutput, TurnRequest};
+use helixos_assistantd::router::Availability;
+use helixos_assistantd::state::{StateParts, StaticProbe};
+use helixos_assistantd::{api, AppState};
+use helixos_syslib::{CommandOutput, MockRunner};
 use http_body_util::BodyExt;
-use newos_assistantd::config::Config;
-use newos_assistantd::conversation::{Block, Message, Role};
-use newos_assistantd::events::SystemEvent;
-use newos_assistantd::memory::Memory;
-use newos_assistantd::providers::{BoxFuture, Provider, ProviderError, ProviderKind, StopReason, StreamEvent, TurnOutput, TurnRequest};
-use newos_assistantd::router::Availability;
-use newos_assistantd::state::{StateParts, StaticProbe};
-use newos_assistantd::{api, AppState};
-use newos_syslib::{CommandOutput, MockRunner};
 use serde_json::{json, Value};
 use tokio::sync::mpsc::UnboundedSender;
 use tower::ServiceExt;
@@ -364,6 +364,6 @@ async fn change_look_applies_a_preset_and_tweaks_through_the_shell() {
     let output = result.1["output"].as_str().unwrap();
     assert!(output.contains("dock.style") && output.contains("appearance.accent"), "{output}");
     let calls = h.runner.calls();
-    assert_eq!(calls[0], ["ags", "request", "-i", "newos", "look", "preset", "windows"]);
-    assert_eq!(calls[1], ["ags", "request", "-i", "newos", "look", "apply", r#"{"appearance":{"accent":"green"}}"#]);
+    assert_eq!(calls[0], ["ags", "request", "-i", "helixos", "look", "preset", "windows"]);
+    assert_eq!(calls[1], ["ags", "request", "-i", "helixos", "look", "apply", r#"{"appearance":{"accent":"green"}}"#]);
 }

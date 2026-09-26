@@ -1,4 +1,4 @@
-use newos_syslib::{audio, display, hyprland, network, power, shell};
+use helixos_syslib::{audio, display, hyprland, network, power, shell};
 use serde_json::{json, Value};
 
 use super::{bool_arg, int_arg, object_schema, str_arg, tool, Tool, ToolContext};
@@ -108,8 +108,8 @@ fn get_system_status<'a>(ctx: &'a ToolContext, _input: Value) -> BoxFuture<'a, a
         );
         Ok(json!({
             "battery": battery.map(|b| json!({"percent": b.percent, "state": b.state})),
-            "volume": volume.ok().map(|v| json!({"percent": newos_syslib::to_percent(v.level), "muted": v.muted})),
-            "brightness_percent": brightness.ok().map(newos_syslib::to_percent),
+            "volume": volume.ok().map(|v| json!({"percent": helixos_syslib::to_percent(v.level), "muted": v.muted})),
+            "brightness_percent": brightness.ok().map(helixos_syslib::to_percent),
             "wifi": wifi.ok(),
             "bluetooth_on": bluetooth.ok(),
             "focused_window": window.ok().flatten().map(|w| json!({"app": w.class, "title": w.title})),
@@ -122,7 +122,7 @@ fn set_volume<'a>(ctx: &'a ToolContext, input: Value) -> BoxFuture<'a, anyhow::R
     Box::pin(async move {
         let percent = int_arg(&input, "percent")?;
         let volume = audio::set_volume(ctx.runner.as_ref(), percent as f64 / 100.0).await?;
-        Ok(format!("Volume is now {}%.", newos_syslib::to_percent(volume.level)))
+        Ok(format!("Volume is now {}%.", helixos_syslib::to_percent(volume.level)))
     })
 }
 
@@ -138,7 +138,7 @@ fn set_brightness<'a>(ctx: &'a ToolContext, input: Value) -> BoxFuture<'a, anyho
     Box::pin(async move {
         let percent = int_arg(&input, "percent")?;
         let level = display::set_brightness(ctx.runner.as_ref(), percent as f64 / 100.0).await?;
-        Ok(format!("Brightness is now {}%.", newos_syslib::to_percent(level)))
+        Ok(format!("Brightness is now {}%.", helixos_syslib::to_percent(level)))
     })
 }
 

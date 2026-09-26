@@ -2,9 +2,9 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 0 var(--newos-space-4) var(--newos-space-2);
-  font-size: var(--newos-font-size-footnote);
-  color: var(--newos-color-fg-secondary);
+  padding: 0 var(--helixos-space-4) var(--helixos-space-2);
+  font-size: var(--helixos-font-size-footnote);
+  color: var(--helixos-color-fg-secondary);
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: none;
@@ -25,17 +25,17 @@
 }
 
 .files-path button:hover {
-  background: var(--newos-color-control);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-control);
+  color: var(--helixos-color-fg);
 }
 
 .files-path button[aria-current] {
-  color: var(--newos-color-fg);
-  font-weight: var(--newos-font-weight-medium);
+  color: var(--helixos-color-fg);
+  font-weight: var(--helixos-font-weight-medium);
 }
 
 .files-banner {
-  padding: 0 var(--newos-space-4) var(--newos-space-2);
+  padding: 0 var(--helixos-space-4) var(--helixos-space-2);
 }
 
 .files-search {
@@ -46,7 +46,7 @@
 }
 
 .files-smart--on {
-  color: var(--newos-accent);
+  color: var(--helixos-accent);
   background: var(--nx-accent-soft);
 }
 
@@ -54,7 +54,7 @@
   flex: 1;
   overflow: auto;
   outline: none;
-  padding: 0 var(--newos-space-2) var(--newos-space-2);
+  padding: 0 var(--helixos-space-2) var(--helixos-space-2);
 }
 
 .files-pane:focus-visible {
@@ -64,11 +64,11 @@
 .files-trash {
   flex: 1;
   overflow: auto;
-  padding: 0 var(--newos-space-2) var(--newos-space-2);
+  padding: 0 var(--helixos-space-2) var(--helixos-space-2);
 }
 
 .files-trash > .nx-callout {
-  margin: 0 var(--newos-space-2) var(--newos-space-2);
+  margin: 0 var(--helixos-space-2) var(--helixos-space-2);
 }
 
 /* List view -------------------------------------------------------------------------------- */
@@ -84,12 +84,12 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  padding: 4px var(--newos-space-2);
-  background: var(--newos-color-bg);
-  border-bottom: 1px solid var(--newos-color-separator);
-  font-size: var(--newos-font-size-footnote);
-  font-weight: var(--newos-font-weight-medium);
-  color: var(--newos-color-fg-secondary);
+  padding: 4px var(--helixos-space-2);
+  background: var(--helixos-color-bg);
+  border-bottom: 1px solid var(--helixos-color-separator);
+  font-size: var(--helixos-font-size-footnote);
+  font-weight: var(--helixos-font-weight-medium);
+  color: var(--helixos-color-fg-secondary);
   text-align: left;
   white-space: nowrap;
   cursor: default;
@@ -113,19 +113,19 @@
 }
 
 .files-table td {
-  padding: 3px var(--newos-space-2);
+  padding: 3px var(--helixos-space-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .files-table tbody tr:nth-child(even) td {
-  background: color-mix(in srgb, var(--newos-color-control) 60%, transparent);
+  background: color-mix(in srgb, var(--helixos-color-control) 60%, transparent);
 }
 
 .files-table tbody tr[aria-selected="true"] td {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
 }
 
 .files-table tbody tr td:first-child {
@@ -139,7 +139,7 @@
 .files-table__name {
   display: flex;
   align-items: center;
-  gap: var(--newos-space-2);
+  gap: var(--helixos-space-2);
 }
 
 .files-table__name > span {
@@ -148,7 +148,7 @@
 }
 
 .files-table__muted {
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 tr[aria-selected="true"] .files-table__muted {
@@ -161,8 +161,8 @@ tr[aria-selected="true"] .files-table__muted {
 .files-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 104px);
-  gap: var(--newos-space-2);
-  padding: var(--newos-space-2);
+  gap: var(--helixos-space-2);
+  padding: var(--helixos-space-2);
 }
 
 .files-tile {
@@ -171,7 +171,7 @@ tr[aria-selected="true"] .files-table__muted {
   align-items: center;
   gap: 4px;
   padding: 6px 4px;
-  border-radius: var(--newos-radius-sm);
+  border-radius: var(--helixos-radius-sm);
   outline: none;
 }
 
@@ -180,18 +180,18 @@ tr[aria-selected="true"] .files-table__muted {
   height: 64px;
   display: grid;
   place-items: center;
-  border-radius: var(--newos-radius-xs);
+  border-radius: var(--helixos-radius-xs);
 }
 
 .files-tile[aria-selected="true"] .files-tile__icon {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .files-tile__name {
   max-width: 100%;
   padding: 1px 4px;
   border-radius: 4px;
-  font-size: var(--newos-font-size-footnote);
+  font-size: var(--helixos-font-size-footnote);
   text-align: center;
   overflow: hidden;
   display: -webkit-box;
@@ -201,8 +201,8 @@ tr[aria-selected="true"] .files-table__muted {
 }
 
 .files-tile[aria-selected="true"] .files-tile__name {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
 }
 
 .files-thumb {
@@ -226,9 +226,9 @@ tr[aria-selected="true"] .files-table__muted {
   padding: 1px 4px;
   border: 0;
   border-radius: 4px;
-  background: var(--newos-color-bg-elevated);
-  color: var(--newos-color-fg);
-  box-shadow: 0 0 0 2px var(--newos-accent);
+  background: var(--helixos-color-bg-elevated);
+  color: var(--helixos-color-fg);
+  box-shadow: 0 0 0 2px var(--helixos-accent);
   user-select: text;
 }
 
@@ -252,9 +252,9 @@ tr[aria-selected="true"] .files-table__muted {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid var(--newos-color-separator);
-  font-size: var(--newos-font-size-footnote);
-  color: var(--newos-color-fg-secondary);
+  border-top: 1px solid var(--helixos-color-separator);
+  font-size: var(--helixos-font-size-footnote);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .files-menu {
@@ -262,16 +262,16 @@ tr[aria-selected="true"] .files-table__muted {
   z-index: 30;
   min-width: 200px;
   padding: 4px;
-  border-radius: var(--newos-radius-sm);
-  background: var(--newos-color-material-thick);
-  backdrop-filter: blur(var(--newos-blur-material));
-  box-shadow: var(--newos-color-shadow-popover);
+  border-radius: var(--helixos-radius-sm);
+  background: var(--helixos-color-material-thick);
+  backdrop-filter: blur(var(--helixos-blur-material));
+  box-shadow: var(--helixos-color-shadow-popover);
   display: flex;
   flex-direction: column;
 }
 
 .files-menu button {
-  padding: 5px var(--newos-space-2);
+  padding: 5px var(--helixos-space-2);
   border: 0;
   border-radius: 5px;
   background: transparent;
@@ -280,18 +280,18 @@ tr[aria-selected="true"] .files-table__muted {
 
 .files-menu button:hover,
 .files-menu button:focus-visible {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
 }
 
 .files-menu__danger {
-  color: var(--newos-color-danger);
+  color: var(--helixos-color-danger);
 }
 
 .files-menu__sep {
   height: 1px;
   margin: 4px 6px;
-  background: var(--newos-color-separator);
+  background: var(--helixos-color-separator);
 }
 
 /* Quick Look ------------------------------------------------------------------------------- */
@@ -299,7 +299,7 @@ tr[aria-selected="true"] .files-table__muted {
 .files-ql {
   display: flex;
   flex-direction: column;
-  gap: var(--newos-space-3);
+  gap: var(--helixos-space-3);
 }
 
 .files-ql__image {
@@ -307,17 +307,17 @@ tr[aria-selected="true"] .files-table__muted {
   max-height: 55vh;
   object-fit: contain;
   align-self: center;
-  border-radius: var(--newos-radius-xs);
+  border-radius: var(--helixos-radius-xs);
 }
 
 .files-ql__text {
   max-height: 50vh;
   overflow: auto;
   margin: 0;
-  padding: var(--newos-space-3);
-  border-radius: var(--newos-radius-xs);
-  background: var(--newos-color-bg);
-  font-family: var(--newos-font-mono);
+  padding: var(--helixos-space-3);
+  border-radius: var(--helixos-radius-xs);
+  background: var(--helixos-color-bg);
+  font-family: var(--helixos-font-mono);
   font-size: 12px;
   white-space: pre-wrap;
   user-select: text;
@@ -326,18 +326,18 @@ tr[aria-selected="true"] .files-table__muted {
 .files-ql__icon {
   display: grid;
   place-items: center;
-  padding: var(--newos-space-6);
+  padding: var(--helixos-space-6);
 }
 
 .files-ql__info {
-  color: var(--newos-color-fg-secondary);
-  font-size: var(--newos-font-size-footnote);
+  color: var(--helixos-color-fg-secondary);
+  font-size: var(--helixos-font-size-footnote);
   text-align: center;
 }
 
 .files-ql__summary {
-  padding: var(--newos-space-3);
-  border-radius: var(--newos-radius-sm);
+  padding: var(--helixos-space-3);
+  border-radius: var(--helixos-radius-sm);
   background: var(--nx-accent-soft);
   white-space: pre-wrap;
   line-height: 1.5;

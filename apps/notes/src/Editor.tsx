@@ -29,11 +29,11 @@ const highlight = HighlightStyle.define([
   { tag: tags.strong, fontWeight: "700" },
   { tag: tags.emphasis, fontStyle: "italic" },
   { tag: tags.strikethrough, textDecoration: "line-through" },
-  { tag: tags.link, color: "var(--newos-accent)", textDecoration: "underline" },
-  { tag: tags.url, color: "var(--newos-accent)" },
-  { tag: tags.monospace, fontFamily: "var(--newos-font-mono)", fontSize: "0.92em" },
-  { tag: tags.quote, color: "var(--newos-color-fg-secondary)", fontStyle: "italic" },
-  { tag: [tags.processingInstruction, tags.meta], color: "var(--newos-color-fg-tertiary)" },
+  { tag: tags.link, color: "var(--helixos-accent)", textDecoration: "underline" },
+  { tag: tags.url, color: "var(--helixos-accent)" },
+  { tag: tags.monospace, fontFamily: "var(--helixos-font-mono)", fontSize: "0.92em" },
+  { tag: tags.quote, color: "var(--helixos-color-fg-secondary)", fontStyle: "italic" },
+  { tag: [tags.processingInstruction, tags.meta], color: "var(--helixos-color-fg-tertiary)" },
 ])
 
 class CheckboxWidget extends WidgetType {
@@ -113,7 +113,7 @@ const checkboxes = ViewPlugin.fromClass(
 const theme = EditorView.theme({
   "&": { height: "100%", fontSize: "15px", backgroundColor: "transparent" },
   ".cm-scroller": {
-    fontFamily: "var(--newos-font-family)",
+    fontFamily: "var(--helixos-font-family)",
     lineHeight: "1.6",
     padding: "8px 0 40px",
   },
@@ -121,17 +121,17 @@ const theme = EditorView.theme({
     maxWidth: "720px",
     margin: "0 auto",
     padding: "0 32px",
-    caretColor: "var(--newos-accent)",
+    caretColor: "var(--helixos-accent)",
   },
   ".cm-line": { padding: "0" },
   "&.cm-focused": { outline: "none" },
-  ".cm-cursor": { borderLeftColor: "var(--newos-accent)", borderLeftWidth: "2px" },
+  ".cm-cursor": { borderLeftColor: "var(--helixos-accent)", borderLeftWidth: "2px" },
   "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection": {
-    backgroundColor: "color-mix(in srgb, var(--newos-accent) 28%, transparent) !important",
+    backgroundColor: "color-mix(in srgb, var(--helixos-accent) 28%, transparent) !important",
   },
-  ".cm-placeholder": { color: "var(--newos-color-fg-tertiary)" },
+  ".cm-placeholder": { color: "var(--helixos-color-fg-tertiary)" },
   ".cm-selectionMatch": {
-    backgroundColor: "color-mix(in srgb, var(--newos-accent) 14%, transparent)",
+    backgroundColor: "color-mix(in srgb, var(--helixos-accent) 14%, transparent)",
   },
 })
 

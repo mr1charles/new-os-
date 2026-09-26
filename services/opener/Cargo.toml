@@ -1,5 +1,5 @@
 [package]
-name = "newos-opener"
+name = "helixos-opener"
 description = "Opens anything: Windows programs (Wine), Flathub links and .flatpakref files, AppImages, Arch packages, and Android apps (Waydroid), with a confirmation and progress in the Dynamic Island."
 version.workspace = true
 edition.workspace = true
@@ -8,12 +8,12 @@ repository.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "newos-open"
+name = "helixos-open"
 path = "src/main.rs"
 
 [dependencies]
-newos-syslib = { path = "../syslib" }
-newos-appkit = { path = "../appkit" }
+helixos-syslib = { path = "../syslib" }
+helixos-appkit = { path = "../appkit" }
 anyhow = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

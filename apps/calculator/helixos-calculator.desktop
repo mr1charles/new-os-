@@ -2,8 +2,8 @@
 Type=Application
 Name=Calculator
 Comment=Math, unit conversion, and everyday questions like 15% tip on 84
-Exec=newos-calculator
-Icon=newos-calculator
+Exec=helixos-calculator
+Icon=helixos-calculator
 Terminal=false
 Categories=Utility;Calculator;
 Keywords=math;convert;units;percent;tip;

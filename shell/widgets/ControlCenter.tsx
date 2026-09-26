@@ -181,7 +181,7 @@ function DarkModeToggle() {
   const active = theme.as((t) => t === "dark")
   return (
     <Toggle
-      icon="newos-dark-mode-symbolic"
+      icon="helixos-dark-mode-symbolic"
       title="Dark Mode"
       subtitle={config.as((c) =>
         c.appearance.theme === "auto" ? "Auto" : c.appearance.theme === "dark" ? "On" : "Off",
@@ -510,7 +510,7 @@ function BluetoothPage({ go }: { go: (p: Page) => void }) {
   )
   const toggleDevice = (device: AstalBluetooth.Device) => {
     const action = device.connected ? device.disconnect_device() : device.connect_device()
-    action.catch((error: unknown) => console.warn(`newos: bluetooth: ${error}`))
+    action.catch((error: unknown) => console.warn(`helixos: bluetooth: ${error}`))
   }
   return (
     <box $type="named" name="bluetooth" orientation={VERTICAL} spacing={8} class="cc-page">
@@ -587,7 +587,7 @@ export default function ControlCenter() {
   return (
     <PopupWindow
       name="control-center"
-      namespace="newos-control-center"
+      namespace="helixos-control-center"
       halign={Gtk.Align.END}
       valign={Gtk.Align.START}
       marginTop={6}

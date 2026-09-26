@@ -1,8 +1,8 @@
-//! System integration for NewOS.
+//! System integration for HelixOS.
 //!
 //! Every action goes through a [`CommandRunner`] so the logic (argument building and output
 //! parsing) is unit tested without touching the machine. The real runner calls the standard
-//! tools a NewOS install ships: `wpctl` (PipeWire), `brightnessctl`, `nmcli`
+//! tools a HelixOS install ships: `wpctl` (PipeWire), `brightnessctl`, `nmcli`
 //! (NetworkManager), `bluetoothctl`, `loginctl`/`systemctl`, `hyprctl`, `gtk-launch`,
 //! `xdg-open`, `gio`, `powerprofilesctl`, and `ags` for talking to the shell.
 

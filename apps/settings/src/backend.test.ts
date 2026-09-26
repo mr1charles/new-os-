@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { createMockBackend } from "@newos/sdk/mock"
+import { createMockBackend } from "@helixos/sdk/mock"
 import {
   appCommands,
   calledCommands,
@@ -7,7 +7,7 @@ import {
   registeredCommands,
   sdkCommands,
   STREAMING_COMMANDS,
-} from "@newos/sdk/testing/commands"
+} from "@helixos/sdk/testing/commands"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
 

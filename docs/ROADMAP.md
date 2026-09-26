@@ -8,7 +8,7 @@ the laptop or a VM.
 | M0 | Scaffold: monorepo, design tokens, docs, CI | Done |
 | M1 | Desktop shell: bar, Dynamic Island, Dock, launcher, panels | Done |
 | M2 | Assistant daemon and assistant UI | Done |
-| M3 | Settings app, `@newos/ui` kit, `@newos/sdk` | Done |
+| M3 | Settings app, `@helixos/ui` kit, `@helixos/sdk` | Done |
 | M4 | Files, Notes, Terminal, Calculator | Done |
 | M5 | Dual Space login, lock screen, biometrics | In progress |
 | M6 | Mail (Gmail, iCloud), Messages, Calendar | Planned |
@@ -20,7 +20,7 @@ the laptop or a VM.
 
 - [x] pnpm workspace, strict TypeScript, ESLint, Prettier, Vitest
 - [x] Cargo workspace with rustfmt and clippy
-- [x] `@newos/design-tokens`: light/dark colors, 8 accents, type, radii, blur, motion →
+- [x] `@helixos/design-tokens`: light/dark colors, 8 accents, type, radii, blur, motion →
       GTK4 CSS and web CSS
 - [x] CI for both toolchains
 - [x] Docs
@@ -45,7 +45,7 @@ the laptop or a VM.
 
 ## M2 — Assistant (done)
 
-- [x] `newos-assistantd`: local HTTP API on a user-only unix socket
+- [x] `helixos-assistantd`: local HTTP API on a user-only unix socket
 - [x] Claude provider: streaming, tool use, adaptive thinking, refusal fallbacks, prompt caching
 - [x] Ollama provider: streaming, tool calls, embeddings
 - [x] Automatic routing between cloud and on-device, with fallback when the cloud is unreachable
@@ -65,9 +65,9 @@ the laptop or a VM.
 
 ## M3 — Settings, UI kit, SDK (done)
 
-- [x] `@newos/ui`: window chrome with traffic lights, sidebar, toolbar, grouped lists, sheets,
+- [x] `@helixos/ui`: window chrome with traffic lights, sidebar, toolbar, grouped lists, sheets,
       popovers, switches, sliders, segmented controls, pop-up menus, search field
-- [x] `@newos/sdk`: typed calls to the app backend, live settings store shared with the shell,
+- [x] `@helixos/sdk`: typed calls to the app backend, live settings store shared with the shell,
       assistant client (status, one-shot tasks, streamed chat, embeddings), theming, React
       hooks, and a mock backend for browser development
 - [x] Settings app: Wi-Fi, Bluetooth, Network, Notifications, Focus, Sound, Appearance,
@@ -80,7 +80,7 @@ the laptop or a VM.
       hardware summary; parsers tested against output from the HP laptop
 - [x] `services/appkit`: shared app backend (settings file and watcher, assistant config and
       keyring, assistantd client over the unix socket)
-- [x] Settings persists input and display choices in `~/.config/newos/hyprland-settings.conf`
+- [x] Settings persists input and display choices in `~/.config/helixos/hyprland-settings.conf`
 - [ ] Verified as a native window on the laptop (needs `webkit2gtk-4.1`; see DEVELOPING.md)
 
 Changed from the plan: system integration uses the standard command-line tools behind a
@@ -88,8 +88,8 @@ tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` 
 
 ## M4 — Core apps (done)
 
-- [x] Shared app backend in `newos-appkit` (`tauri_app`): settings and assistant commands, the
-      settings watcher, and the NewOS window; `scripts/new-app.py` scaffolds a new app
+- [x] Shared app backend in `helixos-appkit` (`tauri_app`): settings and assistant commands, the
+      settings watcher, and the HelixOS window; `scripts/new-app.py` scaffolds a new app
 - [x] **Files**: places, drives (mount and eject through UDisks), list and icon views, sorting,
       multi-select, inline rename, copy/cut/paste with Finder-style names, context menu, the
       Trash (put back, empty), Quick Look for images, PDFs, and text, and search in plain
@@ -109,7 +109,7 @@ tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` 
 
 ## M5 — Dual Space (in progress)
 
-- [x] `newos-spacesd` (system D-Bus `org.newos.Spaces1`): which space a password opens, through
+- [x] `helixos-spacesd` (system D-Bus `org.helixos.Spaces1`): which space a password opens, through
       PAM; rate limited; only the greeter and spaces may ask; changes need polkit; a password
       that already opens another space is refused. Tested with mocks, on a real D-Bus, and with
       real accounts and PAM inside the testing container. Design: [DUAL-SPACE.md](DUAL-SPACE.md)
@@ -118,7 +118,7 @@ tested `CommandRunner` instead of D-Bus bindings. D-Bus comes in with `spacesd` 
 - [x] Lock screen on ext-session-lock: your password unlocks; another space's password is
       recognized
 - [x] Settings → Users & Spaces: add, rename, change password, make default, delete
-- [x] Testing mode runs a demo spacesd ("work-demo", "home-demo") and a lock password ("newos")
+- [x] Testing mode runs a demo spacesd ("work-demo", "home-demo") and a lock password ("helixos")
 - [x] Switching to another running space from the lock screen (spacesd `SwitchTo`, logind
       session activation; the space left behind stays locked)
 - [ ] Starting a space that is not running from the lock screen (second greeter on another VT)

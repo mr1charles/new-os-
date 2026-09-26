@@ -1,6 +1,6 @@
 /** Quick Look: Space shows a preview of the selected file, with Open and Summarize. */
-import { assistant, call, type FileEntry } from "@newos/sdk"
-import { Button, Callout, Sheet, Spinner } from "@newos/ui"
+import { assistant, call, type FileEntry } from "@helixos/sdk"
+import { Button, Callout, Sheet, Spinner } from "@helixos/ui"
 import { Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import { FileIcon, useThumbnail } from "./FileIcon"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { DEFAULT_CONFIG } from "@newos/sdk/settings-schema"
+import { DEFAULT_CONFIG } from "@helixos/sdk/settings-schema"
 import { windowStyleConf } from "./window-style"
 
 const withWindows = (

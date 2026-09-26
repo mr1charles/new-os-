@@ -5,7 +5,7 @@ use std::io::{BufRead, BufReader};
 use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
 
-use newos_appkit::island::{self, Activity, Notification};
+use helixos_appkit::island::{self, Activity, Notification};
 
 struct Bus(Child);
 impl Drop for Bus {
@@ -18,7 +18,7 @@ impl Drop for Bus {
 struct Seen(Arc<Mutex<Vec<String>>>);
 
 struct FakeIsland(Seen);
-#[zbus::interface(name = "org.newos.Island1")]
+#[zbus::interface(name = "org.helixos.Island1")]
 impl FakeIsland {
     fn show(&self, #[zbus(header)] h: zbus::message::Header<'_>, id: String, activity: String) {
         self.0 .0.lock().unwrap().push(format!("show {} {id} {activity}", h.sender().unwrap()));
@@ -64,9 +64,9 @@ async fn activities_and_notifications_reach_the_shell() {
     let seen = Seen::default();
     let _shell = zbus::connection::Builder::address(address.as_str())
         .unwrap()
-        .name("org.newos.Shell1")
+        .name("org.helixos.Shell1")
         .unwrap()
-        .serve_at("/org/newos/Island1", FakeIsland(seen.clone()))
+        .serve_at("/org/helixos/Island1", FakeIsland(seen.clone()))
         .unwrap()
         .build()
         .await
@@ -82,9 +82,9 @@ async fn activities_and_notifications_reach_the_shell() {
         .unwrap();
 
     // SAFETY: set before the client's first connection, and no other test in this binary.
-    unsafe { std::env::set_var("NEWOS_ISLAND_BUS", &address) };
+    unsafe { std::env::set_var("HELIXOS_ISLAND_BUS", &address) };
     let activity = Activity {
-        app: "newos-files".into(),
+        app: "helixos-files".into(),
         icon: "folder".into(),
         title: "Copying".into(),
         subtitle: "2 of 5".into(),
@@ -118,7 +118,7 @@ async fn activities_and_notifications_reach_the_shell() {
 
     // Quick work never reaches the island; slow work shows progress, then ends.
     let base =
-        Activity { app: "newos-files".into(), icon: "folder".into(), title: "Copying".into(), subtitle: String::new(), progress: None };
+        Activity { app: "helixos-files".into(), icon: "folder".into(), title: "Copying".into(), subtitle: String::new(), progress: None };
     let (_tx, rx) = tokio::sync::watch::channel(None);
     assert_eq!(island::while_working("quick", base.clone(), rx, async { 1 }).await, 1);
     let (tx, rx) = tokio::sync::watch::channel(Some(0.5));

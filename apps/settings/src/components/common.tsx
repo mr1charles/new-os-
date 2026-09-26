@@ -1,4 +1,4 @@
-import { Callout, Spinner } from "@newos/ui"
+import { Callout, Spinner } from "@helixos/ui"
 import type { ReactNode } from "react"
 
 /** Shown when a backend call failed, with a retry. */

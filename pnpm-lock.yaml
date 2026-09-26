@@ -37,13 +37,13 @@ importers:
 
   apps/calculator:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
-      '@newos/ui':
+      '@helixos/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tauri-apps/api':
@@ -83,13 +83,13 @@ importers:
 
   apps/files:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
-      '@newos/ui':
+      '@helixos/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tauri-apps/api':
@@ -150,13 +150,13 @@ importers:
       '@lezer/highlight':
         specifier: ^1.2.4
         version: 1.2.4
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
-      '@newos/ui':
+      '@helixos/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tauri-apps/api':
@@ -196,13 +196,13 @@ importers:
 
   apps/settings:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
-      '@newos/ui':
+      '@helixos/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tauri-apps/api':
@@ -245,13 +245,13 @@ importers:
 
   apps/terminal:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
-      '@newos/ui':
+      '@helixos/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tauri-apps/api':
@@ -299,7 +299,7 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../design-tokens
       '@tauri-apps/api':
@@ -315,10 +315,10 @@ importers:
 
   packages/ui:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../sdk
       '@tauri-apps/api':
@@ -358,10 +358,10 @@ importers:
 
   shell:
     dependencies:
-      '@newos/design-tokens':
+      '@helixos/design-tokens':
         specifier: workspace:*
         version: link:../packages/design-tokens
-      '@newos/sdk':
+      '@helixos/sdk':
         specifier: workspace:*
         version: link:../packages/sdk
       ags:

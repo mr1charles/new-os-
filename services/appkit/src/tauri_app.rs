@@ -1,13 +1,13 @@
-//! What every NewOS app shares on the Tauri side: the settings file and assistant commands,
-//! the settings watcher, and the main window with NewOS chrome. An app adds its own commands
+//! What every HelixOS app shares on the Tauri side: the settings file and assistant commands,
+//! the settings watcher, and the main window with HelixOS chrome. An app adds its own commands
 //! with [`with_common_commands`] and calls [`setup`] from its `.setup()` hook.
 //!
-//! The frontend reaches these through `@newos/sdk` (`settings`, `assistant`, `island`).
+//! The frontend reaches these through `@helixos/sdk` (`settings`, `assistant`, `island`).
 
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use newos_syslib::SystemRunner;
+use helixos_syslib::SystemRunner;
 use serde_json::Value;
 use tauri::ipc::{Channel, Invoke};
 use tauri::{App, Emitter, Manager, Runtime, State, WebviewUrl, WebviewWindowBuilder};
@@ -16,7 +16,7 @@ use crate::assistant_client::AssistantClient;
 use crate::{assistant_config, keyring, paths, settings, AppError};
 
 /// Emitted with the new contents when `shell.json` changes on disk.
-pub const SETTINGS_CHANGED_EVENT: &str = "newos://settings-changed";
+pub const SETTINGS_CHANGED_EVENT: &str = "helixos://settings-changed";
 
 /// State for the shared commands. Register it with `.manage(Common::from_env())`.
 pub struct Common {
@@ -157,7 +157,7 @@ pub fn with_common_commands<R: Runtime>(
     move |invoke| if COMMANDS.contains(&invoke.message.command()) { common(invoke) } else { app_handler(invoke) }
 }
 
-/// The main window: no server-side decorations (`@newos/ui` draws the traffic lights, and
+/// The main window: no server-side decorations (`@helixos/ui` draws the traffic lights, and
 /// Hyprland adds rounding, shadow, and blur), transparent for sidebar vibrancy.
 pub struct WindowSpec<'a> {
     pub title: &'a str,

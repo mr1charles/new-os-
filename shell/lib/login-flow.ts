@@ -13,10 +13,10 @@ export type Outcome =
 
 /**
  * Read a spacesd D-Bus error. GLib shows remote errors as
- * "GDBus.Error:org.newos.Spaces1.Error.RateLimited: 30".
+ * "GDBus.Error:org.helixos.Spaces1.Error.RateLimited: 30".
  */
 export function parseSpacesError(error: string): Outcome {
-  const match = /org\.newos\.Spaces1\.Error\.(\w+):\s*(.*)$/s.exec(error)
+  const match = /org\.helixos\.Spaces1\.Error\.(\w+):\s*(.*)$/s.exec(error)
   if (!match) {
     if (
       /ServiceUnknown|NameHasNoOwner|not provided by any \.service|Could not connect/i.test(error)
@@ -76,4 +76,4 @@ export function defaultSpace(spaces: Space[]): Space | undefined {
 }
 
 /** The command greetd starts for a space's session. */
-export const SESSION_COMMAND = "start-hyprland -- --config /usr/share/newos/hypr/session.conf"
+export const SESSION_COMMAND = "start-hyprland -- --config /usr/share/helixos/hypr/session.conf"

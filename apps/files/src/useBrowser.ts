@@ -2,7 +2,7 @@
  * The browser's state: where you are (with back and forward), what is there, the selection,
  * and the clipboard for Copy / Cut / Paste.
  */
-import { call, type FileEntry } from "@newos/sdk"
+import { call, type FileEntry } from "@helixos/sdk"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 /** A folder path, or the Trash, or search results. */

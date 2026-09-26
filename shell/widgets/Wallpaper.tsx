@@ -14,7 +14,7 @@ export const wallpaperPath = createComputed(() => {
   const appearance = config().appearance
   const custom = theme() === "dark" ? appearance.wallpaperDark : appearance.wallpaperLight
   if (custom && GLib.file_test(custom, GLib.FileTest.EXISTS)) return custom
-  return assetPath("wallpapers", theme() === "dark" ? "newos-dark.svg" : "newos-light.svg")
+  return assetPath("wallpapers", theme() === "dark" ? "helixos-dark.svg" : "helixos-light.svg")
 })
 
 export default function Wallpaper({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
@@ -22,7 +22,7 @@ export default function Wallpaper({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   return (
     <window
       name={`wallpaper-${gdkmonitor.connector}`}
-      namespace="newos-wallpaper"
+      namespace="helixos-wallpaper"
       class="wallpaper-window"
       gdkmonitor={gdkmonitor}
       application={app}

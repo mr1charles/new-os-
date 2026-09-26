@@ -2,7 +2,7 @@
   padding: 0;
   min-width: 680px;
   border-radius: 18px;
-  background: var(--newos-color-material-thick);
+  background: var(--helixos-color-material-thick);
 }
 
 .launcher.view-grid {
@@ -15,11 +15,11 @@
 
 .launcher.view-results .launcher-search,
 .launcher.view-grid .launcher-search {
-  border-bottom: 1px solid var(--newos-color-separator);
+  border-bottom: 1px solid var(--helixos-color-separator);
 }
 
 .launcher-search image {
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .launcher-search entry {
@@ -30,7 +30,7 @@
   min-height: 34px;
   font-size: 22px;
   font-weight: 300;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 .launcher-results {
@@ -43,12 +43,12 @@ button.launcher-result {
   box-shadow: none;
   border-radius: 10px;
   padding: 7px 10px;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 button.launcher-result.selected {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
 }
 
 .result-title {
@@ -58,7 +58,7 @@ button.launcher-result.selected {
 
 .result-subtitle {
   font-size: 11px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 button.launcher-result.selected .result-subtitle {
@@ -86,10 +86,10 @@ button.grid-app {
   border-radius: 14px;
   padding: 10px 6px;
   min-width: 96px;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
   font-size: 12px;
 }
 
 button.grid-app:hover {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }

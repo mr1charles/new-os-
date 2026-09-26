@@ -80,9 +80,9 @@ export interface SpacePayload {
   greeting: string
 }
 
-/** A live activity from an app (org.newos.Island1 Show): a copy, a download, a build. */
+/** A live activity from an app (org.helixos.Island1 Show): a copy, a download, a build. */
 export interface AppActivityPayload {
-  /** The app's window class or desktop id, e.g. "newos-files". */
+  /** The app's window class or desktop id, e.g. "helixos-files". */
   app: string
   icon: string
   title: string
@@ -347,7 +347,7 @@ export function sameApp(a: string, b: string): boolean {
     s
       .toLowerCase()
       .replace(/\.desktop$/, "")
-      .replace(/^org\.newos\./, "newos-")
+      .replace(/^org\.helixos\./, "helixos-")
   return a !== "" && b !== "" && norm(a) === norm(b)
 }
 

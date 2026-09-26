@@ -1,4 +1,4 @@
-//! NewOS Dual Space: which space a password opens, and creating and removing spaces.
+//! HelixOS Dual Space: which space a password opens, and creating and removing spaces.
 //! See docs/DUAL-SPACE.md for the design and the rules that keep it safe.
 
 pub mod accounts;
@@ -16,7 +16,7 @@ pub enum Error {
     #[error("{0}")]
     Invalid(String),
     #[error(transparent)]
-    Sys(#[from] newos_syslib::SysError),
+    Sys(#[from] helixos_syslib::SysError),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error(transparent)]

@@ -1,6 +1,6 @@
 import "./files.css"
 
-import { startApp } from "@newos/ui/start"
+import { startApp } from "@helixos/ui/start"
 import { App } from "./App"
 
 startApp(App)

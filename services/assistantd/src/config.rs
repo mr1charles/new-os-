@@ -1,4 +1,4 @@
-//! ~/.config/newos/assistant.toml. Every field has a default, so an empty or missing file works.
+//! ~/.config/helixos/assistant.toml. Every field has a default, so an empty or missing file works.
 
 use std::path::{Path, PathBuf};
 
@@ -54,7 +54,7 @@ pub struct LocalConfig {
 pub struct PrivacyConfig {
     /// Send the focused window's app and title with each request.
     pub share_window_title: bool,
-    /// Keep conversations on disk (~/.local/share/newos/assistant.db). Off keeps them in memory.
+    /// Keep conversations on disk (~/.local/share/helixos/assistant.db). Off keeps them in memory.
     pub store_history: bool,
 }
 
@@ -164,9 +164,9 @@ impl Paths {
         let data_home = std::env::var("XDG_DATA_HOME").map(PathBuf::from).unwrap_or_else(|_| home.join(".local/share"));
         let runtime = std::env::var("XDG_RUNTIME_DIR").map(PathBuf::from).unwrap_or_else(|_| std::env::temp_dir());
         Self {
-            config_file: config_home.join("newos/assistant.toml"),
-            data_dir: data_home.join("newos"),
-            socket: runtime.join("newos/assistant.sock"),
+            config_file: config_home.join("helixos/assistant.toml"),
+            data_dir: data_home.join("helixos"),
+            socket: runtime.join("helixos/assistant.sock"),
             home,
         }
     }

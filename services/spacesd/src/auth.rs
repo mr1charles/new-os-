@@ -1,5 +1,5 @@
 //! Checking a password against an account. The real check goes through PAM (service
-//! `newos-spaces`); tests use [`MockAuthenticator`].
+//! `helixos-spaces`); tests use [`MockAuthenticator`].
 
 use std::collections::HashMap;
 
@@ -9,7 +9,7 @@ pub trait Authenticator: Send + Sync {
     fn authenticate(&self, account: &str, password: &str) -> bool;
 }
 
-/// PAM with the `newos-spaces` service: authenticate and check the account is usable
+/// PAM with the `helixos-spaces` service: authenticate and check the account is usable
 /// (not expired or locked).
 #[cfg(feature = "pam")]
 pub struct PamAuthenticator {

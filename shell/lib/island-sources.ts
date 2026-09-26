@@ -207,7 +207,7 @@ function setupAssistantEvents() {
         cancelTimer(event.timer_id)
         break
       case "notify":
-        notify(event.title, event.body, "newos-sparkle-symbolic")
+        notify(event.title, event.body, "helixos-sparkle-symbolic")
         break
       case "provider_changed":
         break
@@ -225,7 +225,7 @@ function welcome() {
     {
       name: first ?? "",
       accent: config.peek().appearance.accent,
-      icon: "newos-logo-symbolic",
+      icon: "helixos-logo-symbolic",
       greeting,
     },
     { id: "space" },

@@ -1,9 +1,9 @@
 import GLib from "gi://GLib?version=2.0"
 import Gtk from "gi://Gtk?version=4.0"
 
-const INSTALLED_ASSETS = "/usr/share/newos/shell/assets"
+const INSTALLED_ASSETS = "/usr/share/helixos/shell/assets"
 
-/** Installed assets on NewOS, the source tree while developing. */
+/** Installed assets on HelixOS, the source tree while developing. */
 export function assetsDir(): string {
   if (GLib.file_test(INSTALLED_ASSETS, GLib.FileTest.IS_DIR)) return INSTALLED_ASSETS
   return GLib.build_filenamev([SRC, "assets"])

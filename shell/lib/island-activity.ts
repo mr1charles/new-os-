@@ -1,5 +1,5 @@
 /**
- * Checking what apps send to the island (org.newos.Island1 Show). Pure, tested in Node.
+ * Checking what apps send to the island (org.helixos.Island1 Show). Pure, tested in Node.
  * Anything malformed is refused rather than guessed at.
  */
 import type { AppActivityPayload } from "./island-queue"

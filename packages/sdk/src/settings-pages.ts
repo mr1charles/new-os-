@@ -7,7 +7,7 @@ export interface SettingsPage {
 
 /**
  * Pages of the Settings app (apps/settings), shared with the shell's Spotlight search.
- * `newos-settings --page <page>` opens one. `iconName` is a freedesktop symbolic icon for the
+ * `helixos-settings --page <page>` opens one. `iconName` is a freedesktop symbolic icon for the
  * shell; the app draws its own icons.
  */
 export const SETTINGS_PAGES: SettingsPage[] = [
@@ -133,7 +133,7 @@ export const SETTINGS_PAGES: SettingsPage[] = [
     page: "assistant",
     title: "Assistant",
     keywords: ["ai", "claude", "ollama", "api key", "model", "siri"],
-    iconName: "newos-sparkle-symbolic",
+    iconName: "helixos-sparkle-symbolic",
   },
   {
     page: "privacy",

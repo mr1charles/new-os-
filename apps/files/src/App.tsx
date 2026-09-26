@@ -1,5 +1,5 @@
-import { assistant, call, type Drive, type FileEntry, type Place } from "@newos/sdk"
-import { useAppTheme, useCommand } from "@newos/sdk/react"
+import { assistant, call, type Drive, type FileEntry, type Place } from "@helixos/sdk"
+import { useAppTheme, useCommand } from "@helixos/sdk/react"
 import {
   Button,
   Callout,
@@ -13,7 +13,7 @@ import {
   Spinner,
   Toolbar,
   Window,
-} from "@newos/ui"
+} from "@helixos/ui"
 import {
   ChevronRight,
   Download,

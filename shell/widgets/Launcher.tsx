@@ -38,7 +38,7 @@ function activateResult(result: SearchResult) {
       openUrl(result.url)
       break
     case "install":
-      spawn(["newos-open", result.target])
+      spawn(["helixos-open", result.target])
       break
   }
 }
@@ -174,7 +174,7 @@ export default function Launcher() {
   return (
     <PopupWindow
       name="launcher"
-      namespace="newos-launcher"
+      namespace="helixos-launcher"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.START}
       marginTop={140}

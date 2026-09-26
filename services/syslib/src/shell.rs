@@ -1,11 +1,11 @@
-//! Talking to the NewOS shell (`ags request -i newos ...`) and opening things.
+//! Talking to the HelixOS shell (`ags request -i helixos ...`) and opening things.
 
 use crate::runner::{run_checked, CommandRunner};
 use crate::{Result, SysError};
 
 /// Send a command to the shell, e.g. `["theme", "dark"]`. See shell/lib/requests.ts.
 pub async fn shell_request(runner: &dyn CommandRunner, args: &[&str]) -> Result<String> {
-    let mut argv = vec!["request", "-i", "newos"];
+    let mut argv = vec!["request", "-i", "helixos"];
     argv.extend_from_slice(args);
     Ok(run_checked(runner, "ags", &argv).await?.trim().to_string())
 }
@@ -65,7 +65,7 @@ mod tests {
     async fn sends_shell_requests() {
         let runner = MockRunner::new();
         shell_request(&runner, &["theme", "dark"]).await.unwrap();
-        assert_eq!(runner.calls()[0], ["ags", "request", "-i", "newos", "theme", "dark"]);
+        assert_eq!(runner.calls()[0], ["ags", "request", "-i", "helixos", "theme", "dark"]);
     }
 
     #[tokio::test]

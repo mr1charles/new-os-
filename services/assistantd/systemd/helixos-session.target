@@ -1,5 +1,5 @@
 [Unit]
-Description=NewOS desktop session services
+Description=HelixOS desktop session services
 Documentation=https://github.com/mr1charles/new-os-
 BindsTo=graphical-session.target
-Wants=newos-assistantd.service
+Wants=helixos-assistantd.service

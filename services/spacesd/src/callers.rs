@@ -57,14 +57,14 @@ mod tests {
     use super::*;
 
     const PASSWD: &str = "root:x:0:0::/root:/bin/bash\ngreeter:x:964:964::/var/lib/greeter:/bin/sh\nspace-work:x:1001:1001:Work:/home/space-work:/bin/bash\nmallory:x:1002:1002::/home/mallory:/bin/bash\n";
-    const GROUPS: &str = "wheel:x:998:a\nnewos-spaces:x:970:space-work,space-home\nmallory:x:1002:\n";
+    const GROUPS: &str = "wheel:x:998:a\nhelixos-spaces:x:970:space-work,space-home\nmallory:x:1002:\n";
 
     #[test]
     fn maps_uids_and_groups() {
         assert_eq!(user_name(PASSWD, 1001).as_deref(), Some("space-work"));
         assert_eq!(user_name(PASSWD, 4242), None);
-        assert!(in_group(GROUPS, "newos-spaces", "space-work"));
-        assert!(!in_group(GROUPS, "newos-spaces", "mallory"));
+        assert!(in_group(GROUPS, "helixos-spaces", "space-work"));
+        assert!(!in_group(GROUPS, "helixos-spaces", "mallory"));
     }
 
     #[test]

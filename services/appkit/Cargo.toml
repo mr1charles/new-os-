@@ -1,6 +1,6 @@
 [package]
-name = "newos-appkit"
-description = "Shared backend for NewOS apps: the live settings file, the assistant config and keyring, and a client for assistantd's unix-socket API. Tauri backends wrap these in commands."
+name = "helixos-appkit"
+description = "Shared backend for HelixOS apps: the live settings file, the assistant config and keyring, and a client for assistantd's unix-socket API. Tauri backends wrap these in commands."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,7 +8,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-newos-syslib = { path = "../syslib" }
+helixos-syslib = { path = "../syslib" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -25,7 +25,7 @@ toml_edit = "0.23"
 tauri = { version = "2", optional = true }
 
 [features]
-# Shared Tauri commands and window setup for NewOS apps (links WebKitGTK).
+# Shared Tauri commands and window setup for HelixOS apps (links WebKitGTK).
 tauri = ["dep:tauri"]
 
 [dev-dependencies]

@@ -1,6 +1,6 @@
-import { call } from "@newos/sdk"
-import { useAction, useCommand } from "@newos/sdk/react"
-import { Badge, Button, EmptyState, Group, Page, Row, Spinner, Value } from "@newos/ui"
+import { call } from "@helixos/sdk"
+import { useAction, useCommand } from "@helixos/sdk/react"
+import { Badge, Button, EmptyState, Group, Page, Row, Spinner, Value } from "@helixos/ui"
 import { CheckCircle2 } from "lucide-react"
 import { ActionError, LoadError } from "../components/common"
 

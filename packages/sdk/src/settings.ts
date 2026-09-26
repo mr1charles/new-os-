@@ -1,5 +1,5 @@
 /**
- * The live settings store: `~/.config/newos/shell.json`, shared with the shell. Reads go
+ * The live settings store: `~/.config/helixos/shell.json`, shared with the shell. Reads go
  * through the schema's defaults, writes send only the changed part, and edits made elsewhere
  * (the shell, another app, a text editor) arrive through the backend's file watcher.
  */
@@ -13,7 +13,7 @@ export type SettingsPatch<T = Settings> = {
   [K in keyof T]?: T[K] extends unknown[] ? T[K] : T[K] extends object ? SettingsPatch<T[K]> : T[K]
 }
 
-export const SETTINGS_CHANGED_EVENT = "newos://settings-changed"
+export const SETTINGS_CHANGED_EVENT = "helixos://settings-changed"
 
 type Subscriber = (settings: Settings) => void
 

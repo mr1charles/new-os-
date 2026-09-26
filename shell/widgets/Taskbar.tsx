@@ -20,7 +20,7 @@ export default function Taskbar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   return (
     <window
       name={`taskbar-${gdkmonitor.connector}`}
-      namespace="newos-taskbar"
+      namespace="helixos-taskbar"
       class="taskbar-window"
       gdkmonitor={gdkmonitor}
       application={app}
@@ -38,7 +38,7 @@ export default function Taskbar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             tooltipText="Start"
             onClicked={() => openLauncher("grid")}
           >
-            <image iconName="newos-launchpad" pixelSize={24} />
+            <image iconName="helixos-launchpad" pixelSize={24} />
           </button>
           <button
             class="taskbar-button"

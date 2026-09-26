@@ -1,6 +1,6 @@
 //! A client for assistantd's HTTP API on its unix socket. App webviews cannot open unix
 //! sockets, so their Rust backends forward requests here: plain JSON calls, and streamed
-//! responses (chat) passed through chunk by chunk for `@newos/sdk` to parse as SSE.
+//! responses (chat) passed through chunk by chunk for `@helixos/sdk` to parse as SSE.
 
 use std::path::{Path, PathBuf};
 
@@ -28,7 +28,7 @@ impl AssistantClient {
         Self { socket: socket.into() }
     }
 
-    /// `$XDG_RUNTIME_DIR/newos/assistant.sock`
+    /// `$XDG_RUNTIME_DIR/helixos/assistant.sock`
     pub fn from_env() -> Self {
         Self::new(crate::paths::assistant_socket())
     }
@@ -121,8 +121,8 @@ impl AssistantClient {
 }
 
 /// Restart the daemon so it reads a changed assistant.toml or keyring entry.
-pub async fn restart_daemon(runner: &dyn newos_syslib::CommandRunner) -> Result<()> {
-    newos_syslib::runner::run_checked(runner, "systemctl", &["--user", "try-restart", "newos-assistantd.service"]).await?;
+pub async fn restart_daemon(runner: &dyn helixos_syslib::CommandRunner) -> Result<()> {
+    helixos_syslib::runner::run_checked(runner, "systemctl", &["--user", "try-restart", "helixos-assistantd.service"]).await?;
     Ok(())
 }
 
@@ -190,7 +190,7 @@ mod tests {
 
     #[tokio::test]
     async fn missing_socket_means_not_running() {
-        let client = AssistantClient::new("/nonexistent/newos/assistant.sock");
+        let client = AssistantClient::new("/nonexistent/helixos/assistant.sock");
         assert!(matches!(client.request("GET", "/v1/status", None).await, Err(AppError::AssistantUnavailable(_))));
     }
 }

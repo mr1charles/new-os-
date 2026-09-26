@@ -8,10 +8,10 @@
 }
 
 .dock {
-  background: var(--newos-color-material-regular);
-  border: 1px solid var(--newos-color-separator);
+  background: var(--helixos-color-material-regular);
+  border: 1px solid var(--helixos-color-separator);
   border-radius: 22px;
-  box-shadow: var(--newos-color-shadow-popover);
+  box-shadow: var(--helixos-color-shadow-popover);
   padding: 6px 8px 3px 8px;
   margin: 0 12px;
 }
@@ -52,13 +52,13 @@ button.dock-item.mag-3 .dock-icon {
 }
 
 button.dock-item.running .running-dot {
-  background: var(--newos-color-fg-secondary);
+  background: var(--helixos-color-fg-secondary);
 }
 
 button.dock-item.divider {
   margin-left: 6px;
   padding-left: 9px;
-  border-left: 1px solid var(--newos-color-separator);
+  border-left: 1px solid var(--helixos-color-separator);
   border-radius: 0;
 }
 
@@ -105,13 +105,13 @@ button.dock-item.launching .dock-icon {
   margin: 6px 0 0 0;
   padding: 9px 0 0 0;
   border-left: none;
-  border-top: 1px solid var(--newos-color-separator);
+  border-top: 1px solid var(--helixos-color-separator);
 }
 
 /* Taskbar: a full-width strip; apps show a bar under them instead of a dot. */
 window.taskbar-window {
-  background: var(--newos-color-material-bar);
-  border-top: 1px solid var(--newos-color-separator);
+  background: var(--helixos-color-material-bar);
+  border-top: 1px solid var(--helixos-color-separator);
 }
 
 .taskbar {
@@ -130,7 +130,7 @@ button.taskbar-button {
 }
 
 button.taskbar-button:hover {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .taskbar-apps.dock {
@@ -147,7 +147,7 @@ button.taskbar-button:hover {
 }
 
 .taskbar-apps button.dock-item:hover {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .taskbar-apps button.dock-item.mag-1 .dock-icon,
@@ -163,7 +163,7 @@ button.taskbar-button:hover {
 
 .taskbar-apps button.dock-item.running .running-dot {
   min-width: 16px;
-  background: var(--newos-accent);
+  background: var(--helixos-accent);
 }
 
 .taskbar-apps button.dock-item.divider {

@@ -56,7 +56,7 @@ export async function setBrightness(fraction: number) {
   if (!hasBacklight) return
   const percent = Math.round(Math.max(0.01, Math.min(1, fraction)) * 100)
   await execAsync(["brightnessctl", "--quiet", "set", `${percent}%`]).catch((e) =>
-    console.warn(`newos: brightnessctl failed: ${e}`),
+    console.warn(`helixos: brightnessctl failed: ${e}`),
   )
   setBrightnessState(current())
 }

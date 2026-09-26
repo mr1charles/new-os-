@@ -25,11 +25,11 @@ const apps: DockApp[] = [
   },
   { entry: "kitty.desktop", name: "kitty", iconName: "kitty", wmClass: "", executable: "kitty" },
   {
-    entry: "newos-settings.desktop",
+    entry: "helixos-settings.desktop",
     name: "Settings",
-    iconName: "newos-settings",
-    wmClass: "newos-settings",
-    executable: "newos-settings",
+    iconName: "helixos-settings",
+    wmClass: "helixos-settings",
+    executable: "helixos-settings",
   },
 ]
 
@@ -59,11 +59,11 @@ describe("matchApp", () => {
 
 describe("buildDockItems", () => {
   it("keeps pinned order, skips missing apps, and appends running unpinned apps", () => {
-    const items = buildDockItems(["newos-files", "firefox.desktop", "newos-settings"], apps, [
+    const items = buildDockItems(["helixos-files", "firefox.desktop", "helixos-settings"], apps, [
       client("kitty", "0xa", 1),
       client("firefox", "0xb", 0),
     ])
-    expect(items.map((i) => i.key)).toEqual(["firefox", "newos-settings", "kitty"])
+    expect(items.map((i) => i.key)).toEqual(["firefox", "helixos-settings", "kitty"])
     expect(items[0]?.windows.map((w) => w.address)).toEqual(["0xb"])
     expect(items[2]?.pinned).toBe(false)
   })

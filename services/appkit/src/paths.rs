@@ -1,4 +1,4 @@
-//! Standard NewOS locations, following the XDG base directory spec.
+//! Standard HelixOS locations, following the XDG base directory spec.
 
 use std::path::PathBuf;
 
@@ -10,28 +10,28 @@ pub fn home() -> PathBuf {
     env_dir("HOME", || PathBuf::from("/tmp"))
 }
 
-/// `~/.config/newos`
+/// `~/.config/helixos`
 pub fn config_dir() -> PathBuf {
-    env_dir("XDG_CONFIG_HOME", || home().join(".config")).join("newos")
+    env_dir("XDG_CONFIG_HOME", || home().join(".config")).join("helixos")
 }
 
-/// `~/.config/newos/shell.json`: appearance, Dock, menu bar, island, notifications. Shared by
-/// the shell and every app (see `@newos/sdk`'s settings schema).
+/// `~/.config/helixos/shell.json`: appearance, Dock, menu bar, island, notifications. Shared by
+/// the shell and every app (see `@helixos/sdk`'s settings schema).
 pub fn settings_file() -> PathBuf {
     config_dir().join("shell.json")
 }
 
-/// `~/.config/newos/assistant.toml`
+/// `~/.config/helixos/assistant.toml`
 pub fn assistant_config_file() -> PathBuf {
     config_dir().join("assistant.toml")
 }
 
-/// `~/.config/newos/hyprland-settings.conf`
+/// `~/.config/helixos/hyprland-settings.conf`
 pub fn hyprland_settings_file() -> PathBuf {
     config_dir().join("hyprland-settings.conf")
 }
 
-/// `$XDG_RUNTIME_DIR/newos/assistant.sock`
+/// `$XDG_RUNTIME_DIR/helixos/assistant.sock`
 pub fn assistant_socket() -> PathBuf {
-    env_dir("XDG_RUNTIME_DIR", std::env::temp_dir).join("newos").join("assistant.sock")
+    env_dir("XDG_RUNTIME_DIR", std::env::temp_dir).join("helixos").join("assistant.sock")
 }

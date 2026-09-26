@@ -1,6 +1,6 @@
 [package]
-name = "newos-syslib"
-description = "System integration for NewOS: audio, display, network, power, Hyprland, desktop entries. Shared by assistantd and the Settings app."
+name = "helixos-syslib"
+description = "System integration for HelixOS: audio, display, network, power, Hyprland, desktop entries. Shared by assistantd and the Settings app."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

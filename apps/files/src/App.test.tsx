@@ -1,5 +1,5 @@
-import { setMockBackend } from "@newos/sdk"
-import { createMockBackend } from "@newos/sdk/mock"
+import { setMockBackend } from "@helixos/sdk"
+import { createMockBackend } from "@helixos/sdk/mock"
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { App } from "./App"

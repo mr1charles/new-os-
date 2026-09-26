@@ -22,7 +22,7 @@ export function sdkCommands(appDir: string): string[] {
 /** Streaming commands take a channel, so they go through callStreaming instead of Commands. */
 export const STREAMING_COMMANDS = ["assistant_stream", "term_spawn"]
 
-/** Commands every app gets from newos-appkit (`COMMANDS` in tauri_app.rs). */
+/** Commands every app gets from helixos-appkit (`COMMANDS` in tauri_app.rs). */
 export function sharedCommands(appDir: string): string[] {
   const source = read(join(repo(appDir), "services/appkit/src/tauri_app.rs"))
   const start = source.indexOf("pub const COMMANDS")

@@ -1,6 +1,6 @@
 [package]
-name = "newos-calculator"
-description = "NewOS Calculator backend."
+name = "helixos-calculator"
+description = "HelixOS Calculator backend."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,15 +8,15 @@ repository.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "newos-calculator"
+name = "helixos-calculator"
 path = "src/main.rs"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-newos-appkit = { path = "../../../services/appkit", features = ["tauri"] }
-newos-syslib = { path = "../../../services/syslib" }
+helixos-appkit = { path = "../../../services/appkit", features = ["tauri"] }
+helixos-syslib = { path = "../../../services/syslib" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }

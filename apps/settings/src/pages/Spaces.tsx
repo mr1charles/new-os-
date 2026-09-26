@@ -1,6 +1,6 @@
-import { accentColor, accentNames } from "@newos/design-tokens"
-import { call, type SpaceInfo } from "@newos/sdk"
-import { useAction, useCommand } from "@newos/sdk/react"
+import { accentColor, accentNames } from "@helixos/design-tokens"
+import { call, type SpaceInfo } from "@helixos/sdk"
+import { useAction, useCommand } from "@helixos/sdk/react"
 import {
   Badge,
   Button,
@@ -13,7 +13,7 @@ import {
   Sheet,
   TextField,
   Value,
-} from "@newos/ui"
+} from "@helixos/ui"
 import { Fingerprint, Plus } from "lucide-react"
 import { useState } from "react"
 import { ActionError } from "../components/common"

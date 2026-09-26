@@ -1,5 +1,5 @@
-//! A client for newos-spacesd (org.newos.Spaces1), for Settings → Users & Spaces. On the system
-//! bus; `NEWOS_SPACES_BUS=session` points at a development instance. Changes ask polkit for
+//! A client for helixos-spacesd (org.helixos.Spaces1), for Settings → Users & Spaces. On the system
+//! bus; `HELIXOS_SPACES_BUS=session` points at a development instance. Changes ask polkit for
 //! an administrator, so a password prompt may appear.
 
 use serde::{Deserialize, Serialize};
@@ -17,11 +17,11 @@ pub struct Space {
     pub last_used: u64,
 }
 
-const NAME: &str = "org.newos.Spaces1";
-const PATH: &str = "/org/newos/Spaces1";
+const NAME: &str = "org.helixos.Spaces1";
+const PATH: &str = "/org/helixos/Spaces1";
 
 async fn connection() -> Result<zbus::Connection> {
-    let session = std::env::var("NEWOS_SPACES_BUS").is_ok_and(|v| v == "session");
+    let session = std::env::var("HELIXOS_SPACES_BUS").is_ok_and(|v| v == "session");
     let conn = if session { zbus::Connection::session().await } else { zbus::Connection::system().await };
     conn.map_err(|e| AppError::Invalid(format!("Can’t reach the system bus: {e}")))
 }
@@ -32,7 +32,7 @@ fn readable(error: zbus::Error) -> AppError {
         zbus::Error::MethodError(name, message, _) => {
             let name = name.as_str();
             if name.ends_with("ServiceUnknown") || name.ends_with("NameHasNoOwner") {
-                AppError::Invalid("The space service (newos-spacesd) isn’t running.".into())
+                AppError::Invalid("The space service (helixos-spacesd) isn’t running.".into())
             } else if name == "org.freedesktop.DBus.Error.AccessDenied" {
                 AppError::Invalid("This account isn’t allowed to manage spaces.".into())
             } else {
@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn keeps_service_messages_readable() {
         let err = readable(zbus::Error::MethodError(
-            zbus::names::OwnedErrorName::try_from("org.newos.Spaces1.Error.Invalid").unwrap(),
+            zbus::names::OwnedErrorName::try_from("org.helixos.Spaces1.Error.Invalid").unwrap(),
             Some("That password already opens “Work”.".into()),
             zbus::message::Message::method_call("/", "x").unwrap().build(&()).unwrap(),
         ));

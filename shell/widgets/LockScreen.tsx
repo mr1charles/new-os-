@@ -124,7 +124,7 @@ function cleanup() {
  */
 export function followLogind() {
   const session = GLib.getenv("XDG_SESSION_ID")
-  if (!session || GLib.getenv("NEWOS_LIVE") === "1") return
+  if (!session || GLib.getenv("HELIXOS_LIVE") === "1") return
   const system = Gio.bus_get_sync(Gio.BusType.SYSTEM, null)
   system.call(
     "org.freedesktop.login1",
@@ -149,7 +149,7 @@ export function followLogind() {
           () => lockSession(),
         )
       } catch (error) {
-        console.warn(`newos: cannot follow logind locks: ${String(error)}`)
+        console.warn(`helixos: cannot follow logind locks: ${String(error)}`)
       }
     },
   )

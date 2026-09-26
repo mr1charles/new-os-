@@ -3,7 +3,7 @@
  * unit conversions, and everyday percentage phrases. Anything else can go to the assistant,
  * which only turns words into an expression; the arithmetic always happens here.
  */
-import { evaluate, formatNumber, type EvalOptions } from "@newos/sdk/math"
+import { evaluate, formatNumber, type EvalOptions } from "@helixos/sdk/math"
 import { parseConversion } from "./units"
 
 export interface Answer {

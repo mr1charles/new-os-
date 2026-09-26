@@ -1,9 +1,9 @@
 {
-  "name": "@newos/sdk",
+  "name": "@helixos/sdk",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS app SDK: typed calls to the app's Rust backend, the live settings store, the assistant client, theming, and React hooks.",
+  "description": "HelixOS app SDK: typed calls to the app's Rust backend, the live settings store, the assistant client, theming, and React hooks.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
@@ -26,7 +26,7 @@
     "react": "^19"
   },
   "dependencies": {
-    "@newos/design-tokens": "workspace:*",
+    "@helixos/design-tokens": "workspace:*",
     "@tauri-apps/api": "^2.11.1"
   },
   "devDependencies": {

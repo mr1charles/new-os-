@@ -82,7 +82,7 @@ export default function Island() {
   return (
     <window
       name="island"
-      namespace="newos-island"
+      namespace="helixos-island"
       class="island-window"
       application={app}
       layer={Astal.Layer.OVERLAY}

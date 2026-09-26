@@ -1,8 +1,8 @@
-# /etc/greetd/config.toml for NewOS: the login screen on the first VT.
+# /etc/greetd/config.toml for HelixOS: the login screen on the first VT.
 [terminal]
 vt = 1
 
 [default_session]
-# A minimal Hyprland that only shows the NewOS login screen (shell/greeter.ts).
-command = "start-hyprland -- --config /usr/share/newos/hypr/greeter.conf"
+# A minimal Hyprland that only shows the HelixOS login screen (shell/greeter.ts).
+command = "start-hyprland -- --config /usr/share/helixos/hypr/greeter.conf"
 user = "greeter"

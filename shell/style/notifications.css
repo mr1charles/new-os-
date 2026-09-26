@@ -12,20 +12,20 @@
 
 .nc-date {
   font-size: 13px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 calendar.nc-calendar {
-  background: var(--newos-color-control);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-control);
+  color: var(--helixos-color-fg);
   border: none;
   border-radius: 12px;
   padding: 6px;
 }
 
 calendar.nc-calendar > grid > label.today {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
   border-radius: 999px;
   box-shadow: none;
 }
@@ -42,26 +42,26 @@ calendar.nc-calendar > grid > label.today {
 }
 
 .notification-card {
-  background: var(--newos-color-material-thick);
-  border: 1px solid var(--newos-color-separator);
+  background: var(--helixos-color-material-thick);
+  border: 1px solid var(--helixos-color-separator);
   border-radius: 16px;
   padding: 10px 12px;
 }
 
 .notification-card.urgency-critical {
-  border-color: var(--newos-color-danger);
+  border-color: var(--helixos-color-danger);
 }
 
 .notification-app {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.4px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notification-time {
   font-size: 11px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notification-summary {
@@ -70,7 +70,7 @@ calendar.nc-calendar > grid > label.today {
 }
 
 .notification-body {
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 button.notification-close {
@@ -86,7 +86,7 @@ button.notification-close {
 
 button.notification-close:hover {
   opacity: 1;
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .notification-actions {
@@ -94,7 +94,7 @@ button.notification-close:hover {
 }
 
 .nc-empty {
-  color: var(--newos-color-fg-tertiary);
+  color: var(--helixos-color-fg-tertiary);
   font-size: 15px;
   margin: 40px 0;
 }
@@ -113,7 +113,7 @@ button.notification-close:hover {
   margin: -12px 10px 0;
   min-height: 8px;
   border-radius: 0 0 12px 12px;
-  background: var(--newos-color-material-thick);
-  border: 1px solid var(--newos-color-separator);
+  background: var(--helixos-color-material-thick);
+  border: 1px solid var(--helixos-color-separator);
   border-top: none;
 }

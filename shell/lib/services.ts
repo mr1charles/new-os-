@@ -17,7 +17,7 @@ function optional<T>(name: string, get: () => T | null | undefined): T | null {
   try {
     return get() ?? null
   } catch (error) {
-    console.warn(`newos: ${name} is unavailable: ${error}`)
+    console.warn(`helixos: ${name} is unavailable: ${error}`)
     return null
   }
 }

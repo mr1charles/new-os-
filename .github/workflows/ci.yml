@@ -51,4 +51,4 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: shellcheck scripts/*.sh services/*/tests/*.sh
-      - run: python3 -m py_compile preview/newos-preview.py
+      - run: python3 -m py_compile preview/helixos-preview.py

@@ -1,6 +1,6 @@
-//! Print what Settings would show on this machine: `cargo run -p newos-syslib --example probe`.
+//! Print what Settings would show on this machine: `cargo run -p helixos-syslib --example probe`.
 
-use newos_syslib::{about, audio, bluetooth, display, hyprconf, network, power, SystemRunner};
+use helixos_syslib::{about, audio, bluetooth, display, hyprconf, network, power, SystemRunner};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {

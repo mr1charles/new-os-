@@ -1,13 +1,13 @@
 [Unit]
-Description=NewOS Dual Space service
+Description=HelixOS Dual Space service
 Documentation=https://github.com/mr1charles/new-os-/blob/main/docs/DUAL-SPACE.md
 Before=greetd.service
 
 [Service]
 Type=dbus
-BusName=org.newos.Spaces1
-ExecStart=/usr/bin/newos-spacesd
-StateDirectory=newos
+BusName=org.helixos.Spaces1
+ExecStart=/usr/bin/helixos-spacesd
+StateDirectory=helixos
 # It creates accounts, so it needs root; keep everything else locked down.
 NoNewPrivileges=true
 ProtectKernelTunables=true
@@ -15,7 +15,7 @@ ProtectKernelModules=true
 ProtectControlGroups=true
 PrivateTmp=true
 RestrictRealtime=true
-ReadWritePaths=/etc /var/lib/newos /home
+ReadWritePaths=/etc /var/lib/helixos /home
 
 [Install]
 WantedBy=multi-user.target

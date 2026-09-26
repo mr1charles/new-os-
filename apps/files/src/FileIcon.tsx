@@ -1,5 +1,5 @@
 /** Icons and thumbnails for files: colored glyphs by kind, real previews for images and PDFs. */
-import { call, inTauri, type FileEntry, type FileKind } from "@newos/sdk"
+import { call, inTauri, type FileEntry, type FileKind } from "@helixos/sdk"
 import {
   AppWindow,
   FileArchive,

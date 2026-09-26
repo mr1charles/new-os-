@@ -6,8 +6,8 @@ use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant, UNIX_EPOCH};
 
-use newos_syslib::runner::run_checked;
-use newos_syslib::CommandRunner;
+use helixos_syslib::runner::run_checked;
+use helixos_syslib::CommandRunner;
 use serde::{Deserialize, Serialize};
 
 use crate::{AppError, Result};
@@ -443,7 +443,7 @@ pub fn transfer_with_progress(sources: &[PathBuf], dest: &Path, move_files: bool
 
 pub async fn trash(runner: &dyn CommandRunner, paths: &[PathBuf]) -> Result<()> {
     for path in paths {
-        newos_syslib::shell::trash(runner, path).await?;
+        helixos_syslib::shell::trash(runner, path).await?;
     }
     Ok(())
 }

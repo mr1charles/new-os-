@@ -1,5 +1,5 @@
-import { useSettings } from "@newos/sdk/react"
-import { Group, Page, Row, Toggle } from "@newos/ui"
+import { useSettings } from "@helixos/sdk/react"
+import { Group, Page, Row, Toggle } from "@helixos/ui"
 
 export function NotificationsPage() {
   const [settings, update] = useSettings()

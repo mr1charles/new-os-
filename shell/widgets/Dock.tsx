@@ -239,7 +239,7 @@ export default function Dock({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   return (
     <window
       name={`dock-${gdkmonitor.connector}`}
-      namespace="newos-dock"
+      namespace="helixos-dock"
       class="dock-window"
       gdkmonitor={gdkmonitor}
       application={app}
@@ -276,7 +276,7 @@ export default function Dock({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           >
             <Gtk.EventControllerMotion onEnter={() => setHovered(0)} />
             <box orientation={Gtk.Orientation.VERTICAL} class="dock-item-content">
-              <image class="dock-icon" iconName="newos-launchpad" />
+              <image class="dock-icon" iconName="helixos-launchpad" />
               <box class="running-dot" halign={Gtk.Align.CENTER} />
             </box>
           </button>

@@ -5,7 +5,7 @@ use crate::memory::Fact;
 
 pub fn system_prompt(name: &str) -> String {
     format!(
-        "You are {name}, the assistant built into NewOS, the desktop operating system on the user's laptop. \
+        "You are {name}, the assistant built into HelixOS, the desktop operating system on the user's laptop. \
 You can see and control the computer through tools: settings (volume, brightness, Wi-Fi, Bluetooth, appearance, Focus), \
 apps and windows, files in the user's home folder, notes, timers, and a memory of facts the user asks you to remember.
 
@@ -116,7 +116,7 @@ mod tests {
 
     #[test]
     fn system_prompt_uses_the_name() {
-        assert!(system_prompt("Nova").starts_with("You are Nova, the assistant built into NewOS"));
+        assert!(system_prompt("Nova").starts_with("You are Nova, the assistant built into HelixOS"));
     }
 
     #[test]

@@ -1,5 +1,5 @@
-import type { BarPosition, DesktopEntry, DockPosition, DockStyle } from "@newos/sdk"
-import { useCommand, useSettings } from "@newos/sdk/react"
+import type { BarPosition, DesktopEntry, DockPosition, DockStyle } from "@helixos/sdk"
+import { useCommand, useSettings } from "@helixos/sdk/react"
 import {
   Button,
   EmptyState,
@@ -11,7 +11,7 @@ import {
   Sheet,
   Slider,
   Toggle,
-} from "@newos/ui"
+} from "@helixos/ui"
 import { ArrowDown, ArrowUp, Plus, X } from "lucide-react"
 import { useMemo, useState } from "react"
 

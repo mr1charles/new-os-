@@ -1,6 +1,6 @@
 /** The Trash: what was deleted and from where, with Restore and Empty Trash. */
-import { call, type TrashItem } from "@newos/sdk"
-import { Button, Callout, EmptyState, Sheet } from "@newos/ui"
+import { call, type TrashItem } from "@helixos/sdk"
+import { Button, Callout, EmptyState, Sheet } from "@helixos/ui"
 import { Trash2 } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { FileIcon } from "./FileIcon"

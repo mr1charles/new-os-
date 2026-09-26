@@ -1,4 +1,4 @@
-//! Settings → Assistant edits `~/.config/newos/assistant.toml` in place, keeping the user's
+//! Settings → Assistant edits `~/.config/helixos/assistant.toml` in place, keeping the user's
 //! comments and any keys it does not manage. assistantd reads the file at start, so a change is
 //! followed by a restart of its user service.
 
@@ -109,7 +109,7 @@ fn validate(field: &str, new: &serde_json::Value) -> Result<toml_edit::Value> {
                 "mode" => MODES.contains(&text),
                 "effort" => EFFORT_LEVELS.contains(&text),
                 "name" => !text.is_empty() && text.chars().count() <= 32 && !text.chars().any(char::is_control),
-                // Custom model ids are allowed: new models ship before NewOS updates its list.
+                // Custom model ids are allowed: new models ship before HelixOS updates its list.
                 "cloud_model" => {
                     text.starts_with("claude-")
                         && text.len() <= 64

@@ -1,4 +1,4 @@
-import type { FileEntry } from "@newos/sdk"
+import type { FileEntry } from "@helixos/sdk"
 import { describe, expect, it } from "vitest"
 import {
   breadcrumbs,

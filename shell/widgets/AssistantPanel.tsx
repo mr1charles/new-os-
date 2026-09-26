@@ -170,7 +170,7 @@ export default function AssistantPanel() {
     getStatus().then((status) => {
       if (!status)
         setServiceNote(
-          "The assistant service is not running. Start it with: systemctl --user start newos-assistantd",
+          "The assistant service is not running. Start it with: systemctl --user start helixos-assistantd",
         )
       else if (status.active === "none")
         setServiceNote(
@@ -183,7 +183,7 @@ export default function AssistantPanel() {
   return (
     <PopupWindow
       name="assistant"
-      namespace="newos-assistant"
+      namespace="helixos-assistant"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.START}
       marginTop={52}
@@ -191,7 +191,7 @@ export default function AssistantPanel() {
     >
       <box class="assistant-panel panel" orientation={VERTICAL} widthRequest={660}>
         <box class="assistant-header" spacing={8}>
-          <image iconName="newos-sparkle-symbolic" class="accent-icon" pixelSize={20} />
+          <image iconName="helixos-sparkle-symbolic" class="accent-icon" pixelSize={20} />
           <label class="assistant-title" label={config.as((c) => c.assistant.name)} xalign={0} />
           <label
             class="provider-badge"

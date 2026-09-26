@@ -2,8 +2,8 @@
 Type=Application
 Name=Terminal
 Comment=Your shell, with tabs and the assistant turning English into commands
-Exec=newos-terminal
-Icon=newos-terminal
+Exec=helixos-terminal
+Icon=helixos-terminal
 Terminal=false
 Categories=System;TerminalEmulator;
 Keywords=shell;prompt;command;commandline;cli;bash;fish;

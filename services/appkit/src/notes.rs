@@ -1,7 +1,7 @@
 //! Notes are Markdown files in `~/Notes` (or `tools.notes_dir` in assistant.toml), shared with
 //! the assistant's note tools. One level of folders; the file name follows the note's title
 //! (its first line), like the assistant names the notes it creates. Pinned notes are listed in
-//! `.newos/pinned.json` inside the notes folder.
+//! `.helixos/pinned.json` inside the notes folder.
 
 use std::path::{Component, Path, PathBuf};
 use std::time::UNIX_EPOCH;
@@ -32,7 +32,7 @@ pub struct SearchHit {
     pub score: f64,
 }
 
-const PINNED_FILE: &str = ".newos/pinned.json";
+const PINNED_FILE: &str = ".helixos/pinned.json";
 const UNTITLED: &str = "New Note";
 
 /// `~/Notes`, or the folder set in assistant.toml `[tools] notes_dir`.
@@ -353,7 +353,7 @@ pub fn watch(dir: PathBuf, on_change: impl Fn() + Send + 'static) -> Result<Note
     std::fs::create_dir_all(&dir)?;
     let mut watcher = notify::recommended_watcher(move |event: notify::Result<notify::Event>| {
         let Ok(event) = event else { return };
-        // Pins live in .newos/; every other hidden file (editor swap files) is noise.
+        // Pins live in .helixos/; every other hidden file (editor swap files) is noise.
         let relevant = event.paths.iter().any(|p| {
             let name = p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
             name == "pinned.json" || !name.starts_with('.')
@@ -456,7 +456,7 @@ mod tests {
     #[test]
     fn rejects_paths_outside_the_notes_folder() {
         let (_dir, notes) = store();
-        for bad in ["../x.md", "/etc/passwd", "a/b/c.md", ".newos/pinned.json", "note.txt", "Work/.secret.md"] {
+        for bad in ["../x.md", "/etc/passwd", "a/b/c.md", ".helixos/pinned.json", "note.txt", "Work/.secret.md"] {
             assert!(notes.read(bad).is_err(), "{bad}");
         }
     }

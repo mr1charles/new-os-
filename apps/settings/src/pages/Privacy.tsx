@@ -1,6 +1,6 @@
-import { assistant, type AssistantSettings, type Fact } from "@newos/sdk"
-import { useAction, useCommand } from "@newos/sdk/react"
-import { EmptyState, Group, Page, Row, Toggle } from "@newos/ui"
+import { assistant, type AssistantSettings, type Fact } from "@helixos/sdk"
+import { useAction, useCommand } from "@helixos/sdk/react"
+import { EmptyState, Group, Page, Row, Toggle } from "@helixos/ui"
 import { X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ActionError } from "../components/common"
@@ -52,7 +52,7 @@ export function PrivacyPage() {
         </Row>
         <Row
           label="Keep conversation history"
-          description="Saved on this laptop in ~/.local/share/newos. Off keeps conversations in memory until you log out."
+          description="Saved on this laptop in ~/.local/share/helixos. Off keeps conversations in memory until you log out."
         >
           <Toggle
             label="Keep conversation history"

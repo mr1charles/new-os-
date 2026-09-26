@@ -1,6 +1,6 @@
-import { call } from "@newos/sdk"
-import { useAction, useCommand } from "@newos/sdk/react"
-import { Badge, EmptyState, Group, Page, Row, Toggle, Value } from "@newos/ui"
+import { call } from "@helixos/sdk"
+import { useAction, useCommand } from "@helixos/sdk/react"
+import { Badge, EmptyState, Group, Page, Row, Toggle, Value } from "@helixos/ui"
 import { Cable, Plane, Wifi } from "lucide-react"
 import { ActionError, LoadError } from "../components/common"
 

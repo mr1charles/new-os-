@@ -7,7 +7,7 @@
 }
 
 .cc-module {
-  background: var(--newos-color-control);
+  background: var(--helixos-color-control);
   border-radius: 14px;
   padding: 10px;
 }
@@ -19,7 +19,7 @@
 
 .cc-caption {
   font-size: 11px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .cc-toggle {
@@ -37,7 +37,7 @@ button.cc-link {
   box-shadow: none;
   min-width: 0;
   min-height: 0;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 button.cc-toggle-main {
@@ -48,19 +48,19 @@ button.cc-toggle-main {
 button.cc-toggle-main:hover,
 button.cc-toggle-more:hover,
 button.cc-list-row:hover {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .cc-toggle-icon {
   min-width: 30px;
   min-height: 30px;
   border-radius: 999px;
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .cc-toggle.active .cc-toggle-icon {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
 }
 
 .cc-toggle-title {
@@ -70,13 +70,13 @@ button.cc-list-row:hover {
 
 .cc-toggle-subtitle {
   font-size: 11px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 button.cc-toggle-more {
   padding: 4px;
   border-radius: 8px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .cc-slider scale {
@@ -87,13 +87,13 @@ button.cc-toggle-more {
 .cc-slider scale > trough {
   min-height: 22px;
   border-radius: 11px;
-  background: var(--newos-color-track-off);
+  background: var(--helixos-color-track-off);
   border: none;
 }
 
 .cc-slider scale > trough > highlight {
   border-radius: 11px;
-  background: var(--newos-color-fg);
+  background: var(--helixos-color-fg);
   border: none;
 }
 
@@ -118,7 +118,7 @@ button.cc-slider-icon {
 }
 
 .segmented {
-  background: var(--newos-color-track-off);
+  background: var(--helixos-color-track-off);
   border-radius: 8px;
   padding: 2px;
 }
@@ -130,7 +130,7 @@ button.segment {
 }
 
 button.segment.active {
-  background: var(--newos-color-bg-elevated);
+  background: var(--helixos-color-bg-elevated);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -140,7 +140,7 @@ button.segment.active {
 
 .cc-page-header {
   padding-bottom: 4px;
-  border-bottom: 1px solid var(--newos-color-separator);
+  border-bottom: 1px solid var(--helixos-color-separator);
 }
 
 .cc-page-title {
@@ -154,7 +154,7 @@ button.cc-list-row {
 }
 
 button.cc-list-row.active {
-  color: var(--newos-accent);
+  color: var(--helixos-accent);
   font-weight: 600;
 }
 
@@ -166,17 +166,17 @@ entry.cc-password {
 button.cc-link {
   padding: 4px 8px;
   border-radius: 6px;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 button.cc-link:hover {
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 .app-switcher {
   padding: 16px;
   border-radius: 26px;
-  background: var(--newos-color-material-thick);
+  background: var(--helixos-color-material-thick);
 }
 
 button.switcher-item {
@@ -185,10 +185,10 @@ button.switcher-item {
   box-shadow: none;
   border-radius: 18px;
   padding: 12px;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
   font-size: 12px;
 }
 
 button.switcher-item.selected {
-  background: var(--newos-color-control-active);
+  background: var(--helixos-color-control-active);
 }

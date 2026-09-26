@@ -1,14 +1,14 @@
-//! NewOS Terminal.
+//! HelixOS Terminal.
 
 mod commands;
 
-use newos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
+use helixos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
 use tauri::{Manager, Runtime};
 
 /// Register the state and every command (the shared ones from appkit plus the app's own).
 /// Separate from `main` so tests can build the same app on Tauri's mock runtime.
 fn with_commands<R: Runtime>(builder: tauri::Builder<R>, common: Common) -> tauri::Builder<R> {
-    builder.manage(common).manage(newos_appkit::pty::Ptys::default()).invoke_handler(with_common_commands(tauri::generate_handler![
+    builder.manage(common).manage(helixos_appkit::pty::Ptys::default()).invoke_handler(with_common_commands(tauri::generate_handler![
         commands::term_spawn,
         commands::term_write,
         commands::term_resize,

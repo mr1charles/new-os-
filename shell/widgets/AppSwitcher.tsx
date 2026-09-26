@@ -23,7 +23,7 @@ export default function AppSwitcher() {
   return (
     <PopupWindow
       name="app-switcher"
-      namespace="newos-app-switcher"
+      namespace="helixos-app-switcher"
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
       onKeyPressed={(keyval, state) => {

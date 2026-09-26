@@ -7,7 +7,7 @@ use std::process::{Command, Stdio};
 
 use crate::{AppError, Result};
 
-pub const ATTRIBUTES: [&str; 4] = ["service", "newos-assistant", "account", "anthropic-api-key"];
+pub const ATTRIBUTES: [&str; 4] = ["service", "helixos-assistant", "account", "anthropic-api-key"];
 
 /// Anthropic keys are one token of printable ASCII starting with "sk-ant-".
 pub fn valid_api_key(key: &str) -> bool {
@@ -36,7 +36,7 @@ pub fn store_api_key(key: &str) -> Result<()> {
     if !valid_api_key(key) {
         return Err(AppError::Invalid("That doesn't look like an Anthropic API key (it starts with \"sk-ant-\").".into()));
     }
-    let mut args = vec!["store", "--label=NewOS assistant: Anthropic API key"];
+    let mut args = vec!["store", "--label=HelixOS assistant: Anthropic API key"];
     args.extend(ATTRIBUTES);
     let output = secret_tool(&args, Some(key))?;
     if !output.status.success() {
@@ -73,6 +73,6 @@ mod tests {
     #[test]
     fn attributes_match_assistantd() {
         let secrets = include_str!("../../assistantd/src/secrets.rs");
-        assert!(secrets.contains(r#"["service", "newos-assistant", "account", "anthropic-api-key"]"#));
+        assert!(secrets.contains(r#"["service", "helixos-assistant", "account", "anthropic-api-key"]"#));
     }
 }

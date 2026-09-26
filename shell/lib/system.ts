@@ -6,7 +6,7 @@ import { launchEntry } from "./apps"
 
 function run(argv: string[]) {
   return execAsync(argv).catch((error) => {
-    console.warn(`newos: ${argv.join(" ")} failed: ${error}`)
+    console.warn(`helixos: ${argv.join(" ")} failed: ${error}`)
     return ""
   })
 }
@@ -30,8 +30,8 @@ export const shutdown = () => run(["systemctl", "poweroff"])
 export const logOut = () =>
   hyprland ? hyprland.dispatch("exit", "") : run(["loginctl", "terminate-session", "self"])
 
-export function notify(summary: string, body = "", icon = "newos-logo-symbolic") {
-  return run(["notify-send", "--app-name=NewOS", `--icon=${icon}`, summary, body])
+export function notify(summary: string, body = "", icon = "helixos-logo-symbolic") {
+  return run(["notify-send", "--app-name=HelixOS", `--icon=${icon}`, summary, body])
 }
 
 export function openUrl(url: string) {
@@ -44,10 +44,10 @@ export function copyToClipboard(text: string) {
 
 /** Open the Settings app, optionally on a page (apps/settings, milestone 3). */
 export function openSettings(page?: string) {
-  if (hasProgram("newos-settings")) {
-    spawn(page ? ["newos-settings", "--page", page] : ["newos-settings"])
-  } else if (!launchEntry("newos-settings")) {
-    notify("Settings is not installed yet", "The Settings app ships in milestone 3 of NewOS.")
+  if (hasProgram("helixos-settings")) {
+    spawn(page ? ["helixos-settings", "--page", page] : ["helixos-settings"])
+  } else if (!launchEntry("helixos-settings")) {
+    notify("Settings is not installed yet", "The Settings app ships in milestone 3 of HelixOS.")
   }
 }
 

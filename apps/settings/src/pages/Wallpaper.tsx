@@ -1,10 +1,10 @@
-import { inTauri, resolveTheme, type Wallpaper } from "@newos/sdk"
-import { useAction, useCommand, useSettings } from "@newos/sdk/react"
-import { Button, cx, Group, Page, Row, SegmentedControl } from "@newos/ui"
+import { inTauri, resolveTheme, type Wallpaper } from "@helixos/sdk"
+import { useAction, useCommand, useSettings } from "@helixos/sdk/react"
+import { Button, cx, Group, Page, Row, SegmentedControl } from "@helixos/ui"
 import { ImagePlus } from "lucide-react"
 import { useEffect, useState } from "react"
-import builtinDark from "../../../../shell/assets/wallpapers/newos-dark.svg?url"
-import builtinLight from "../../../../shell/assets/wallpapers/newos-light.svg?url"
+import builtinDark from "../../../../shell/assets/wallpapers/helixos-dark.svg?url"
+import builtinLight from "../../../../shell/assets/wallpapers/helixos-light.svg?url"
 import { ActionError } from "../components/common"
 
 type Variant = "light" | "dark"
@@ -45,7 +45,7 @@ export function WallpaperPage() {
     if (path) choose(path)
   })
 
-  const builtin: Wallpaper = { path: "", name: "NewOS" }
+  const builtin: Wallpaper = { path: "", name: "HelixOS" }
   const list: Wallpaper[] = [builtin, ...(found.data ?? [])]
   if (selected && !list.some((w) => w.path === selected))
     list.push({ path: selected, name: selected.split("/").pop() ?? selected })

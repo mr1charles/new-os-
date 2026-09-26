@@ -1,7 +1,7 @@
 /**
  * The login screen, run by greetd as the `greeter` user (shell/greeter.ts). One password
  * field: spacesd says which space the password opens, then greetd logs that account in and
- * starts its NewOS session.
+ * starts its HelixOS session.
  */
 import app from "ags/gtk4/app"
 import Astal from "gi://Astal?version=4.0"
@@ -17,8 +17,8 @@ import { listSpaces, resolvePassword } from "../lib/spaces"
 import { restart, shutdown } from "../lib/system"
 import LoginView, { type Attempt } from "./login/LoginView"
 
-/** NEWOS_GREETER_PREVIEW=1: say which space would open instead of logging in (development). */
-const PREVIEW = GLib.getenv("NEWOS_GREETER_PREVIEW") === "1"
+/** HELIXOS_GREETER_PREVIEW=1: say which space would open instead of logging in (development). */
+const PREVIEW = GLib.getenv("HELIXOS_GREETER_PREVIEW") === "1"
 
 function greetdLogin(account: string, password: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -101,7 +101,7 @@ export default function Greeter({
   return (
     <window
       name={`greeter-${gdkmonitor.connector}`}
-      namespace="newos-greeter"
+      namespace="helixos-greeter"
       class="greeter-window"
       gdkmonitor={gdkmonitor}
       application={app}
@@ -119,7 +119,7 @@ export default function Greeter({
           vexpand
           canShrink
           contentFit={Gtk.ContentFit.COVER}
-          file={Gio.File.new_for_path(assetPath("wallpapers", "newos-dark.svg"))}
+          file={Gio.File.new_for_path(assetPath("wallpapers", "helixos-dark.svg"))}
         />
         {primary && (
           <LoginView

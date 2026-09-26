@@ -1,5 +1,5 @@
-import { assistant, call, type NoteMeta, type NoteSearchHit } from "@newos/sdk"
-import { useAppTheme } from "@newos/sdk/react"
+import { assistant, call, type NoteMeta, type NoteSearchHit } from "@helixos/sdk"
+import { useAppTheme } from "@helixos/sdk/react"
 import {
   Button,
   Callout,
@@ -17,7 +17,7 @@ import {
   TextField,
   Toolbar,
   Window,
-} from "@newos/ui"
+} from "@helixos/ui"
 import {
   Folder,
   FolderPlus,

@@ -90,7 +90,7 @@ impl Ptys {
         cmd.cwd(dir);
         cmd.env("TERM", "xterm-256color");
         cmd.env("COLORTERM", "truecolor");
-        cmd.env("TERM_PROGRAM", "NewOS Terminal");
+        cmd.env("TERM_PROGRAM", "HelixOS Terminal");
         if program.is_none() && shell.ends_with("/bash") {
             // Mark where commands start and end (OSC 133, which fish and others emit on their
             // own), so Terminal can say when a long command finishes.

@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use newos_syslib::{CommandRunner, SystemRunner};
+use helixos_syslib::{CommandRunner, SystemRunner};
 use tokio::sync::{broadcast, oneshot};
 
 use crate::config::{Config, Paths};
@@ -127,7 +127,7 @@ impl AppState {
     pub fn from_config(config: Config, paths: &Paths) -> anyhow::Result<Arc<Self>> {
         let http = reqwest::Client::builder()
             .connect_timeout(Duration::from_secs(10))
-            .user_agent(concat!("newos-assistantd/", env!("CARGO_PKG_VERSION")))
+            .user_agent(concat!("helixos-assistantd/", env!("CARGO_PKG_VERSION")))
             .build()?;
         let key = find_api_key(&config.cloud);
         let key_source = key.as_ref().map(|(_, source)| *source);
@@ -171,7 +171,7 @@ impl AppState {
             runner: Arc::new(SystemRunner::default()),
             memory,
             home: paths.home.clone(),
-            app_dirs: newos_syslib::desktop::application_dirs(),
+            app_dirs: helixos_syslib::desktop::application_dirs(),
             power_supply_dir: PathBuf::from("/sys/class/power_supply"),
             key_source,
         }))

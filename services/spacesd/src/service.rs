@@ -1,4 +1,4 @@
-//! The D-Bus interface `org.newos.Spaces1` at `/org/newos/Spaces1`. Results are JSON strings,
+//! The D-Bus interface `org.helixos.Spaces1` at `/org/helixos/Spaces1`. Results are JSON strings,
 //! which both the shell (GJS) and the apps read easily.
 //!
 //! | Method | Who may call |
@@ -17,7 +17,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
-use newos_syslib::CommandRunner;
+use helixos_syslib::CommandRunner;
 use tokio::sync::Mutex;
 use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
@@ -30,12 +30,12 @@ use crate::ratelimit::RateLimiter;
 use crate::registry::{check_accent, check_name, Registry, Space};
 use crate::{accounts, password_taken, resolve};
 
-pub const BUS_NAME: &str = "org.newos.Spaces1";
-pub const OBJECT_PATH: &str = "/org/newos/Spaces1";
-pub const MANAGE_ACTION: &str = "org.newos.spaces.manage";
+pub const BUS_NAME: &str = "org.helixos.Spaces1";
+pub const OBJECT_PATH: &str = "/org/helixos/Spaces1";
+pub const MANAGE_ACTION: &str = "org.helixos.spaces.manage";
 
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.newos.Spaces1.Error")]
+#[zbus(prefix = "org.helixos.Spaces1.Error")]
 pub enum SpacesError {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -62,7 +62,7 @@ type Result<T> = std::result::Result<T, SpacesError>;
 /// How management calls are authorized.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Authorization {
-    /// polkit `org.newos.spaces.manage` (the installed system service).
+    /// polkit `org.helixos.spaces.manage` (the installed system service).
     Polkit,
     /// Development on a session bus: only the uid running the service may manage, and
     /// ResolvePassword answers only that uid. Never used on the system bus.
@@ -186,7 +186,7 @@ impl Service {
     }
 }
 
-#[interface(name = "org.newos.Spaces1")]
+#[interface(name = "org.helixos.Spaces1")]
 impl Service {
     async fn list_spaces(&self, #[zbus(header)] header: Header<'_>, #[zbus(connection)] connection: &Connection) -> Result<String> {
         self.require_resolver(connection, &header).await?;

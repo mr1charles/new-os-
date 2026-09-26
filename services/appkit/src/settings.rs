@@ -1,6 +1,6 @@
-//! The live settings file (`~/.config/newos/shell.json`).
+//! The live settings file (`~/.config/helixos/shell.json`).
 //!
-//! The schema and defaults live in TypeScript (`@newos/sdk`), shared by the shell and the apps,
+//! The schema and defaults live in TypeScript (`@helixos/sdk`), shared by the shell and the apps,
 //! so this side treats the file as JSON: read it, deep-merge a patch into it, write it
 //! atomically, and report changes made by anyone else.
 
@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn updates_keep_unrelated_keys() {
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("newos/shell.json");
+        let path = dir.path().join("helixos/shell.json");
         update(&path, &json!({"bar": {"clock24h": true}})).unwrap();
         let after = update(&path, &json!({"appearance": {"theme": "light"}})).unwrap();
         assert_eq!(after, json!({"bar": {"clock24h": true}, "appearance": {"theme": "light"}}));

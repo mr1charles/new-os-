@@ -1,20 +1,20 @@
 {
-  "name": "@newos/shell",
+  "name": "@helixos/shell",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS desktop shell: bar, Dynamic Island, dock, launcher, control center, notifications, assistant overlay (AGS/Astal, GTK4).",
+  "description": "HelixOS desktop shell: bar, Dynamic Island, dock, launcher, control center, notifications, assistant overlay (AGS/Astal, GTK4).",
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "dev": "ags run --gtk 4 app.ts",
     "start": "ags run --gtk 4 app.ts",
-    "bundle": "ags bundle app.ts dist/newos-shell",
+    "bundle": "ags bundle app.ts dist/helixos-shell",
     "types": "ags types -d . --gtk 4 -u"
   },
   "dependencies": {
-    "@newos/design-tokens": "workspace:*",
-    "@newos/sdk": "workspace:*",
+    "@helixos/design-tokens": "workspace:*",
+    "@helixos/sdk": "workspace:*",
     "ags": "git+https://github.com/Aylur/ags.git#v3.1.2",
     "gnim": "^1.9.1"
   },

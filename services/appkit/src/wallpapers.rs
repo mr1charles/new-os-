@@ -1,5 +1,5 @@
 //! Pictures offered in Settings → Wallpaper: the user's `~/Pictures/Wallpapers`, then the
-//! distribution's `/usr/share/backgrounds` and NewOS's own set.
+//! distribution's `/usr/share/backgrounds` and HelixOS's own set.
 
 use std::path::{Path, PathBuf};
 
@@ -19,7 +19,7 @@ const LIMIT: usize = 200;
 pub fn default_dirs() -> Vec<PathBuf> {
     vec![
         crate::paths::home().join("Pictures/Wallpapers"),
-        PathBuf::from("/usr/share/newos/wallpapers"),
+        PathBuf::from("/usr/share/helixos/wallpapers"),
         PathBuf::from("/usr/share/backgrounds"),
     ]
 }

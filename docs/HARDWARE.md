@@ -1,6 +1,6 @@
 # Hardware: the HP laptop
 
-NewOS targets the owner's **HP Laptop 14-dq2xxx**, product number (SKU) **50V33UA#ABA**. This
+HelixOS targets the owner's **HP Laptop 14-dq2xxx**, product number (SKU) **50V33UA#ABA**. This
 is the 14" non-touch model without a pen, not the Pavilion x360. Confirmed on 2026-09-26 by
 running the checks below on the laptop itself (CachyOS, kernel 7.2, Hyprland 0.56):
 
@@ -26,7 +26,7 @@ running the checks below on the laptop itself (CachyOS, kernel 7.2, Hyprland 0.5
 
 The ELAN `04f3:0c00` reader is supported by the `elanmoc2` driver, which is not in upstream
 libfprint yet. It is packaged in the AUR as `libfprint-elanmoc2-working-git`, and that
-package is what makes it work on this laptop today. The NewOS ISO (milestone 8) must ship that
+package is what makes it work on this laptop today. The HelixOS ISO (milestone 8) must ship that
 libfprint build instead of Arch's `libfprint`. With it, Dual Space can use fingerprints to pick
 a space (milestone 5.1).
 

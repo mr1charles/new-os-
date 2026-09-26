@@ -5,10 +5,10 @@ describe("app activities", () => {
   it("accepts a well-formed activity and clamps progress", () => {
     expect(
       parseActivity(
-        '{"app":"newos-files","icon":"folder","title":"Copying 3 items","subtitle":"to Documents","progress":1.7}',
+        '{"app":"helixos-files","icon":"folder","title":"Copying 3 items","subtitle":"to Documents","progress":1.7}',
       ),
     ).toEqual({
-      app: "newos-files",
+      app: "helixos-files",
       icon: "folder",
       title: "Copying 3 items",
       subtitle: "to Documents",

@@ -147,7 +147,7 @@ describe("island sizing", () => {
 describe("island in context", () => {
   const q = new IslandQueue()
   const activity = q.upsert("activity", {
-    app: "newos-files",
+    app: "helixos-files",
     icon: "",
     title: "Copying 3 items",
     subtitle: "",
@@ -155,16 +155,16 @@ describe("island in context", () => {
   })
 
   it("keeps an app's activity compact while that app is in front", () => {
-    expect(contextualSize(activity, false, "newos-files")).toBe("compact")
-    expect(contextualSize(activity, false, "org.newos.Files".replace("Files", "files"))).toBe(
+    expect(contextualSize(activity, false, "helixos-files")).toBe("compact")
+    expect(contextualSize(activity, false, "org.helixos.Files".replace("Files", "files"))).toBe(
       "compact",
     )
-    expect(contextualSize(activity, true, "newos-files")).toBe("expanded")
+    expect(contextualSize(activity, true, "helixos-files")).toBe("expanded")
     expect(contextualSize(activity, false, "firefox")).toBe("compact")
   })
 
   it("matches apps across class and desktop id spellings", () => {
-    expect(sameApp("newos-files.desktop", "NewOS-Files")).toBe(true)
+    expect(sameApp("helixos-files.desktop", "HelixOS-Files")).toBe(true)
     expect(sameApp("", "")).toBe(false)
   })
 

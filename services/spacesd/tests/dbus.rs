@@ -5,12 +5,12 @@ use std::io::{BufRead, BufReader};
 use std::process::{Child, Command, Stdio};
 use std::sync::Arc;
 
-use newos_spacesd::auth::MockAuthenticator;
-use newos_spacesd::callers::AccountFiles;
-use newos_spacesd::ratelimit::RateLimiter;
-use newos_spacesd::registry::Registry;
-use newos_spacesd::service::{Authorization, Service, BUS_NAME, OBJECT_PATH};
-use newos_syslib::{CommandOutput, MockRunner};
+use helixos_spacesd::auth::MockAuthenticator;
+use helixos_spacesd::callers::AccountFiles;
+use helixos_spacesd::ratelimit::RateLimiter;
+use helixos_spacesd::registry::Registry;
+use helixos_spacesd::service::{Authorization, Service, BUS_NAME, OBJECT_PATH};
+use helixos_syslib::{CommandOutput, MockRunner};
 use serde_json::Value;
 use tokio::sync::Mutex;
 
@@ -93,7 +93,7 @@ async fn create_resolve_and_rate_limit_over_dbus() {
 
     // A password that already opens a space is refused for a new one.
     let err = call(&client, "CreateSpace", &("Copy", "work-secret", "pink")).await.unwrap_err();
-    assert_eq!(error_name(err), "org.newos.Spaces1.Error.Invalid");
+    assert_eq!(error_name(err), "org.helixos.Spaces1.Error.Invalid");
 
     // Each password opens its own space.
     let account = |m: zbus::Message| m.body().deserialize::<String>().unwrap();
@@ -107,7 +107,7 @@ async fn create_resolve_and_rate_limit_over_dbus() {
     runner.respond(CommandOutput::ok("")); // no sessions
     match call(&client, "SwitchTo", &("home-secret",)).await.unwrap_err() {
         zbus::Error::MethodError(name, message, _) => {
-            assert_eq!(name.as_str(), "org.newos.Spaces1.Error.NotRunning");
+            assert_eq!(name.as_str(), "org.helixos.Spaces1.Error.NotRunning");
             assert_eq!(message.as_deref(), Some("Personal"));
         }
         other => panic!("unexpected {other}"),
@@ -116,17 +116,17 @@ async fn create_resolve_and_rate_limit_over_dbus() {
     // Wrong passwords: NoMatch four times, then the fifth locks the caller out.
     for _ in 0..5 {
         let err = call(&client, "ResolvePassword", &("guess",)).await.unwrap_err();
-        assert_eq!(error_name(err), "org.newos.Spaces1.Error.NoMatch");
+        assert_eq!(error_name(err), "org.helixos.Spaces1.Error.NoMatch");
     }
     let err = call(&client, "ResolvePassword", &("work-secret",)).await.unwrap_err();
-    assert_eq!(error_name(err), "org.newos.Spaces1.Error.RateLimited", "even the right password waits");
+    assert_eq!(error_name(err), "org.helixos.Spaces1.Error.RateLimited", "even the right password waits");
 
     // Deleting: never the last space; the account tools are called for the others.
     runner.respond(CommandOutput::ok("")); // loginctl list-sessions: none
     call(&client, "DeleteSpace", &("space-personal", false)).await.unwrap();
     assert!(runner.calls().iter().any(|c| c == &["userdel", "--remove", "space-personal"]));
     let err = call(&client, "DeleteSpace", &("space-work", false)).await.unwrap_err();
-    assert_eq!(error_name(err), "org.newos.Spaces1.Error.Invalid");
+    assert_eq!(error_name(err), "org.helixos.Spaces1.Error.Invalid");
 
     let saved: Value = serde_json::from_str(&std::fs::read_to_string(dir.path().join("spaces.json")).unwrap()).unwrap();
     assert_eq!(saved["spaces"].as_array().unwrap().len(), 1);

@@ -1,6 +1,6 @@
-//! newos-open: open anything. Registered as the handler for Windows programs, Flatpak refs and
+//! helixos-open: open anything. Registered as the handler for Windows programs, Flatpak refs and
 //! bundles, AppImages, packages, APKs, and Flathub / appstream links (distro/applications/
-//! newos-open.desktop), so double-clicking in Files or clicking "Install" on flathub.org ends
+//! helixos-open.desktop), so double-clicking in Files or clicking "Install" on flathub.org ends
 //! up here.
 //!
 //! It asks first when something gets installed (a notification with buttons, answered in the
@@ -16,8 +16,8 @@ use std::time::Duration;
 
 use anyhow::{anyhow, Context, Result};
 use futures_util::StreamExt;
-use newos_appkit::island::{self, Activity};
-use newos_syslib::{CommandRunner, SystemRunner};
+use helixos_appkit::island::{self, Activity};
+use helixos_syslib::{CommandRunner, SystemRunner};
 use zbus::zvariant::Value;
 
 use classify::{classify, Target};
@@ -215,15 +215,20 @@ async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner) -
         open = Some(vec![target.to_string_lossy().into_owned()]);
     }
     if !steps.is_empty() {
-        let activity =
-            Activity { app: "newos-open".into(), icon: ICON.into(), title: plan.activity.clone(), subtitle: String::new(), progress: None };
+        let activity = Activity {
+            app: "helixos-open".into(),
+            icon: ICON.into(),
+            title: plan.activity.clone(),
+            subtitle: String::new(),
+            progress: None,
+        };
         let id = format!("open-{}", std::process::id());
         let result = island::while_working(&id, activity, tokio::sync::watch::channel(None).1, async {
             for (i, step) in steps.iter().enumerate() {
                 let _ = island::show(
                     &id,
                     &Activity {
-                        app: "newos-open".into(),
+                        app: "helixos-open".into(),
                         icon: ICON.into(),
                         title: plan.activity.clone(),
                         subtitle: format!("Step {} of {}", i + 1, steps.len()),
@@ -266,7 +271,7 @@ async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner) -
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.is_empty() || args[0] == "--help" {
-        println!("usage: newos-open FILE-OR-LINK...\n\nOpens Windows programs, Flatpaks and Flathub links, AppImages, packages, and Android apps.");
+        println!("usage: helixos-open FILE-OR-LINK...\n\nOpens Windows programs, Flatpaks and Flathub links, AppImages, packages, and Android apps.");
         return Ok(());
     }
     if args[0] == "--classify" {
@@ -288,7 +293,7 @@ async fn main() -> Result<()> {
         };
         let plan = plan::plan(&target, have, flatpakref.as_deref());
         if let Err(error) = execute(&plan, &notifier, &runner).await {
-            eprintln!("newos-open: {input}: {error}");
+            eprintln!("helixos-open: {input}: {error}");
             failed = true;
         }
     }

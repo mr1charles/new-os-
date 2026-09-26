@@ -1,7 +1,7 @@
-import { accentColor, accentNames } from "@newos/design-tokens"
-import { resolveTheme, type ThemePreference } from "@newos/sdk"
-import { useSettings } from "@newos/sdk/react"
-import { cx, Group, Page, Row, Toggle } from "@newos/ui"
+import { accentColor, accentNames } from "@helixos/design-tokens"
+import { resolveTheme, type ThemePreference } from "@helixos/sdk"
+import { useSettings } from "@helixos/sdk/react"
+import { cx, Group, Page, Row, Toggle } from "@helixos/ui"
 
 const THEMES: { value: ThemePreference; label: string }[] = [
   { value: "light", label: "Light" },

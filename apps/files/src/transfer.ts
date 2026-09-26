@@ -1,4 +1,4 @@
-import { call, notify } from "@newos/sdk"
+import { call, notify } from "@helixos/sdk"
 
 const baseName = (path: string) => path.replace(/\/+$/, "").split("/").pop() ?? ""
 

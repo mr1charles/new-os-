@@ -11,19 +11,19 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  border-right: 1px solid var(--newos-color-separator);
+  border-right: 1px solid var(--helixos-color-separator);
 }
 
 .notes-list__head {
   display: flex;
-  gap: var(--newos-space-2);
-  padding: 0 var(--newos-space-3) var(--newos-space-2);
+  gap: var(--helixos-space-2);
+  padding: 0 var(--helixos-space-3) var(--helixos-space-2);
 }
 
 .notes-list__rows {
   flex: 1;
   overflow-y: auto;
-  padding: 0 var(--newos-space-2) var(--newos-space-3);
+  padding: 0 var(--helixos-space-2) var(--helixos-space-3);
 }
 
 .notes-row {
@@ -31,9 +31,9 @@
   flex-direction: column;
   gap: 2px;
   width: 100%;
-  padding: var(--newos-space-2) var(--newos-space-3);
+  padding: var(--helixos-space-2) var(--helixos-space-3);
   border: 0;
-  border-radius: var(--newos-radius-sm);
+  border-radius: var(--helixos-radius-sm);
   background: transparent;
   text-align: left;
   position: relative;
@@ -43,9 +43,9 @@
   content: "";
   position: absolute;
   top: 0;
-  left: var(--newos-space-3);
-  right: var(--newos-space-3);
-  border-top: 1px solid var(--newos-color-separator);
+  left: var(--helixos-space-3);
+  right: var(--helixos-space-3);
+  border-top: 1px solid var(--helixos-color-separator);
 }
 
 .notes-row--selected,
@@ -59,19 +59,19 @@
 }
 
 .notes-row:hover {
-  background: var(--newos-color-control);
+  background: var(--helixos-color-control);
 }
 
 .notes-row--selected,
 .notes-row--selected:hover {
-  background: color-mix(in srgb, var(--newos-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--helixos-accent) 22%, transparent);
 }
 
 .notes-row__title {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-weight: var(--newos-font-weight-semibold);
+  font-weight: var(--helixos-font-weight-semibold);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -79,23 +79,23 @@
 
 .notes-row__pin {
   flex: none;
-  color: var(--newos-color-warning);
+  color: var(--helixos-color-warning);
 }
 
 .notes-row__meta {
   display: flex;
-  gap: var(--newos-space-2);
-  font-size: var(--newos-font-size-footnote);
+  gap: var(--helixos-space-2);
+  font-size: var(--helixos-font-size-footnote);
   min-width: 0;
 }
 
 .notes-row__date {
   flex: none;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 .notes-row__preview {
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -124,19 +124,19 @@
 .notes-new-folder {
   display: flex;
   align-items: center;
-  gap: var(--newos-space-2);
+  gap: var(--helixos-space-2);
   width: 100%;
   height: 30px;
-  padding: 0 var(--newos-space-2);
+  padding: 0 var(--helixos-space-2);
   border: 0;
-  border-radius: var(--newos-radius-xs);
+  border-radius: var(--helixos-radius-xs);
   background: transparent;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notes-new-folder:hover {
-  background: var(--newos-color-control);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-control);
+  color: var(--helixos-color-fg);
 }
 
 /* Editor pane ------------------------------------------------------------------------------- */
@@ -146,18 +146,18 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: var(--newos-color-bg-elevated);
+  background: var(--helixos-color-bg-elevated);
 }
 
 .notes-pane > .nx-callout {
-  margin: var(--newos-space-3);
+  margin: var(--helixos-space-3);
 }
 
 .notes-pane__date {
-  padding: var(--newos-space-2) 0 0;
+  padding: var(--helixos-space-2) 0 0;
   text-align: center;
-  font-size: var(--newos-font-size-footnote);
-  color: var(--newos-color-fg-tertiary);
+  font-size: var(--helixos-font-size-footnote);
+  color: var(--helixos-color-fg-tertiary);
 }
 
 .notes-editor {
@@ -171,12 +171,12 @@
   height: 15px;
   margin: 0 4px 0 0;
   vertical-align: -2px;
-  accent-color: var(--newos-accent);
+  accent-color: var(--helixos-accent);
   cursor: pointer;
 }
 
 .notes-done {
-  color: var(--newos-color-fg-tertiary);
+  color: var(--helixos-color-fg-tertiary);
   text-decoration: line-through;
 }
 
@@ -184,17 +184,17 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: var(--newos-font-size-footnote);
-  color: var(--newos-color-fg-secondary);
+  font-size: var(--helixos-font-size-footnote);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notes-notice {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--newos-space-2);
-  padding: 4px var(--newos-space-3);
-  font-size: var(--newos-font-size-footnote);
+  gap: var(--helixos-space-2);
+  padding: 4px var(--helixos-space-3);
+  font-size: var(--helixos-font-size-footnote);
   background: var(--nx-accent-soft);
 }
 
@@ -205,25 +205,25 @@
 }
 
 .notes-menu button {
-  padding: 6px var(--newos-space-2);
+  padding: 6px var(--helixos-space-2);
   border: 0;
-  border-radius: var(--newos-radius-xs);
+  border-radius: var(--helixos-radius-xs);
   background: transparent;
   text-align: left;
 }
 
 .notes-menu button:hover,
 .notes-menu button:focus-visible {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
 }
 
 .notes-menu__label {
-  margin-top: var(--newos-space-1);
-  padding: 4px var(--newos-space-2) 2px;
-  border-top: 1px solid var(--newos-color-separator);
-  font-size: var(--newos-font-size-caption);
-  color: var(--newos-color-fg-secondary);
+  margin-top: var(--helixos-space-1);
+  padding: 4px var(--helixos-space-2) 2px;
+  border-top: 1px solid var(--helixos-color-separator);
+  font-size: var(--helixos-font-size-caption);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notes-summary {
@@ -236,22 +236,22 @@
 
 .notes-ask {
   display: flex;
-  gap: var(--newos-space-2);
+  gap: var(--helixos-space-2);
 }
 
 .notes-ask__status {
   display: flex;
   align-items: center;
-  gap: var(--newos-space-2);
-  margin-top: var(--newos-space-3);
-  color: var(--newos-color-fg-secondary);
+  gap: var(--helixos-space-2);
+  margin-top: var(--helixos-space-3);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notes-ask__answer {
-  margin-top: var(--newos-space-3);
-  padding: var(--newos-space-3);
-  border-radius: var(--newos-radius-sm);
-  background: var(--newos-color-control);
+  margin-top: var(--helixos-space-3);
+  padding: var(--helixos-space-3);
+  border-radius: var(--helixos-radius-sm);
+  background: var(--helixos-color-control);
   white-space: pre-wrap;
   user-select: text;
   line-height: 1.55;
@@ -261,9 +261,9 @@
 
 .notes-ask__provider {
   float: right;
-  margin-left: var(--newos-space-2);
-  font-size: var(--newos-font-size-caption);
-  color: var(--newos-color-fg-secondary);
+  margin-left: var(--helixos-space-2);
+  font-size: var(--helixos-font-size-caption);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notes-ask__sources {
@@ -271,16 +271,16 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  margin-top: var(--newos-space-3);
-  font-size: var(--newos-font-size-footnote);
-  color: var(--newos-color-fg-secondary);
+  margin-top: var(--helixos-space-3);
+  font-size: var(--helixos-font-size-footnote);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .notes-chip {
   padding: 2px 8px;
   border: 0;
-  border-radius: var(--newos-radius-pill);
+  border-radius: var(--helixos-radius-pill);
   background: var(--nx-accent-soft);
-  color: var(--newos-accent);
-  font-size: var(--newos-font-size-footnote);
+  color: var(--helixos-accent);
+  font-size: var(--helixos-font-size-footnote);
 }

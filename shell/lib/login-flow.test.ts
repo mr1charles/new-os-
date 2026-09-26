@@ -5,18 +5,18 @@ describe("spacesd errors", () => {
   it("reads the service's error names", () => {
     expect(
       parseSpacesError(
-        "GDBus.Error:org.newos.Spaces1.Error.NoMatch: That password doesn’t open a space.",
+        "GDBus.Error:org.helixos.Spaces1.Error.NoMatch: That password doesn’t open a space.",
       ),
     ).toEqual({
       kind: "nomatch",
     })
-    expect(parseSpacesError("GDBus.Error:org.newos.Spaces1.Error.RateLimited: 45")).toEqual({
+    expect(parseSpacesError("GDBus.Error:org.helixos.Spaces1.Error.RateLimited: 45")).toEqual({
       kind: "ratelimited",
       seconds: 45,
     })
     expect(
       parseSpacesError(
-        "GDBus.Error:org.newos.Spaces1.Error.AccessDenied: Only the login screen and spaces may ask this.",
+        "GDBus.Error:org.helixos.Spaces1.Error.AccessDenied: Only the login screen and spaces may ask this.",
       ),
     ).toEqual({
       kind: "unavailable",

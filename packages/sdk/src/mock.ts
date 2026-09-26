@@ -1,7 +1,7 @@
 /**
  * An in-memory backend for developing and testing app UIs in a browser: `setMockBackend(
  * createMockBackend())`. State changes stick for the session, so toggles, pairing, and
- * connecting behave like the real thing. The sample data is the HP 14-dq2xxx NewOS targets.
+ * connecting behave like the real thing. The sample data is the HP 14-dq2xxx HelixOS targets.
  */
 import { PRESETS } from "./customize"
 import type { AssistantSettings } from "./assistant"
@@ -139,7 +139,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
   ]
   const facts = [
     { id: 1, text: "Prefers the metric system", created_at: 1789900000 },
-    { id: 2, text: "Works on the NewOS project", created_at: 1789950000 },
+    { id: 2, text: "Works on the HelixOS project", created_at: 1789950000 },
   ]
 
   // Notes: path -> text, plus folders and pins, with the same naming rules as appkit::notes.
@@ -161,7 +161,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
     [
       "Work/Q4 plan.md",
       {
-        text: "# Q4 plan\n\nShip the NewOS installer and Dual Space.\n",
+        text: "# Q4 plan\n\nShip the HelixOS installer and Dual Space.\n",
         modified: Date.now() - 86_400_000,
       },
     ],
@@ -236,7 +236,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
   addNode(`${HOME}/Documents/Resume.docx`, false, 40, { size: 38_200 })
   addNode(`${HOME}/Documents/Budget.xlsx`, false, 12, { size: 21_004 })
   addNode(`${HOME}/Documents/Work/Q4 plan.md`, false, 1, {
-    text: "# Q4 plan\n\nShip the NewOS installer and Dual Space.\n",
+    text: "# Q4 plan\n\nShip the HelixOS installer and Dual Space.\n",
   })
   addNode(`${HOME}/Documents/ideas.txt`, false, 3, {
     text: "Ideas\n- A Dynamic Island for timers\n- Ask my notes\n",
@@ -776,12 +776,12 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
 
     apps: () =>
       [
-        ["newos-files", "Files"],
+        ["helixos-files", "Files"],
         ["firefox", "Firefox"],
-        ["newos-notes", "Notes"],
-        ["newos-terminal", "Terminal"],
+        ["helixos-notes", "Notes"],
+        ["helixos-terminal", "Terminal"],
         ["kitty", "kitty"],
-        ["newos-settings", "Settings"],
+        ["helixos-settings", "Settings"],
         ["org.gnome.Calculator", "Calculator"],
       ].map(([id, name]) => ({
         id: `${id}.desktop`,
@@ -793,7 +793,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
       })),
 
     about: () => ({
-      hostname: "newos",
+      hostname: "helixos",
       vendor: "HP",
       model: "HP Laptop 14-dq2xxx",
       sku: "50V33UA#ABA",
@@ -899,7 +899,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
           () =>
             onEvent({
               type: "data",
-              text: `Welcome to the NewOS Terminal (sample shell).\r\n${mockPrompt}`,
+              text: `Welcome to the HelixOS Terminal (sample shell).\r\n${mockPrompt}`,
             }),
           0,
         )

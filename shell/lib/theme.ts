@@ -6,9 +6,9 @@ import app from "ags/gtk4/app"
 import Gtk from "gi://Gtk?version=4.0"
 import { createComputed, createEffect } from "ags"
 import { execAsync } from "ags/process"
-import { accentColor } from "@newos/design-tokens"
-import tokensLight from "@newos/design-tokens/dist/gtk-light.css"
-import tokensDark from "@newos/design-tokens/dist/gtk-dark.css"
+import { accentColor } from "@helixos/design-tokens"
+import tokensLight from "@helixos/design-tokens/dist/gtk-light.css"
+import tokensDark from "@helixos/design-tokens/dist/gtk-dark.css"
 import base from "../style/base.css"
 import bar from "../style/bar.css"
 import island from "../style/island.css"
@@ -19,7 +19,7 @@ import notifications from "../style/notifications.css"
 import assistant from "../style/assistant.css"
 import login from "../style/login.css"
 import { config } from "./config"
-import { resolveTheme, type Theme } from "@newos/sdk/settings-schema"
+import { resolveTheme, type Theme } from "@helixos/sdk/settings-schema"
 import { minute } from "./clock"
 
 const STYLES = [base, bar, island, dock, panels, launcher, notifications, assistant, login].join(
@@ -52,10 +52,10 @@ export function dockSizeCss(iconSize: number): string {
 
 export function buildCss(current: Theme, accentHex: string, solid: boolean, iconSize = 44): string {
   const tokens = current === "dark" ? tokensDark : tokensLight
-  const overrides = [`:root { --newos-accent: ${accentHex}; }`]
+  const overrides = [`:root { --helixos-accent: ${accentHex}; }`]
   if (solid) {
     overrides.push(
-      ":root { --newos-color-material-thin: var(--newos-color-bg-elevated); --newos-color-material-regular: var(--newos-color-bg-elevated); --newos-color-material-bar: var(--newos-color-bg-window); }",
+      ":root { --helixos-color-material-thin: var(--helixos-color-bg-elevated); --helixos-color-material-regular: var(--helixos-color-bg-elevated); --helixos-color-material-bar: var(--helixos-color-bg-window); }",
     )
   }
   return `${tokens}\n${overrides.join("\n")}\n${STYLES}\n${dockSizeCss(iconSize)}`

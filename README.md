@@ -1,7 +1,7 @@
-# NewOS
+# HelixOS
 
 A macOS-style operating system for everyday laptops, starting with an HP 14" / Pavilion x360
-(11th-gen Intel). NewOS is a Linux distribution with its own desktop built from scratch:
+(11th-gen Intel). HelixOS is a Linux distribution with its own desktop built from scratch:
 
 - **Dynamic Island.** A black pill at the top of the screen that morphs to show what's
   happening: notifications, music, volume and brightness, charging, timers, installs, and the
@@ -23,7 +23,7 @@ A macOS-style operating system for everyday laptops, starting with an HP 14" / P
 
 ## How it's built
 
-NewOS reuses the Linux kernel, drivers, and the Hyprland Wayland compositor. Everything you
+HelixOS reuses the Linux kernel, drivers, and the Hyprland Wayland compositor. Everything you
 see and touch is built in this repo.
 
 | Layer | Technology | Where |
@@ -52,16 +52,16 @@ cargo test --workspace # daemon, system libraries, app backends: 137 tests
 The Settings app's interface also runs in any browser against sample data:
 
 ```bash
-pnpm --filter @newos/settings dev   # then open http://localhost:1420
+pnpm --filter @helixos/settings dev   # then open http://localhost:1420
 ```
 
 To try the whole OS on a Linux machine without installing anything, use testing mode: a
-rootless container with everything NewOS needs, using your real Wi-Fi, sound, and Bluetooth
+rootless container with everything HelixOS needs, using your real Wi-Fi, sound, and Bluetooth
 ([details](docs/DEVELOPING.md#testing-mode-the-whole-os-in-a-container)):
 
 ```bash
-scripts/install-preview.sh   # adds "NewOS Preview" to your app menu: set up, start, update
-scripts/live.sh run          # or from a terminal: NewOS in a window (full screen from a console)
+scripts/install-preview.sh   # adds "HelixOS Preview" to your app menu: set up, start, update
+scripts/live.sh run          # or from a terminal: HelixOS in a window (full screen from a console)
 ```
 
 ## Docs
@@ -75,4 +75,4 @@ scripts/live.sh run          # or from a terminal: NewOS in a window (full scree
 ## License
 
 MIT. Wallpapers and icons in `shell/assets` are original artwork under the same license.
-NewOS is an independent project, not affiliated with Apple or HP.
+HelixOS is an independent project, not affiliated with Apple or HP.

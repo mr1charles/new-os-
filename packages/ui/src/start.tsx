@@ -2,11 +2,11 @@
  * Start an app: load the design tokens and UI styles, use the sample-data backend when the page
  * runs in a plain browser (vite dev without Tauri), and render.
  */
-import "@newos/design-tokens/dist/tokens.css"
+import "@helixos/design-tokens/dist/tokens.css"
 import "./styles.css"
 
-import { inTauri, setMockBackend } from "@newos/sdk"
-import { createMockBackend } from "@newos/sdk/mock"
+import { inTauri, setMockBackend } from "@helixos/sdk"
+import { createMockBackend } from "@helixos/sdk/mock"
 import { StrictMode, type ComponentType } from "react"
 import { createRoot } from "react-dom/client"
 

@@ -2,18 +2,18 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
 use clap::Parser;
-use newos_assistantd::config::{Config, Paths};
-use newos_assistantd::{api, AppState};
+use helixos_assistantd::config::{Config, Paths};
+use helixos_assistantd::{api, AppState};
 use tracing_subscriber::EnvFilter;
 
-/// The NewOS assistant daemon.
+/// The HelixOS assistant daemon.
 #[derive(Parser)]
 #[command(version, about)]
 struct Args {
-    /// Config file (default: ~/.config/newos/assistant.toml).
+    /// Config file (default: ~/.config/helixos/assistant.toml).
     #[arg(long)]
     config: Option<PathBuf>,
-    /// Unix socket to serve on (default: $XDG_RUNTIME_DIR/newos/assistant.sock).
+    /// Unix socket to serve on (default: $XDG_RUNTIME_DIR/helixos/assistant.sock).
     #[arg(long)]
     socket: Option<PathBuf>,
     /// Also listen on TCP, for development with curl (e.g. 127.0.0.1:7777). Any local user can

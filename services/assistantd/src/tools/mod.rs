@@ -12,7 +12,7 @@ mod timers;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
-use newos_syslib::CommandRunner;
+use helixos_syslib::CommandRunner;
 use serde_json::{json, Value};
 use tokio::sync::broadcast;
 

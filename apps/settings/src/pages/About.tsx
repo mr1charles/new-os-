@@ -1,9 +1,9 @@
-import { useCommand } from "@newos/sdk/react"
-import { Group, Page, Row, Value } from "@newos/ui"
+import { useCommand } from "@helixos/sdk/react"
+import { Group, Page, Row, Value } from "@helixos/ui"
 import { LoadError } from "../components/common"
 import { cleanCpuName, cleanGpuName, formatBytes, formatMemory } from "../format"
 
-export const NEWOS_VERSION = "0.1.0"
+export const HELIXOS_VERSION = "0.1.0"
 
 export function AboutPage() {
   const about = useCommand("about")
@@ -21,7 +21,7 @@ export function AboutPage() {
       <div className="settings-about-hero">
         <div className="settings-about-logo" aria-hidden="true" />
         <h2 className="settings-about-model">{a?.model || "This Computer"}</h2>
-        <p className="settings-about-os">NewOS {NEWOS_VERSION}</p>
+        <p className="settings-about-os">HelixOS {HELIXOS_VERSION}</p>
       </div>
       {a && (
         <>

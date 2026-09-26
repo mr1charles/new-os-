@@ -1,39 +1,44 @@
 #!/usr/bin/env bash
-# NewOS testing mode: the whole desktop in a rootless Arch Linux container on this machine.
+# HelixOS testing mode: the whole desktop in a rootless Arch Linux container on this machine.
 #
 #   scripts/live.sh create    build the container (first time: ~2 GB download, 15-30 min)
-#   scripts/live.sh run       start NewOS
-#   scripts/live.sh update    rebuild NewOS from this checkout after you pull or edit
+#   scripts/live.sh run       start HelixOS
+#   scripts/live.sh update    rebuild HelixOS from this checkout after you pull or edit
 #   scripts/live.sh shell     a shell inside the container (add `root` for a root shell)
-#   scripts/live.sh exec CMD  run a command in the running NewOS session (hyprctl, ags ...)
+#   scripts/live.sh exec CMD  run a command in the running HelixOS session (hyprctl, ags ...)
 #   scripts/live.sh remove    delete the container
 #
-# `run` inside a desktop opens NewOS in a window; in that window Alt replaces Super for the
+# `run` inside a desktop opens HelixOS in a window; in that window Alt replaces Super for the
 # shortcuts (Alt+Space assistant, Alt+A search), because the host keeps Super for itself.
 # `run` from a text console (Ctrl+Alt+F3, log in) takes over the whole screen like the real
 # OS, with the real Super key.
 #
-# Super+L (Alt+L in a window) locks the screen; the password is "newos". Dual Space runs in demo
+# Super+L (Alt+L in a window) locks the screen; the password is "helixos". Dual Space runs in demo
 # mode: "work-demo" and "home-demo" are the passwords of two pretend spaces.
 #
 # No root needed: the container uses user namespaces (the ranges in /etc/subuid and
 # /etc/subgid). It shares the host's network, GPU, sound (PipeWire), and system services
 # (NetworkManager, BlueZ, UPower, fprintd, logind), so Wi-Fi, Bluetooth, volume, and the
-# fingerprint reader in NewOS are the real ones. It has its own home folder, so NewOS
+# fingerprint reader in HelixOS are the real ones. It has its own home folder, so HelixOS
 # settings never touch the host desktop's.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SELF="$REPO/scripts/live.sh"
-BASE="${NEWOS_LIVE_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/newos-live}"
+BASE="${HELIXOS_LIVE_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/helixos-live}"
+# HelixOS was called NewOS: keep a preview made under the old name.
+OLD_BASE="${XDG_DATA_HOME:-$HOME/.local/share}/newos-live"
+if [ -z "${HELIXOS_LIVE_DIR:-}" ] && [ -d "$OLD_BASE" ] && [ ! -e "$BASE" ]; then
+  mv "$OLD_BASE" "$BASE"
+fi
 ROOT="$BASE/root"
-LOGS="${XDG_RUNTIME_DIR:-/tmp}/newos-live"
+LOGS="${XDG_RUNTIME_DIR:-/tmp}/helixos-live"
 # Fixed before entering the namespace, where `id` would report the container's root.
-HOST_UID="${NEWOS_LIVE_UID:-$(id -u)}"
-HOST_GID="${NEWOS_LIVE_GID:-$(id -g)}"
-USER_NAME="${NEWOS_LIVE_USER:-$(id -un)}"
-export NEWOS_LIVE_UID="$HOST_UID" NEWOS_LIVE_GID="$HOST_GID" NEWOS_LIVE_USER="$USER_NAME"
-MIRROR="${NEWOS_LIVE_MIRROR:-https://fastly.mirror.pkgbuild.com}"
+HOST_UID="${HELIXOS_LIVE_UID:-$(id -u)}"
+HOST_GID="${HELIXOS_LIVE_GID:-$(id -g)}"
+USER_NAME="${HELIXOS_LIVE_USER:-$(id -un)}"
+export HELIXOS_LIVE_UID="$HOST_UID" HELIXOS_LIVE_GID="$HOST_GID" HELIXOS_LIVE_USER="$USER_NAME"
+MIRROR="${HELIXOS_LIVE_MIRROR:-https://fastly.mirror.pkgbuild.com}"
 
 # Packages from the Arch repositories. AGS and the Astal libraries come from the AUR.
 PACKAGES=(
@@ -117,8 +122,8 @@ inner() {
     mkdir -p "$ROOT/home/$USER_NAME/.cargo/registry"
     mount --bind "$HOME/.cargo/registry" "$ROOT/home/$USER_NAME/.cargo/registry"
   fi
-  # Only the sockets NewOS needs from the host session: the display and sound. The session
-  # D-Bus stays private so the NewOS shell can be the notification server without taking
+  # Only the sockets HelixOS needs from the host session: the display and sound. The session
+  # D-Bus stays private so the HelixOS shell can be the notification server without taking
   # notifications from the host desktop.
   local host_runtime="${HOST_RUNTIME:-}"
   if [ -n "$host_runtime" ]; then
@@ -132,7 +137,7 @@ inner() {
   local env=(
     "HOME=/home/$USER_NAME" "USER=$USER_NAME" "LOGNAME=$USER_NAME" "SHELL=/bin/bash"
     "PATH=/usr/local/bin:/usr/bin" "LANG=${LANG:-C.UTF-8}" "TERM=${TERM:-xterm-256color}"
-    "XDG_RUNTIME_DIR=$runtime" "NEWOS_REPO=$REPO" "NEWOS_LIVE=1" "NEWOS_LIVE_ROOT_HINT=$ROOT"
+    "XDG_RUNTIME_DIR=$runtime" "HELIXOS_REPO=$REPO" "HELIXOS_LIVE=1" "HELIXOS_LIVE_ROOT_HINT=$ROOT"
   )
   [ -n "${HOST_WAYLAND:-}" ] && env+=("WAYLAND_DISPLAY=$HOST_WAYLAND")
   [ -n "${XDG_SEAT:-}" ] && env+=("XDG_SEAT=$XDG_SEAT")
@@ -184,15 +189,15 @@ grep -q "^$NAME:" "$ROOT/etc/passwd" || {
   echo "$NAME:x:1000:" >> "$ROOT/etc/group"
   echo "$NAME:!*:20000::::::" >> "$ROOT/etc/shadow"
 }
-# A known password for the container's user, so its lock screen can be unlocked: "newos".
+# A known password for the container's user, so its lock screen can be unlocked: "helixos".
 # It exists only inside the container.
-chroot "$ROOT" /usr/bin/sh -c "echo '$NAME:newos' | chpasswd" 2>/dev/null || true
+chroot "$ROOT" /usr/bin/sh -c "echo '$NAME:helixos' | chpasswd" 2>/dev/null || true
 mkdir -p "$ROOT/home/$NAME" && chown 1000:1000 "$ROOT/home/$NAME"
 mkdir -p -m 750 "$ROOT/etc/sudoers.d"
-echo "$NAME ALL=(ALL) NOPASSWD: ALL" > "$ROOT/etc/sudoers.d/newos-live"
-chmod 440 "$ROOT/etc/sudoers.d/newos-live"
+echo "$NAME ALL=(ALL) NOPASSWD: ALL" > "$ROOT/etc/sudoers.d/helixos-live"
+chmod 440 "$ROOT/etc/sudoers.d/helixos-live"
 echo "en_US.UTF-8 UTF-8" > "$ROOT/etc/locale.gen"
-echo "newos-live" > "$ROOT/etc/hostname"
+echo "helixos-live" > "$ROOT/etc/hostname"
 SETUP
 
   say "Installing packages (the big download)"
@@ -214,40 +219,44 @@ SETUP
   "
 
   update
-  say "Ready. Start NewOS with: scripts/live.sh run"
+  say "Ready. Start HelixOS with: scripts/live.sh run"
 }
 
 # Build this checkout inside the container and install it there.
 update() {
-  say "Building NewOS from $REPO"
+  say "Building HelixOS from $REPO"
   # shellcheck disable=SC2016 # expanded inside the container, not here
   enter user bash -c '
     set -e
-    cd "$NEWOS_REPO"
-    export CARGO_TARGET_DIR="$HOME/.cache/newos-target"
+    cd "$HELIXOS_REPO"
+    export CARGO_TARGET_DIR="$HOME/.cache/helixos-target"
+    # Renamed from NewOS: keep the build cache.
+    sudo rm -f /usr/local/bin/newos-* /usr/local/share/applications/newos-*.desktop \
+      /usr/local/share/icons/hicolor/scalable/apps/newos-*.svg /etc/pam.d/newos-spaces
+    [ -d "$HOME/.cache/newos-target" ] && [ ! -e "$CARGO_TARGET_DIR" ] && mv "$HOME/.cache/newos-target" "$CARGO_TARGET_DIR"
     [ -d node_modules ] || { echo "error: run pnpm install on the host first" >&2; exit 1; }
     # Tools added after the container was created.
     sudo pacman -S --needed --noconfirm poppler udisks2 clang wtype flatpak >/dev/null 2>&1 || true
-    # The lock screen needs a password to unlock: "newos" (this container only).
-    echo "$USER:newos" | sudo chpasswd
-    cargo build --release -p newos-spacesd
-    sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-spacesd" /usr/local/bin/newos-spacesd
-    sudo install -Dm644 distro/configs/pam/newos-spaces /etc/pam.d/newos-spaces
+    # The lock screen needs a password to unlock: "helixos" (this container only).
+    echo "$USER:helixos" | sudo chpasswd
+    cargo build --release -p helixos-spacesd
+    sudo install -Dm755 "$CARGO_TARGET_DIR/release/helixos-spacesd" /usr/local/bin/helixos-spacesd
+    sudo install -Dm644 distro/configs/pam/helixos-spaces /etc/pam.d/helixos-spaces
     node packages/design-tokens/src/build.mjs >/dev/null
-    cargo build --release -p newos-assistantd
-    sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-assistantd" /usr/local/bin/newos-assistantd
-    cargo build --release -p newos-opener
-    sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-open" /usr/local/bin/newos-open
-    sudo install -Dm644 distro/applications/newos-open.desktop /usr/local/share/applications/newos-open.desktop
+    cargo build --release -p helixos-assistantd
+    sudo install -Dm755 "$CARGO_TARGET_DIR/release/helixos-assistantd" /usr/local/bin/helixos-assistantd
+    cargo build --release -p helixos-opener
+    sudo install -Dm755 "$CARGO_TARGET_DIR/release/helixos-open" /usr/local/bin/helixos-open
+    sudo install -Dm644 distro/applications/helixos-open.desktop /usr/local/share/applications/helixos-open.desktop
     sudo install -Dm644 distro/configs/xdg/mimeapps.list /etc/xdg/mimeapps.list
     sudo update-desktop-database -q /usr/local/share/applications 2>/dev/null || true
     for app in settings calculator notes terminal files; do
       echo "Building $app"
       (cd "apps/$app" && node_modules/.bin/vite build --logLevel warn)
-      cargo build --release -p "newos-$app" --features tauri/custom-protocol
-      sudo install -Dm755 "$CARGO_TARGET_DIR/release/newos-$app" "/usr/local/bin/newos-$app"
-      sudo install -Dm644 "apps/$app/newos-$app.desktop" "/usr/local/share/applications/newos-$app.desktop"
-      sudo install -Dm644 "apps/$app/src-tauri/icons/icon.svg" "/usr/local/share/icons/hicolor/scalable/apps/newos-$app.svg"
+      cargo build --release -p "helixos-$app" --features tauri/custom-protocol
+      sudo install -Dm755 "$CARGO_TARGET_DIR/release/helixos-$app" "/usr/local/bin/helixos-$app"
+      sudo install -Dm644 "apps/$app/helixos-$app.desktop" "/usr/local/share/applications/helixos-$app.desktop"
+      sudo install -Dm644 "apps/$app/src-tauri/icons/icon.svg" "/usr/local/share/icons/hicolor/scalable/apps/helixos-$app.svg"
     done
     sudo gtk-update-icon-cache -q -t /usr/local/share/icons/hicolor 2>/dev/null || true
   '
@@ -255,15 +264,19 @@ update() {
 
 # The session inside the container (runs as you, after chroot).
 session() {
-  local conf_dir="$XDG_RUNTIME_DIR/newos-live" logs="$HOME/.local/state/newos-live"
-  mkdir -p "$conf_dir" "$logs" "$HOME/.config/newos"
-  touch "$HOME/.config/newos/hyprland-settings.conf" "$HOME/.config/newos/hyprland-user.conf"
+  local conf_dir="$XDG_RUNTIME_DIR/helixos-live" logs="$HOME/.local/state/helixos-live"
+  # Renamed from NewOS: keep the preview's settings.
+  if [ -d "$HOME/.config/newos" ] && [ ! -e "$HOME/.config/helixos" ]; then
+    mv "$HOME/.config/newos" "$HOME/.config/helixos"
+  fi
+  mkdir -p "$conf_dir" "$logs" "$HOME/.config/helixos"
+  touch "$HOME/.config/helixos/hyprland-settings.conf" "$HOME/.config/helixos/hyprland-user.conf"
   # Window layout rules; the shell rewrites this from Settings. Floating windows until then.
-  [ -s "$HOME/.config/newos/hyprland-windows.conf" ] ||
+  [ -s "$HOME/.config/helixos/hyprland-windows.conf" ] ||
     printf 'windowrule = float on, match:class .*\nwindowrule = center on, match:float true\n' \
-      > "$HOME/.config/newos/hyprland-windows.conf"
+      > "$HOME/.config/helixos/hyprland-windows.conf"
   # Use a model the host's Ollama already has, unless the tester chose one.
-  if [ ! -f "$HOME/.config/newos/assistant.toml" ]; then
+  if [ ! -f "$HOME/.config/helixos/assistant.toml" ]; then
     local installed model="" want
     installed="$(curl -fsS http://127.0.0.1:11434/api/tags 2>/dev/null |
       grep -oE '"name":"[^"]+"' | sed 's/"name":"//; s/"$//' || true)"
@@ -272,32 +285,32 @@ session() {
       model="$(grep -m1 -E "^$want" <<<"$installed" || true)"
       [ -n "$model" ] && break
     done
-    printf '[local]\nmodel = "%s"\n' "${model:-qwen2.5:3b}" > "$HOME/.config/newos/assistant.toml"
+    printf '[local]\nmodel = "%s"\n' "${model:-qwen2.5:3b}" > "$HOME/.config/helixos/assistant.toml"
   fi
 
-  local newos_conf="$NEWOS_REPO/shell/hypr/newos.conf"
+  local helixos_conf="$HELIXOS_REPO/shell/hypr/helixos.conf"
   if [ -n "${WAYLAND_DISPLAY:-}" ]; then
-    # Nested in a window: the host compositor keeps Super, so NewOS shortcuts use Alt.
+    # Nested in a window: the host compositor keeps Super, so HelixOS shortcuts use Alt.
     # shellcheck disable=SC2016 # $mod is Hyprland's variable, not the shell's
-    sed 's/^\$mod = SUPER/$mod = ALT/' "$newos_conf" > "$conf_dir/newos.conf"
-    newos_conf="$conf_dir/newos.conf"
+    sed 's/^\$mod = SUPER/$mod = ALT/' "$helixos_conf" > "$conf_dir/helixos.conf"
+    helixos_conf="$conf_dir/helixos.conf"
   fi
   cat > "$conf_dir/hyprland.conf" <<CONF
 monitor = , preferred, auto, 1
-source = $newos_conf
-source = $HOME/.config/newos/hyprland-windows.conf
-source = $HOME/.config/newos/hyprland-settings.conf
+source = $helixos_conf
+source = $HOME/.config/helixos/hyprland-windows.conf
+source = $HOME/.config/helixos/hyprland-settings.conf
 env = XCURSOR_SIZE, 24
 # Dual Space in testing mode: a demo spacesd on the session bus with two mock spaces, "Work"
 # (password work-demo) and "Personal" (home-demo). No real accounts are created.
-env = NEWOS_SPACES_BUS, session
-exec-once = sh -c 'newos-spacesd --session --demo > "$logs/spacesd.log" 2>&1'
+env = HELIXOS_SPACES_BUS, session
+exec-once = sh -c 'helixos-spacesd --session --demo > "$logs/spacesd.log" 2>&1'
 exec-once = gnome-keyring-daemon --start --components=secrets
-exec-once = sh -c 'newos-assistantd > "$logs/assistantd.log" 2>&1'
-exec-once = sh -c 'cd "$NEWOS_REPO/shell" && XDG_DATA_DIRS="\$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share" exec ags run --gtk 4 app.ts > "$logs/shell.log" 2>&1'
-source = $HOME/.config/newos/hyprland-user.conf
+exec-once = sh -c 'helixos-assistantd > "$logs/assistantd.log" 2>&1'
+exec-once = sh -c 'cd "$HELIXOS_REPO/shell" && XDG_DATA_DIRS="\$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share" exec ags run --gtk 4 app.ts > "$logs/shell.log" 2>&1'
+source = $HOME/.config/helixos/hyprland-user.conf
 CONF
-  echo "NewOS testing mode. Logs: ${NEWOS_LIVE_ROOT_HINT:-}$logs"
+  echo "HelixOS testing mode. Logs: ${HELIXOS_LIVE_ROOT_HINT:-}$logs"
   exec dbus-run-session -- Hyprland -c "$conf_dir/hyprland.conf" > "$logs/hyprland.log" 2>&1
 }
 
@@ -311,7 +324,7 @@ exec_in_session() {
       break
     fi
   done
-  [ -n "$pid" ] || die "NewOS is not running. Start it with: scripts/live.sh run"
+  [ -n "$pid" ] || die "HelixOS is not running. Start it with: scripts/live.sh run"
   local signature bus display runtime="/proc/$pid/root/run/user/1000"
   signature="$(find "$runtime/hypr" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | head -1)"
   # The session's own D-Bus (dbus-run-session) and Wayland socket, not the host's.
@@ -320,7 +333,7 @@ exec_in_session() {
   nsenter --target "$pid" --user --mount --pid --root --wd=/ --setuid 1000 --setgid 1000 --preserve-credentials \
     /usr/bin/env -i -C "/home/$USER_NAME" PATH=/usr/local/bin:/usr/bin HOME="/home/$USER_NAME" XDG_RUNTIME_DIR=/run/user/1000 \
     HYPRLAND_INSTANCE_SIGNATURE="$signature" WAYLAND_DISPLAY="${display:-wayland-1}" DBUS_SESSION_BUS_ADDRESS="$bus" \
-    NEWOS_REPO="$REPO" "$@"
+    HELIXOS_REPO="$REPO" "$@"
 }
 
 remove() {
@@ -328,7 +341,7 @@ remove() {
     echo "Nothing to remove."
     return
   }
-  read -r -p "Delete the NewOS testing container in $BASE? [y/N] " answer
+  read -r -p "Delete the HelixOS testing container in $BASE? [y/N] " answer
   [ "$answer" = y ] || [ "$answer" = Y ] || return
   # Files owned by container users can only be deleted from inside the namespace.
   in_userns rm -rf "$BASE"

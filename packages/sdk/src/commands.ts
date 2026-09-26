@@ -247,11 +247,11 @@ export interface FileSearch {
 }
 
 /** Emitted when anything in the notes folder changes (this app, the assistant, an editor). */
-export const NOTES_CHANGED_EVENT = "newos://notes-changed"
+export const NOTES_CHANGED_EVENT = "helixos://notes-changed"
 
 type Json = unknown
 
-/** A live activity in the Dynamic Island (shell: org.newos.Island1). */
+/** A live activity in the Dynamic Island (shell: org.helixos.Island1). */
 export interface IslandActivity {
   /** The app's window class, so clicking the island brings the app forward. */
   app: string
@@ -382,7 +382,7 @@ export interface Commands {
   fingerprints: [Record<string, never>, Fingerprints]
   updates: [Record<string, never>, PackageUpdate[]]
 
-  // Users & Spaces (newos-spacesd; changes ask for an administrator)
+  // Users & Spaces (helixos-spacesd; changes ask for an administrator)
   spaces_list: [Record<string, never>, SpaceInfo[]]
   spaces_create: [{ name: string; password: string; accent: string }, SpaceInfo]
   spaces_delete: [{ account: string; keepHome: boolean }, null]

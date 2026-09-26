@@ -1,5 +1,5 @@
 /**
- * Shell configuration stored at ~/.config/newos/shell.json. The Settings app writes the same
+ * Shell configuration stored at ~/.config/helixos/shell.json. The Settings app writes the same
  * file, and the shell reloads it live. Unknown or invalid values fall back to defaults so a
  * hand-edited file can never break the desktop.
  */
@@ -11,7 +11,7 @@ export interface ShellConfig {
   appearance: {
     theme: ThemePreference
     accent: string
-    /** Absolute paths. Empty means the built-in NewOS wallpaper. */
+    /** Absolute paths. Empty means the built-in HelixOS wallpaper. */
     wallpaperLight: string
     wallpaperDark: string
     reduceTransparency: boolean
@@ -45,7 +45,7 @@ export interface ShellConfig {
   }
   assistant: {
     name: string
-    /** Empty means $XDG_RUNTIME_DIR/newos/assistant.sock. */
+    /** Empty means $XDG_RUNTIME_DIR/helixos/assistant.sock. */
     socketPath: string
   }
   nightShift: {
@@ -105,17 +105,17 @@ export const DEFAULT_CONFIG: ShellConfig = {
   },
   dock: {
     pinned: [
-      "newos-files",
+      "helixos-files",
       "firefox",
-      "newos-mail",
-      "newos-messages",
-      "newos-notes",
-      "newos-calendar",
-      "newos-music",
-      "newos-appstore",
-      "newos-terminal",
+      "helixos-mail",
+      "helixos-messages",
+      "helixos-notes",
+      "helixos-calendar",
+      "helixos-music",
+      "helixos-appstore",
+      "helixos-terminal",
       "kitty",
-      "newos-settings",
+      "helixos-settings",
     ],
     magnification: true,
     showRecents: true,

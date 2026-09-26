@@ -1,9 +1,9 @@
 {
-  "name": "@newos/ui",
+  "name": "@helixos/ui",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS UI kit: macOS-style window chrome, sidebar, toolbar, grouped lists, controls, sheets and popovers for Tauri + React apps.",
+  "description": "HelixOS UI kit: macOS-style window chrome, sidebar, toolbar, grouped lists, controls, sheets and popovers for Tauri + React apps.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
@@ -21,8 +21,8 @@
     "react-dom": "^19"
   },
   "dependencies": {
-    "@newos/design-tokens": "workspace:*",
-    "@newos/sdk": "workspace:*",
+    "@helixos/design-tokens": "workspace:*",
+    "@helixos/sdk": "workspace:*",
     "@tauri-apps/api": "^2.11.1",
     "lucide-react": "^1.48.0"
   },

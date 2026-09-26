@@ -1,9 +1,9 @@
 {
-  "name": "@newos/settings",
+  "name": "@helixos/settings",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NewOS Settings: Wi-Fi, Bluetooth, displays, sound, appearance, Dock, battery, keyboard, trackpad, spaces, assistant, privacy, updates, and About.",
+  "description": "HelixOS Settings: Wi-Fi, Bluetooth, displays, sound, appearance, Dock, battery, keyboard, trackpad, spaces, assistant, privacy, updates, and About.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,9 +12,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@newos/design-tokens": "workspace:*",
-    "@newos/sdk": "workspace:*",
-    "@newos/ui": "workspace:*",
+    "@helixos/design-tokens": "workspace:*",
+    "@helixos/sdk": "workspace:*",
+    "@helixos/ui": "workspace:*",
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-dialog": "^2.7.3",
     "lucide-react": "^1.48.0",

@@ -2,7 +2,7 @@
   padding: 0;
   min-width: 660px;
   border-radius: 22px;
-  background: var(--newos-color-material-thick);
+  background: var(--helixos-color-material-thick);
 }
 
 .assistant-header {
@@ -19,7 +19,7 @@
   padding: 8px 10px;
   border-radius: 10px;
   font-size: 12px;
-  background: color-mix(in srgb, var(--newos-color-warning) 18%, transparent);
+  background: color-mix(in srgb, var(--helixos-color-warning) 18%, transparent);
 }
 
 .assistant-scroll {
@@ -32,12 +32,12 @@
 
 .suggestions-title {
   font-weight: 600;
-  color: var(--newos-color-fg-secondary);
+  color: var(--helixos-color-fg-secondary);
 }
 
 button.suggestion {
-  background: var(--newos-color-control);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-control);
+  color: var(--helixos-color-fg);
   border: none;
   box-shadow: none;
   border-radius: 12px;
@@ -46,7 +46,7 @@ button.suggestion {
 }
 
 button.suggestion:hover {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 .bubble {
@@ -56,19 +56,19 @@ button.suggestion:hover {
 }
 
 .bubble.user {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
   border-bottom-right-radius: 5px;
 }
 
 .bubble.assistant {
-  background: var(--newos-color-control);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-control);
+  color: var(--helixos-color-fg);
   border-bottom-left-radius: 5px;
 }
 
 .bubble-error {
-  color: var(--newos-color-danger);
+  color: var(--helixos-color-danger);
   font-size: 12px;
 }
 
@@ -76,23 +76,23 @@ button.suggestion:hover {
   font-size: 11px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: var(--newos-color-control);
-  color: var(--newos-color-fg-secondary);
+  background: var(--helixos-color-control);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .tool-chip.ok {
-  color: var(--newos-color-success);
+  color: var(--helixos-color-success);
 }
 
 .tool-chip.error {
-  color: var(--newos-color-danger);
+  color: var(--helixos-color-danger);
 }
 
 .assistant-input {
   margin: 6px 12px 12px;
   padding: 4px 4px 4px 14px;
   border-radius: 999px;
-  background: var(--newos-color-control);
+  background: var(--helixos-color-control);
 }
 
 .assistant-input entry {
@@ -102,12 +102,12 @@ button.suggestion:hover {
   outline: none;
   min-height: 32px;
   font-size: 14px;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
 }
 
 button.send-button {
-  background: var(--newos-accent);
-  color: var(--newos-color-fg-on-accent);
+  background: var(--helixos-accent);
+  color: var(--helixos-color-fg-on-accent);
   border: none;
   box-shadow: none;
   border-radius: 999px;

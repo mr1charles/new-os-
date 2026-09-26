@@ -8,7 +8,7 @@ use std::path::Path;
 use crate::config::CloudConfig;
 
 /// Attributes the key is stored under in the keyring.
-pub const KEYRING_ATTRIBUTES: [&str; 4] = ["service", "newos-assistant", "account", "anthropic-api-key"];
+pub const KEYRING_ATTRIBUTES: [&str; 4] = ["service", "helixos-assistant", "account", "anthropic-api-key"];
 
 pub fn clean_key(raw: &str) -> Option<String> {
     let key = raw.trim();

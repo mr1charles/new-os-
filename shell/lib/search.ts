@@ -2,8 +2,8 @@
  * Launcher (Spotlight) search. Combines apps, Settings pages, a calculator, "Ask the
  * assistant", and web search into one ranked list. Pure TypeScript for Node tests.
  */
-import { SETTINGS_PAGES } from "@newos/sdk/settings-pages"
-import { evaluate, formatNumber, looksLikeMath } from "@newos/sdk/math"
+import { SETTINGS_PAGES } from "@helixos/sdk/settings-pages"
+import { evaluate, formatNumber, looksLikeMath } from "@helixos/sdk/math"
 
 export interface SearchableApp {
   entry: string
@@ -53,7 +53,7 @@ export type SearchResult =
       prompt: string
     }
   | {
-      /** Install from a Flathub link (newos-open). */
+      /** Install from a Flathub link (helixos-open). */
       kind: "install"
       id: string
       title: string
@@ -72,7 +72,7 @@ export type SearchResult =
       url: string
     }
 
-export { SETTINGS_PAGES, type SettingsPage } from "@newos/sdk/settings-pages"
+export { SETTINGS_PAGES, type SettingsPage } from "@helixos/sdk/settings-pages"
 
 /**
  * Score how well `query` matches `text`, 0 (no match) to 1 (exact).
@@ -128,7 +128,7 @@ export interface BuildOptions {
   maxSettings?: number
 }
 
-/** The app id in a Flathub link or appstream:// URL (same rules as newos-open). */
+/** The app id in a Flathub link or appstream:// URL (same rules as helixos-open). */
 export function flathubAppId(text: string): string | null {
   const match =
     /^(?:https?:\/\/(?:www\.)?flathub\.org\/(?:[a-z-]+\/)?apps\/(?:details\/)?|appstream:(?:\/\/)?)([A-Za-z_][\w-]*(?:\.[\w-]+){2,})(?:\.desktop)?\/?(?:[?#].*)?$/.exec(
@@ -229,7 +229,7 @@ export function buildResults(
     subtitle: request
       ? "Sounds like a question for the assistant"
       : "Get an answer or have it done for you",
-    iconName: "newos-sparkle-symbolic",
+    iconName: "helixos-sparkle-symbolic",
     score: request ? 1.5 : 0.1,
     prompt: q,
   })

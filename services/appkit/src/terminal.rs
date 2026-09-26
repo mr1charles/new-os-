@@ -1,13 +1,13 @@
 //! Opening a terminal to run something that needs the user (sudo password, prompts), such as
 //! system updates from Settings → Software Update.
 
-use newos_syslib::CommandRunner;
+use helixos_syslib::CommandRunner;
 
 use crate::{AppError, Result};
 
 /// Terminals tried in order, with the arguments that make each run a command.
 const TERMINALS: [(&str, &[&str]); 6] = [
-    ("newos-terminal", &["--"]),
+    ("helixos-terminal", &["--"]),
     ("xdg-terminal-exec", &[]),
     ("kitty", &[]),
     ("foot", &[]),
@@ -25,7 +25,7 @@ pub fn terminal_argv(terminal: &str, script: &str) -> Option<Vec<String>> {
 
 /// The update command: pacman, then Flatpak apps if Flatpak is installed. The window stays
 /// open at the end so the result can be read.
-pub const UPDATE_SCRIPT: &str = "echo 'Updating NewOS…'; sudo pacman -Syu; \
+pub const UPDATE_SCRIPT: &str = "echo 'Updating HelixOS…'; sudo pacman -Syu; \
     if command -v flatpak >/dev/null; then flatpak update; fi; \
     echo; printf 'Done. Press Enter to close.'; read -r _";
 
@@ -35,7 +35,7 @@ pub async fn run_in_terminal(runner: &dyn CommandRunner, script: &str) -> Result
         let argv = terminal_argv(terminal, script).expect("listed terminal");
         match runner.spawn_detached(terminal, &argv).await {
             Ok(()) => return Ok(()),
-            Err(newos_syslib::SysError::NotInstalled { .. }) => continue,
+            Err(helixos_syslib::SysError::NotInstalled { .. }) => continue,
             Err(e) => return Err(e.into()),
         }
     }
@@ -55,8 +55,8 @@ mod tests {
 
     #[tokio::test]
     async fn uses_the_first_terminal_that_starts() {
-        let runner = newos_syslib::MockRunner::new();
+        let runner = helixos_syslib::MockRunner::new();
         run_in_terminal(&runner, "true").await.unwrap();
-        assert_eq!(runner.calls()[0][0], "newos-terminal");
+        assert_eq!(runner.calls()[0][0], "helixos-terminal");
     }
 }

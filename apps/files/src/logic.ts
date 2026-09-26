@@ -1,5 +1,5 @@
 /** Pure logic behind Files (no React, no backend), unit tested. */
-import type { FileEntry, FileKind, FileSearch } from "@newos/sdk"
+import type { FileEntry, FileKind, FileSearch } from "@helixos/sdk"
 
 export function formatSize(bytes: number | null, kind: FileKind): string {
   if (bytes === null) return "—"

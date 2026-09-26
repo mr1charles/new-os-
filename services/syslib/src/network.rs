@@ -142,7 +142,7 @@ fn check_ssid(ssid: &str) -> Result<()> {
 /// `password` unless they are open.
 ///
 /// The password is passed on nmcli's command line, which other local users can briefly see in
-/// the process list. NewOS machines are single-owner, and each space is its own account, so
+/// the process list. HelixOS machines are single-owner, and each space is its own account, so
 /// this is accepted for now; a NetworkManager secret agent replaces it later.
 pub async fn connect_wifi(runner: &dyn CommandRunner, ssid: &str, password: Option<&str>) -> Result<()> {
     check_ssid(ssid)?;

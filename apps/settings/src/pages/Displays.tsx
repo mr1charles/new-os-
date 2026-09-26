@@ -1,5 +1,5 @@
-import { call, type Monitor, type MonitorSetup } from "@newos/sdk"
-import { useAction, useCommand, useSettings } from "@newos/sdk/react"
+import { call, type Monitor, type MonitorSetup } from "@helixos/sdk"
+import { useAction, useCommand, useSettings } from "@helixos/sdk/react"
 import {
   Button,
   Group,
@@ -10,7 +10,7 @@ import {
   Sheet,
   Slider,
   Toggle,
-} from "@newos/ui"
+} from "@helixos/ui"
 import { Sun, SunDim } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ActionError, LoadError } from "../components/common"

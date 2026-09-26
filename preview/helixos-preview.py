@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""NewOS Preview: try NewOS on this computer before installing it.
+"""HelixOS Preview: try HelixOS on this computer before installing it.
 
 A small GTK 4 / libadwaita app around scripts/live.sh (testing mode). It sets up the container
-the first time, starts and stops NewOS in a window, rebuilds it after updates, and shows the
+the first time, starts and stops HelixOS in a window, rebuilds it after updates, and shows the
 passwords and shortcuts to use inside. Installed by scripts/install-preview.sh.
 """
 
@@ -16,12 +16,12 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 
-REPO = os.environ.get("NEWOS_REPO") or os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+REPO = os.environ.get("HELIXOS_REPO") or os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 LIVE = os.path.join(REPO, "scripts", "live.sh")
-DATA = os.environ.get("NEWOS_LIVE_DIR") or os.path.join(
-    os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share"), "newos-live"
+DATA = os.environ.get("HELIXOS_LIVE_DIR") or os.path.join(
+    os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share"), "helixos-live"
 )
-ICON = os.path.join(REPO, "preview", "newos-preview.svg")
+ICON = os.path.join(REPO, "preview", "helixos-preview.svg")
 
 TIPS = [
     ("Alt+Space", "Ask the assistant"),
@@ -29,10 +29,10 @@ TIPS = [
     ("Alt+Return", "Terminal"),
     ("Alt+E", "Files"),
     ("Alt+,", "Settings"),
-    ("Alt+L", "Lock the screen (password: newos)"),
+    ("Alt+L", "Lock the screen (password: helixos)"),
 ]
 SPACES = [
-    ("newos", "Unlocks this space"),
+    ("helixos", "Unlocks this space"),
     ("work-demo", "The “Work” demo space"),
     ("home-demo", "The “Personal” demo space"),
 ]
@@ -44,9 +44,9 @@ def container_ready() -> bool:
 
 class Preview(Adw.ApplicationWindow):
     def __init__(self, app: Adw.Application):
-        super().__init__(application=app, title="NewOS Preview", default_width=560, default_height=720)
+        super().__init__(application=app, title="HelixOS Preview", default_width=560, default_height=720)
         self.task: Gio.Subprocess | None = None  # create/update/remove
-        self.session: Gio.Subprocess | None = None  # NewOS itself
+        self.session: Gio.Subprocess | None = None  # HelixOS itself
         self.task_name = ""
 
         toolbar = Adw.ToolbarView()
@@ -83,16 +83,16 @@ class Preview(Adw.ApplicationWindow):
         self.primary = Gtk.Button(label="", css_classes=["pill", "suggested-action"], width_request=240)
         self.primary.connect("clicked", self.on_primary)
         buttons.append(self.primary)
-        self.secondary = Gtk.Button(label="Update NewOS", css_classes=["pill"], width_request=240)
-        self.secondary.connect("clicked", lambda *_: self.run_task("update", "Updating NewOS…"))
+        self.secondary = Gtk.Button(label="Update HelixOS", css_classes=["pill"], width_request=240)
+        self.secondary.connect("clicked", lambda *_: self.run_task("update", "Updating HelixOS…"))
         buttons.append(self.secondary)
         self.progress = Gtk.ProgressBar(visible=False, width_request=240, pulse_step=0.08)
         buttons.append(self.progress)
         column.append(buttons)
 
         tips = Adw.PreferencesGroup(
-            title="Inside NewOS",
-            description="NewOS opens in a window. The host keeps the Super key, so NewOS uses Alt instead.",
+            title="Inside HelixOS",
+            description="HelixOS opens in a window. The host keeps the Super key, so HelixOS uses Alt instead.",
         )
         for keys, what in TIPS:
             row = Adw.ActionRow(title=what)
@@ -143,17 +143,17 @@ class Preview(Adw.ApplicationWindow):
             self.title_label.set_label(self.task_name)
             self.description_label.set_label("This can take a while the first time. You can keep using your computer.")
         elif running:
-            self.title_label.set_label("NewOS is running")
+            self.title_label.set_label("HelixOS is running")
             self.description_label.set_label("It’s open in its own window. Close that window or press Stop to end it.")
         elif ready:
-            self.title_label.set_label("NewOS Preview")
-            self.description_label.set_label("The whole NewOS desktop in a window, using this laptop’s Wi-Fi, sound, and Bluetooth. Nothing on your system changes.")
+            self.title_label.set_label("HelixOS Preview")
+            self.description_label.set_label("The whole HelixOS desktop in a window, using this laptop’s Wi-Fi, sound, and Bluetooth. Nothing on your system changes.")
         else:
             self.title_label.set_label("Set Up the Preview")
             self.description_label.set_label(
-                "The first time, the preview downloads about 3 GB and builds NewOS. It takes 20–30 minutes and needs no administrator password."
+                "The first time, the preview downloads about 3 GB and builds HelixOS. It takes 20–30 minutes and needs no administrator password."
             )
-        self.primary.set_label("Stop NewOS" if running else "Start NewOS" if ready else "Set Up")
+        self.primary.set_label("Stop HelixOS" if running else "Start HelixOS" if ready else "Set Up")
         self.primary.set_css_classes(["pill", "destructive-action" if running else "suggested-action"])
         self.primary.set_sensitive(not busy)
         self.secondary.set_visible(ready and not running)
@@ -238,7 +238,7 @@ class Preview(Adw.ApplicationWindow):
         try:
             self.session = self.spawn(["run"])
         except GLib.Error as error:
-            self.toast.add_toast(Adw.Toast(title=f"Couldn’t start NewOS: {error.message}"))
+            self.toast.add_toast(Adw.Toast(title=f"Couldn’t start HelixOS: {error.message}"))
             return
         self.log("\n$ live.sh run\n")
         self.follow(self.session, lambda line: self.log(line + "\n"))
@@ -257,7 +257,7 @@ class Preview(Adw.ApplicationWindow):
     def on_remove(self, *_):
         dialog = Adw.AlertDialog(
             heading="Remove the Preview?",
-            body="The container, the NewOS build inside it, and everything saved in the preview will be deleted. Your own files are not touched.",
+            body="The container, the HelixOS build inside it, and everything saved in the preview will be deleted. Your own files are not touched.",
         )
         dialog.add_response("cancel", "Cancel")
         dialog.add_response("remove", "Remove")
@@ -277,7 +277,7 @@ class Preview(Adw.ApplicationWindow):
 
 class App(Adw.Application):
     def __init__(self):
-        super().__init__(application_id="org.newos.Preview", flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        super().__init__(application_id="org.helixos.Preview", flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
 
     def do_activate(self):
         window = self.get_active_window() or Preview(self)
@@ -286,6 +286,6 @@ class App(Adw.Application):
 
 if __name__ == "__main__":
     if not os.access(LIVE, os.X_OK):
-        print(f"newos-preview: {LIVE} not found; set NEWOS_REPO to the NewOS checkout", file=sys.stderr)
+        print(f"helixos-preview: {LIVE} not found; set HELIXOS_REPO to the HelixOS checkout", file=sys.stderr)
         sys.exit(1)
     sys.exit(App().run(sys.argv))

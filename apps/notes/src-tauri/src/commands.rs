@@ -1,9 +1,9 @@
-//! Notes' own commands, over `newos_appkit::notes` (where the logic and its tests live). The
-//! settings file and assistant commands come from `newos_appkit::tauri_app`.
+//! Notes' own commands, over `helixos_appkit::notes` (where the logic and its tests live). The
+//! settings file and assistant commands come from `helixos_appkit::tauri_app`.
 
-use newos_appkit::notes::{NoteMeta, Notes, SearchHit};
-use newos_appkit::AppError;
-use newos_syslib::SystemRunner;
+use helixos_appkit::notes::{NoteMeta, Notes, SearchHit};
+use helixos_appkit::AppError;
+use helixos_syslib::SystemRunner;
 use tauri::State;
 
 type Result<T> = std::result::Result<T, AppError>;
@@ -15,7 +15,7 @@ pub struct Ctx {
 
 impl Ctx {
     pub fn from_env() -> Self {
-        Self { notes: Notes::new(newos_appkit::notes::default_dir()), runner: SystemRunner::default() }
+        Self { notes: Notes::new(helixos_appkit::notes::default_dir()), runner: SystemRunner::default() }
     }
 }
 
@@ -53,7 +53,7 @@ pub fn note_create(ctx: State<'_, Ctx>, folder: String, text: String) -> Result<
 #[tauri::command]
 pub async fn note_delete(ctx: State<'_, Ctx>, path: String) -> Result<()> {
     let abs = ctx.notes.absolute(&path)?;
-    newos_syslib::shell::trash(&ctx.runner, &abs).await?;
+    helixos_syslib::shell::trash(&ctx.runner, &abs).await?;
     ctx.notes.forget(&path)
 }
 

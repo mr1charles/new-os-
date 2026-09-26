@@ -1,6 +1,6 @@
-//! NewOS Calculator.
+//! HelixOS Calculator.
 
-use newos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
+use helixos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
 use tauri::{Manager, Runtime};
 
 /// Register the state and every command (the shared ones from appkit plus the app's own).

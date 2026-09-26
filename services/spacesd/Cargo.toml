@@ -1,6 +1,6 @@
 [package]
-name = "newos-spacesd"
-description = "NewOS Dual Space service: which space a password opens, and creating and removing spaces. Runs as root on the system D-Bus (org.newos.Spaces1)."
+name = "helixos-spacesd"
+description = "HelixOS Dual Space service: which space a password opens, and creating and removing spaces. Runs as root on the system D-Bus (org.helixos.Spaces1)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,7 +8,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "newos-spacesd"
+name = "helixos-spacesd"
 path = "src/main.rs"
 
 [features]
@@ -18,7 +18,7 @@ default = ["pam"]
 pam = ["dep:pam-client"]
 
 [dependencies]
-newos-syslib = { path = "../syslib" }
+helixos-syslib = { path = "../syslib" }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 serde = { workspace = true }

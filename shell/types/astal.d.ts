@@ -1,7 +1,7 @@
 /**
  * Type declarations for the Astal libraries the shell uses.
  *
- * On a device with Astal installed, `pnpm --filter @newos/shell types` runs `ags types`, which
+ * On a device with Astal installed, `pnpm --filter @helixos/shell types` runs `ags types`, which
  * generates complete declarations from the installed GObject introspection data into
  * `shell/@girs` (git-ignored). CI has no Astal install, so these hand-written declarations
  * cover the subset of the API the shell calls. They were written from the Vala/C sources of

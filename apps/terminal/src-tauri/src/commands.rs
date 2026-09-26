@@ -1,9 +1,9 @@
-//! Terminal's own commands, over `newos_appkit::pty` (where the logic and its tests live).
+//! Terminal's own commands, over `helixos_appkit::pty` (where the logic and its tests live).
 
 use std::path::PathBuf;
 
-use newos_appkit::pty::{PtyEvent, Ptys};
-use newos_appkit::AppError;
+use helixos_appkit::pty::{PtyEvent, Ptys};
+use helixos_appkit::AppError;
 use tauri::ipc::Channel;
 use tauri::State;
 

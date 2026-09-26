@@ -3,7 +3,7 @@
  * stops (and immediately when you switch notes). A save can rename the file when the title
  * changes; the open note follows it without reloading the editor.
  */
-import { call, CommandError, listen, NOTES_CHANGED_EVENT, type NoteMeta } from "@newos/sdk"
+import { call, CommandError, listen, NOTES_CHANGED_EVENT, type NoteMeta } from "@helixos/sdk"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 const SAVE_DELAY_MS = 600

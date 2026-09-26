@@ -1,9 +1,9 @@
 /**
- * Window chrome. NewOS apps run without server-side decorations: the traffic lights, drag
+ * Window chrome. HelixOS apps run without server-side decorations: the traffic lights, drag
  * region, and sidebar vibrancy are drawn here, and Hyprland supplies rounding, shadow, and
  * the blur behind the translucent sidebar.
  */
-import { inTauri } from "@newos/sdk"
+import { inTauri } from "@helixos/sdk"
 import type { CSSProperties, ReactNode } from "react"
 import { cx } from "./cx"
 

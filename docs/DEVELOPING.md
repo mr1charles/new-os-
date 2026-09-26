@@ -1,4 +1,4 @@
-# Developing NewOS
+# Developing HelixOS
 
 ## What runs where
 
@@ -37,14 +37,14 @@ paru -S aylurs-gtk-shell-git libastal-meta
 
 ## Testing mode: the whole OS in a container
 
-`scripts/live.sh` runs the complete NewOS desktop on this machine without installing anything
+`scripts/live.sh` runs the complete HelixOS desktop on this machine without installing anything
 on the host and without root. It builds a rootless Arch Linux container (user namespaces, the
 ranges in `/etc/subuid`), installs Hyprland, AGS/Astal, WebKitGTK and the rest inside it, and
-builds NewOS from this checkout.
+builds HelixOS from this checkout.
 
 ```bash
-scripts/live.sh create     # once: ~3 GB download and 20-30 minutes; lands in ~/.local/share/newos-live
-scripts/live.sh run        # start NewOS
+scripts/live.sh create     # once: ~3 GB download and 20-30 minutes; lands in ~/.local/share/helixos-live
+scripts/live.sh run        # start HelixOS
 scripts/live.sh update     # rebuild the assistant and apps after you pull or edit
 scripts/live.sh exec hyprctl configerrors   # run a command in the running session
 scripts/live.sh shell      # a shell inside the container (`shell root` for root)
@@ -57,14 +57,14 @@ scripts/live.sh remove     # delete the container
   installed OS.
 - The container shares the host's network, GPU, PipeWire, and system services
   (NetworkManager, BlueZ, UPower, fprintd, power profiles), so Wi-Fi, Bluetooth, volume, and
-  the fingerprint reader in NewOS are the real ones. Screen brightness needs the full-screen
+  the fingerprint reader in HelixOS are the real ones. Screen brightness needs the full-screen
   mode (logind only lets the active session change it).
-- It has its own home folder, so NewOS settings never touch the host desktop's. The assistant
+- It has its own home folder, so HelixOS settings never touch the host desktop's. The assistant
   uses the host's Ollama; the first run picks a model that is already pulled.
 - The shell runs from this checkout: edit `shell/`, then restart it with
-  `scripts/live.sh exec pkill gjs` followed by `scripts/live.sh exec sh -c 'cd $NEWOS_REPO/shell && ags run --gtk 4 app.ts &'`,
+  `scripts/live.sh exec pkill gjs` followed by `scripts/live.sh exec sh -c 'cd $HELIXOS_REPO/shell && ags run --gtk 4 app.ts &'`,
   or just restart the session.
-- Logs: `~/.local/share/newos-live/root/home/$USER/.local/state/newos-live/`.
+- Logs: `~/.local/share/helixos-live/root/home/$USER/.local/state/helixos-live/`.
 
 ## Running the shell
 
@@ -73,50 +73,50 @@ scripts/dev-session.sh
 ```
 
 The script builds the design tokens and writes a Hyprland config that sources
-`shell/hypr/newos.conf`. That config starts the assistant daemon with `cargo run` and the
+`shell/hypr/helixos.conf`. That config starts the assistant daemon with `cargo run` and the
 shell with `ags run`. Inside an existing Wayland desktop, Hyprland opens as a nested window.
-From a text console it takes over the screen. Logs go to `$XDG_RUNTIME_DIR/newos-dev/`.
+From a text console it takes over the screen. Logs go to `$XDG_RUNTIME_DIR/helixos-dev/`.
 
 To iterate on the shell alone inside a running Hyprland session:
 
 ```bash
 pnpm build:tokens
 cd shell && ags run --gtk 4 app.ts     # restart after edits; AGS bundles with esbuild
-ags request -i newos help              # commands the keybindings use
-ags inspect -i newos                   # GTK inspector
+ags request -i helixos help              # commands the keybindings use
+ags inspect -i helixos                   # GTK inspector
 ```
 
-`pnpm --filter @newos/shell types` generates full type definitions from the installed Astal
+`pnpm --filter @helixos/shell types` generates full type definitions from the installed Astal
 libraries into `shell/@girs/` (git-ignored). CI uses the hand-written declarations in
 `shell/types/astal.d.ts`. Extend them when you use a new Astal API.
 
 ## Apps
 
 Apps live in `apps/<name>` with a React frontend (`src/`) and a Rust backend (`src-tauri/`).
-They share `@newos/ui` for the look and `@newos/sdk` for everything that talks to the system.
+They share `@helixos/ui` for the look and `@helixos/sdk` for everything that talks to the system.
 
 ```bash
 # The interface in any browser, against sample data (no Tauri, no Linux desktop needed)
-pnpm --filter @newos/settings dev            # http://localhost:1420, ?page=wifi opens a page
-pnpm --filter @newos/calculator dev          # :1421   (notes :1422, terminal :1423, files :1424)
+pnpm --filter @helixos/settings dev            # http://localhost:1420, ?page=wifi opens a page
+pnpm --filter @helixos/calculator dev          # :1421   (notes :1422, terminal :1423, files :1424)
 
 # The real app, talking to this machine (needs webkit2gtk-4.1)
-pnpm --filter @newos/settings tauri dev
+pnpm --filter @helixos/settings tauri dev
 
-# A standalone debug build that scripts/dev-session.sh puts on PATH as newos-settings
-pnpm --filter @newos/settings tauri build --debug --no-bundle
+# A standalone debug build that scripts/dev-session.sh puts on PATH as helixos-settings
+pnpm --filter @helixos/settings tauri build --debug --no-bundle
 ```
 
 Settings changes the real system: Wi-Fi, Bluetooth, volume, brightness, displays, power mode,
-and Hyprland input options (applied live and saved to `~/.config/newos/hyprland-settings.conf`).
+and Hyprland input options (applied live and saved to `~/.config/helixos/hyprland-settings.conf`).
 Display changes revert after 15 seconds unless you keep them.
 
 A new app: draw `apps/<id>/src-tauri/icons/icon.svg`, then run
 `scripts/new-app.py <id> --title ... --port 14xx --comment ... --categories ...`. It writes the
-Tauri side (manifest, config, capabilities, `main.rs` on `newos_appkit::tauri_app`, rendered
+Tauri side (manifest, config, capabilities, `main.rs` on `helixos_appkit::tauri_app`, rendered
 icons, the `.desktop` file). Copy `package.json`, `index.html`, `vite.config.ts` (with the
 port), and `tsconfig.json` from an existing app, start `src/main.tsx` with `startApp(App)`
-from `@newos/ui/start`, and add the crate to the workspace in `Cargo.toml`. Every app gets the
+from `@helixos/ui/start`, and add the crate to the workspace in `Cargo.toml`. Every app gets the
 settings and assistant commands for free.
 
 To add a backend command: write the logic in `services/syslib` or `services/appkit` with a
@@ -125,7 +125,7 @@ test, wrap it in `apps/<app>/src-tauri/src/commands.rs`, register it in `main.rs
 app's `src/backend.test.ts` checks that every command its frontend calls is registered, that
 everything registered is typed in the SDK, and that the mock covers the SDK.
 
-`cargo run -p newos-syslib --example probe` prints what Settings reads on the current machine
+`cargo run -p helixos-syslib --example probe` prints what Settings reads on the current machine
 (networks, audio devices, monitors, battery, Hyprland options), which helps when a parser meets
 new output.
 
@@ -133,7 +133,7 @@ new output.
 
 ```bash
 export ANTHROPIC_API_KEY=...            # or store it in the keyring, see ASSISTANT.md
-cargo run -p newos-assistantd -- --tcp 127.0.0.1:7777
+cargo run -p helixos-assistantd -- --tcp 127.0.0.1:7777
 curl -s localhost:7777/v1/status | jq
 curl -sN localhost:7777/v1/chat -H 'content-type: application/json' -d '{"message":"set a 1 minute timer"}'
 ```
@@ -147,7 +147,7 @@ The daemon uses it automatically.
 - **New island activity:** add a payload type and priority in `shell/lib/island-queue.ts`, a
   page in `shell/widgets/island/views.tsx`, and a source in `shell/lib/island-sources.ts`.
 - **New shell command:** add a case to `shell/lib/requests.ts` and bind it in
-  `shell/hypr/newos.conf`.
+  `shell/hypr/helixos.conf`.
 - **New assistant tool:** add it to a module in `services/assistantd/src/tools/`. Give it an
   `object_schema` with `additionalProperties: false`. Write a description that says *when* to
   call it. Set `confirm: true` if it can lose data or leave the machine. The schema test in
@@ -166,4 +166,4 @@ sentence case and plain language.
 
 ## Booting in a VM (from M8)
 
-`scripts/dev-vm.sh` boots `out/newos.iso` in QEMU with UEFI firmware.
+`scripts/dev-vm.sh` boots `out/helixos.iso` in QEMU with UEFI firmware.

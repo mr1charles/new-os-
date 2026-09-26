@@ -61,7 +61,7 @@ for (const dir of new Set(APP_DIRS)) {
     monitor.connect("changed", reloadApps)
     appMonitors.push(monitor)
   } catch (error) {
-    console.warn(`newos: cannot watch ${dir}: ${error}`)
+    console.warn(`helixos: cannot watch ${dir}: ${error}`)
   }
 }
 

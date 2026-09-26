@@ -7,9 +7,9 @@ import {
   customizeInput,
   type Change,
   type Settings,
-} from "@newos/sdk"
-import { useSettings } from "@newos/sdk/react"
-import { Button, Callout, Group, Page, Row, TextField } from "@newos/ui"
+} from "@helixos/sdk"
+import { useSettings } from "@helixos/sdk/react"
+import { Button, Callout, Group, Page, Row, TextField } from "@helixos/ui"
 import { Sparkles, Undo2 } from "lucide-react"
 import { useState } from "react"
 

@@ -1,14 +1,14 @@
-//! NewOS Notes: Markdown notes in ~/Notes, shared with the assistant.
+//! HelixOS Notes: Markdown notes in ~/Notes, shared with the assistant.
 
 mod commands;
 
 use std::sync::Mutex;
 
-use newos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
+use helixos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
 use tauri::{Emitter, Manager, Runtime};
 
-/// Tells the frontend to reload the list (see `NOTES_CHANGED_EVENT` in @newos/sdk).
-const NOTES_CHANGED_EVENT: &str = "newos://notes-changed";
+/// Tells the frontend to reload the list (see `NOTES_CHANGED_EVENT` in @helixos/sdk).
+const NOTES_CHANGED_EVENT: &str = "helixos://notes-changed";
 
 /// Register the state and every command (the shared ones from appkit plus Notes' own).
 /// Separate from `main` so tests can build the same app on Tauri's mock runtime.
@@ -41,7 +41,7 @@ fn main() {
             // Notes written by the assistant or another program show up right away.
             let handle = app.handle().clone();
             let dir = app.state::<commands::Ctx>().notes.dir().to_path_buf();
-            let watcher = newos_appkit::notes::watch(dir, move || {
+            let watcher = helixos_appkit::notes::watch(dir, move || {
                 let _ = handle.emit(NOTES_CHANGED_EVENT, ());
             })?;
             app.manage(Mutex::new(watcher));
@@ -55,7 +55,7 @@ fn main() {
 mod ipc_tests {
     //! Notes commands through Tauri's IPC layer, with the JSON the frontend sends.
 
-    use newos_appkit::notes::Notes;
+    use helixos_appkit::notes::Notes;
     use serde_json::{json, Value};
     use tauri::ipc::{CallbackFn, InvokeBody};
     use tauri::test::{get_ipc_response, mock_builder, INVOKE_KEY};
@@ -84,12 +84,12 @@ mod ipc_tests {
     fn notes_round_trip() {
         let dir = tempfile::tempdir().unwrap();
         let common = Common {
-            runner: newos_syslib::SystemRunner::default(),
-            assistant: newos_appkit::assistant_client::AssistantClient::new(dir.path().join("none.sock")),
+            runner: helixos_syslib::SystemRunner::default(),
+            assistant: helixos_appkit::assistant_client::AssistantClient::new(dir.path().join("none.sock")),
             settings_file: dir.path().join("shell.json"),
             assistant_config: dir.path().join("assistant.toml"),
         };
-        let ctx = commands::Ctx { notes: Notes::new(dir.path().join("Notes")), runner: newos_syslib::SystemRunner::default() };
+        let ctx = commands::Ctx { notes: Notes::new(dir.path().join("Notes")), runner: helixos_syslib::SystemRunner::default() };
         let app = with_commands(mock_builder(), common, ctx).build(tauri::generate_context!()).unwrap();
         let webview = WebviewWindowBuilder::new(&app, "main", Default::default()).build().unwrap();
 

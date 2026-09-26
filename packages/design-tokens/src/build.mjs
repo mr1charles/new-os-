@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
-const PREFIX = "newos"
+const PREFIX = "helixos"
 
 /** @param {string} key */
 export function kebab(key) {
@@ -19,7 +19,7 @@ export function kebab(key) {
 }
 
 /**
- * Flatten a group of tokens into `--newos-<group>-<key>` declarations.
+ * Flatten a group of tokens into `--helixos-<group>-<key>` declarations.
  * @param {string} group
  * @param {Record<string, string>} values
  * @returns {string[]}

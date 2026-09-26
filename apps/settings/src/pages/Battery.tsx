@@ -1,6 +1,6 @@
-import { call, type PowerProfile } from "@newos/sdk"
-import { useAction, useCommand, useSettings } from "@newos/sdk/react"
-import { Badge, EmptyState, Group, Page, Row, SegmentedControl, Toggle, Value } from "@newos/ui"
+import { call, type PowerProfile } from "@helixos/sdk"
+import { useAction, useCommand, useSettings } from "@helixos/sdk/react"
+import { Badge, EmptyState, Group, Page, Row, SegmentedControl, Toggle, Value } from "@helixos/ui"
 import { BatteryWarning } from "lucide-react"
 import { ActionError, LoadError } from "../components/common"
 

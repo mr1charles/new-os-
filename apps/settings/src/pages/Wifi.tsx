@@ -1,5 +1,5 @@
-import { call, type WifiNetwork } from "@newos/sdk"
-import { useAction, useCommand } from "@newos/sdk/react"
+import { call, type WifiNetwork } from "@helixos/sdk"
+import { useAction, useCommand } from "@helixos/sdk/react"
 import {
   Badge,
   Button,
@@ -14,7 +14,7 @@ import {
   TextField,
   Toggle,
   Value,
-} from "@newos/ui"
+} from "@helixos/ui"
 import { Lock, WifiOff } from "lucide-react"
 import { useState } from "react"
 import { ActionError, LoadError, SignalIcon } from "../components/common"

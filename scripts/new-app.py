@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Create the Tauri side of a NewOS app: src-tauri/ (manifest, config, capabilities, main.rs on
-newos_appkit::tauri_app, icons rendered from icons/icon.svg) and the .desktop file.
+"""Create the Tauri side of a HelixOS app: src-tauri/ (manifest, config, capabilities, main.rs on
+helixos_appkit::tauri_app, icons rendered from icons/icon.svg) and the .desktop file.
 
     scripts/new-app.py <id> --title Notes --port 1422 --size 1000x680 --min 640x420 \\
         --comment "..." --categories "Office;" --keywords "memo;markdown;"
@@ -44,13 +44,13 @@ def main():
     tauri = app / "src-tauri"
     w, h = (float(x) for x in a.size.split("x"))
     mw, mh = (float(x) for x in a.min.split("x"))
-    binary = f"newos-{a.id}"
+    binary = f"helixos-{a.id}"
     plugins = [x for x in a.plugins.split(",") if x]
 
     deps = "\n".join(f'{name} = "2"' for name in plugins)
     write(tauri / "Cargo.toml", f'''[package]
 name = "{binary}"
-description = "NewOS {a.title} backend."
+description = "HelixOS {a.title} backend."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -65,8 +65,8 @@ path = "src/main.rs"
 tauri-build = {{ version = "2", features = [] }}
 
 [dependencies]
-newos-appkit = {{ path = "../../../services/appkit", features = ["tauri"] }}
-newos-syslib = {{ path = "../../../services/syslib" }}
+helixos-appkit = {{ path = "../../../services/appkit", features = ["tauri"] }}
+helixos-syslib = {{ path = "../../../services/syslib" }}
 serde = {{ workspace = true }}
 serde_json = {{ workspace = true }}
 tokio = {{ workspace = true }}
@@ -84,7 +84,7 @@ tempfile = "3"
         "productName": a.title,
         "mainBinaryName": binary,
         "version": "0.1.0",
-        "identifier": f"org.newos.{a.title.replace(' ', '')}",
+        "identifier": f"org.helixos.{a.title.replace(' ', '')}",
         "build": {
             "beforeDevCommand": "pnpm dev",
             "devUrl": f"http://localhost:{a.port}",
@@ -117,9 +117,9 @@ tempfile = "3"
     }
     write(tauri / "capabilities" / "default.json", json.dumps(cap, indent=2) + "\n", a.force)
     plugin_lines = "".join(f"        .plugin({name.replace('-', '_')}::init())\n" for name in plugins)
-    write(tauri / "src" / "main.rs", f'''//! NewOS {a.title}.
+    write(tauri / "src" / "main.rs", f'''//! HelixOS {a.title}.
 
-use newos_appkit::tauri_app::{{setup, with_common_commands, Common, WindowSpec}};
+use helixos_appkit::tauri_app::{{setup, with_common_commands, Common, WindowSpec}};
 use tauri::{{Manager, Runtime}};
 
 /// Register the state and every command (the shared ones from appkit plus the app's own).

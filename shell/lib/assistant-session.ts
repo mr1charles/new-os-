@@ -4,7 +4,7 @@
  */
 import { createState } from "ags"
 import { chat, confirmTool, type ChatHandle } from "./assistant"
-import { describeTool, type ChatEvent, type ProviderKind } from "@newos/sdk/assistant-protocol"
+import { describeTool, type ChatEvent, type ProviderKind } from "@helixos/sdk/assistant-protocol"
 import { island } from "./island"
 import { openPopup } from "./popups"
 import { hyprland } from "./services"
@@ -168,7 +168,7 @@ export function newConversation() {
 
 export function answerConfirmation(requestId: string, allow: boolean) {
   island.dismiss(`confirm:${requestId}`)
-  confirmTool(requestId, allow).catch((error) => console.warn(`newos: confirm failed: ${error}`))
+  confirmTool(requestId, allow).catch((error) => console.warn(`helixos: confirm failed: ${error}`))
 }
 
 export function assistantName() {

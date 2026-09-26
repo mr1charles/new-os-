@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Boot a NewOS ISO in QEMU with UEFI firmware (the ISO build arrives in milestone 8).
+# Boot a HelixOS ISO in QEMU with UEFI firmware (the ISO build arrives in milestone 8).
 #
-#   scripts/dev-vm.sh [path/to/newos.iso]
+#   scripts/dev-vm.sh [path/to/helixos.iso]
 #
 # Needs qemu-full (or qemu-system-x86) and edk2-ovmf. Creates a 32 GB disk image on first run
 # so the installer has somewhere to install.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ISO="${1:-$ROOT/out/newos.iso}"
-DISK="$ROOT/out/newos-vm.qcow2"
+ISO="${1:-$ROOT/out/helixos.iso}"
+DISK="$ROOT/out/helixos-vm.qcow2"
 VARS="$ROOT/out/OVMF_VARS.fd"
 
 if [[ ! -f "$ISO" ]]; then

@@ -1,6 +1,6 @@
-import { call } from "@newos/sdk"
-import { useCommand } from "@newos/sdk/react"
-import { Row, Slider, Toggle } from "@newos/ui"
+import { call } from "@helixos/sdk"
+import { useCommand } from "@helixos/sdk/react"
+import { Row, Slider, Toggle } from "@helixos/ui"
 import { useState } from "react"
 
 /**

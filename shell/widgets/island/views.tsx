@@ -61,7 +61,7 @@ export function IdlePage() {
   const name = createComputed(() => config().assistant.name)
   return (
     <Page name="idle" class="idle">
-      <image iconName="newos-sparkle-symbolic" class="accent-icon" pixelSize={18} />
+      <image iconName="helixos-sparkle-symbolic" class="accent-icon" pixelSize={18} />
       <label class="idle-hint" label={name.as((n) => `Ask ${n}`)} hexpand xalign={0} />
       <image iconName={networkIcon()} visible={network !== null} />
       <image
@@ -403,7 +403,7 @@ export function AssistantPage() {
       <box orientation={VERTICAL} hexpand spacing={6}>
         <box spacing={8}>
           <image
-            iconName="newos-sparkle-symbolic"
+            iconName="helixos-sparkle-symbolic"
             class={payload.as(
               (p) => `accent-icon ${p.phase === "done" || p.phase === "error" ? "" : "pulsing"}`,
             )}
@@ -480,7 +480,7 @@ export function SpacePage() {
   const payload = payloadOf("space", {
     name: "",
     accent: "",
-    icon: "newos-logo-symbolic",
+    icon: "helixos-logo-symbolic",
     greeting: "",
   })
   return (

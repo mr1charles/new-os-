@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# End-to-end check of newos-spacesd with real accounts and real PAM, run as root inside the
+# End-to-end check of helixos-spacesd with real accounts and real PAM, run as root inside the
 # testing container (scripts/live.sh), never on a real system:
 #
-#   scripts/live.sh shell <<< 'cd $NEWOS_REPO && CARGO_TARGET_DIR=~/.cache/newos-target cargo build --release -p newos-spacesd'
-#   scripts/live.sh shell root <<< 'bash $NEWOS_REPO/services/spacesd/tests/pam-in-container.sh'
+#   scripts/live.sh shell <<< 'cd $HELIXOS_REPO && CARGO_TARGET_DIR=~/.cache/helixos-target cargo build --release -p helixos-spacesd'
+#   scripts/live.sh shell root <<< 'bash $HELIXOS_REPO/services/spacesd/tests/pam-in-container.sh'
 set -euo pipefail
 
-[ "${NEWOS_LIVE:-}" = 1 ] || { echo "run this inside the testing container only" >&2; exit 1; }
+[ "${HELIXOS_LIVE:-}" = 1 ] || { echo "run this inside the testing container only" >&2; exit 1; }
 [ "$(id -u)" = 0 ] || { echo "run as the container's root" >&2; exit 1; }
 
-BIN="/home/${NEWOS_LIVE_USER:-a}/.cache/newos-target/release/newos-spacesd"
-install -Dm644 "$NEWOS_REPO/distro/configs/pam/newos-spaces" /etc/pam.d/newos-spaces
+BIN="/home/${HELIXOS_LIVE_USER:-a}/.cache/helixos-target/release/helixos-spacesd"
+install -Dm644 "$HELIXOS_REPO/distro/configs/pam/helixos-spaces" /etc/pam.d/helixos-spaces
 STATE="$(mktemp -d)/spaces.json"
 
 cleanup() {
@@ -23,15 +23,15 @@ dbus-run-session -- bash -s "$BIN" "$STATE" <<'INNER'
 set -euo pipefail
 BIN="$1" STATE="$2"
 "$BIN" --session --state "$STATE" &
-for _ in $(seq 50); do busctl --user status org.newos.Spaces1 >/dev/null 2>&1 && break; sleep 0.1; done
-call() { busctl --user call org.newos.Spaces1 /org/newos/Spaces1 org.newos.Spaces1 "$@"; }
+for _ in $(seq 50); do busctl --user status org.helixos.Spaces1 >/dev/null 2>&1 && break; sleep 0.1; done
+call() { busctl --user call org.helixos.Spaces1 /org/helixos/Spaces1 org.helixos.Spaces1 "$@"; }
 pass=0 fail=0
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; pass=$((pass + 1)); else echo "FAIL $1: expected [$3], got [$2]"; fail=$((fail + 1)); fi; }
 
 call CreateSpace sss "Work" "work-pass-1" "blue" >/dev/null
 call CreateSpace sss "Personal" "home-pass-2" "pink" >/dev/null
 check "accounts exist" "$(getent passwd space-work space-personal | cut -d: -f1 | tr '\n' ' ')" "space-work space-personal "
-check "in the newos-spaces group" "$(getent group newos-spaces | cut -d: -f4)" "space-work,space-personal"
+check "in the helixos-spaces group" "$(getent group helixos-spaces | cut -d: -f4)" "space-work,space-personal"
 check "home folders" "$(stat -c %U /home/space-work)" "space-work"
 check "work password" "$(call ResolvePassword s work-pass-1)" 's "space-work"'
 check "personal password" "$(call ResolvePassword s home-pass-2)" 's "space-personal"'

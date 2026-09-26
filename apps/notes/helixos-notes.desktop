@@ -2,8 +2,8 @@
 Type=Application
 Name=Notes
 Comment=Markdown notes with summaries, rewriting, and answers from your notes
-Exec=newos-notes
-Icon=newos-notes
+Exec=helixos-notes
+Icon=helixos-notes
 Terminal=false
 Categories=Office;TextEditor;
 Keywords=memo;markdown;todo;checklist;journal;

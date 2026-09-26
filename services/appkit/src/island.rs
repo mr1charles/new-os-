@@ -1,6 +1,6 @@
 //! Live activities and notifications for apps.
 //!
-//! Activities go to the shell's `org.newos.Island1` (see shell/lib/island-service.ts): a
+//! Activities go to the shell's `org.helixos.Island1` (see shell/lib/island-service.ts): a
 //! progress or status that sits in the Dynamic Island while it lasts. Notifications go to the
 //! standard `org.freedesktop.Notifications`, which the shell shows in the island and the
 //! Notification Center.
@@ -47,7 +47,7 @@ static SESSION: OnceCell<zbus::Connection> = OnceCell::const_new();
 async fn session() -> Result<&'static zbus::Connection> {
     SESSION
         .get_or_try_init(|| async {
-            match std::env::var("NEWOS_ISLAND_BUS") {
+            match std::env::var("HELIXOS_ISLAND_BUS") {
                 // Tests point this at a private bus.
                 Ok(address) => zbus::connection::Builder::address(address.as_str())?.build().await,
                 Err(_) => zbus::Connection::session().await,
@@ -62,7 +62,7 @@ fn shell_missing(error: zbus::Error) -> AppError {
         zbus::Error::MethodError(name, message, _) => {
             let name = name.as_str();
             if name.ends_with("ServiceUnknown") || name.ends_with("NameHasNoOwner") {
-                AppError::Invalid("The NewOS shell isn’t running.".into())
+                AppError::Invalid("The HelixOS shell isn’t running.".into())
             } else {
                 AppError::Invalid(message.unwrap_or_else(|| name.to_string()))
             }
@@ -71,9 +71,9 @@ fn shell_missing(error: zbus::Error) -> AppError {
     }
 }
 
-const SHELL: &str = "org.newos.Shell1";
-const ISLAND_PATH: &str = "/org/newos/Island1";
-const ISLAND: &str = "org.newos.Island1";
+const SHELL: &str = "org.helixos.Shell1";
+const ISLAND_PATH: &str = "/org/helixos/Island1";
+const ISLAND: &str = "org.helixos.Island1";
 
 /// Show an activity, or update the one with the same id.
 pub async fn show(id: &str, activity: &Activity) -> Result<()> {

@@ -1,6 +1,6 @@
 //! Commands invoked through Tauri's IPC layer on the mock runtime, with the same JSON the
 //! frontend sends (camelCase arguments). This catches argument-name and type mismatches
-//! between `@newos/sdk` and the Rust signatures, which unit tests on either side cannot.
+//! between `@helixos/sdk` and the Rust signatures, which unit tests on either side cannot.
 //!
 //! Every case here only touches temp files or fails validation before any system tool runs,
 //! so the tests are safe on a developer's machine.
@@ -11,7 +11,7 @@ use tauri::test::{get_ipc_response, mock_builder, MockRuntime, INVOKE_KEY};
 use tauri::webview::InvokeRequest;
 use tauri::{App, WebviewWindow, WebviewWindowBuilder};
 
-use newos_appkit::tauri_app::Common;
+use helixos_appkit::tauri_app::Common;
 
 use crate::commands::Ctx;
 
@@ -24,12 +24,12 @@ struct Harness {
 fn harness() -> Harness {
     let dir = tempfile::tempdir().unwrap();
     let common = Common {
-        runner: newos_syslib::SystemRunner::default(),
-        assistant: newos_appkit::assistant_client::AssistantClient::new(dir.path().join("missing.sock")),
+        runner: helixos_syslib::SystemRunner::default(),
+        assistant: helixos_appkit::assistant_client::AssistantClient::new(dir.path().join("missing.sock")),
         settings_file: dir.path().join("shell.json"),
         assistant_config: dir.path().join("assistant.toml"),
     };
-    let ctx = Ctx { runner: newos_syslib::SystemRunner::default(), hypr_settings: dir.path().join("hyprland-settings.conf") };
+    let ctx = Ctx { runner: helixos_syslib::SystemRunner::default(), hypr_settings: dir.path().join("hyprland-settings.conf") };
     // The real generated context, so the app's own capabilities (ACL) apply as in production.
     let app = crate::with_commands(mock_builder(), common, ctx).build(tauri::generate_context!()).unwrap();
     let webview = WebviewWindowBuilder::new(&app, "main", Default::default()).build().unwrap();

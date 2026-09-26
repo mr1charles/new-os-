@@ -174,7 +174,7 @@ export default function NotificationCenter() {
   return (
     <PopupWindow
       name="notification-center"
-      namespace="newos-notification-center"
+      namespace="helixos-notification-center"
       halign={Gtk.Align.END}
       valign={Gtk.Align.FILL}
       marginTop={6}

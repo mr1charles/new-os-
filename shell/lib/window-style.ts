@@ -1,10 +1,10 @@
 /**
  * The window part of the settings, as Hyprland config: layout mode (floating, arrange,
  * tiling), corner radius, gaps, blur, and animation level. The shell writes it to
- * ~/.config/newos/hyprland-windows.conf, which the session sources, and reloads Hyprland when
+ * ~/.config/helixos/hyprland-windows.conf, which the session sources, and reloads Hyprland when
  * it changes. Pure, tested in Node.
  */
-import type { ShellConfig } from "@newos/sdk/settings-schema"
+import type { ShellConfig } from "@helixos/sdk/settings-schema"
 
 export function windowStyleConf(config: Pick<ShellConfig, "windows" | "appearance">): string {
   const w = config.windows

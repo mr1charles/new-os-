@@ -1,5 +1,5 @@
-import { assistant, type AssistantSettings } from "@newos/sdk"
-import { useAction, useCommand, useSettings } from "@newos/sdk/react"
+import { assistant, type AssistantSettings } from "@helixos/sdk"
+import { useAction, useCommand, useSettings } from "@helixos/sdk/react"
 import {
   Badge,
   Button,
@@ -14,7 +14,7 @@ import {
   TextField,
   Toggle,
   Value,
-} from "@newos/ui"
+} from "@helixos/ui"
 import { useEffect, useRef, useState } from "react"
 import { ActionError, LoadError } from "../components/common"
 
@@ -158,7 +158,7 @@ export function AssistantPage() {
       {status.error ? (
         <Callout tone="warning">
           The assistant isn’t running. It starts with your session; you can start it now with{" "}
-          <code>systemctl --user start newos-assistantd</code>.
+          <code>systemctl --user start helixos-assistantd</code>.
         </Callout>
       ) : (
         st && (

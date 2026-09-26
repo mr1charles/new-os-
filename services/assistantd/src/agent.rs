@@ -100,7 +100,7 @@ async fn run_chat_inner(state: &Arc<AppState>, input: ChatInput, tx: &Events) ->
         TurnContext { selection: input.context.selection, ..Default::default() }
     };
     let facts = state.memory.facts()?;
-    let battery = newos_syslib::power::read_battery(&state.tool_ctx.power_supply_dir).map(|b| (b.percent, b.charging));
+    let battery = helixos_syslib::power::read_battery(&state.tool_ctx.power_supply_dir).map(|b| (b.percent, b.charging));
     let user = Message::user(vec![
         Block::text(prompt::context_block(chrono::Local::now(), &context, &facts, battery)),
         Block::text(input.message.trim()),
@@ -257,7 +257,7 @@ pub async fn complete(state: &AppState, prompt_text: String) -> anyhow::Result<(
     let mut kind = router::choose(mode, state.probe.probe().await)?;
     let messages = vec![Message::user(vec![Block::text(prompt_text)])];
     let system = format!(
-        "You are {}, the assistant built into NewOS. Follow the instruction exactly and output only what it asks for.",
+        "You are {}, the assistant built into HelixOS. Follow the instruction exactly and output only what it asks for.",
         state.config.name
     );
     for _ in 0..2 {

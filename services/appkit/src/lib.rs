@@ -1,8 +1,8 @@
-//! Shared backend for NewOS apps.
+//! Shared backend for HelixOS apps.
 //!
 //! Everything here is plain Rust with no Tauri dependency, so it is unit tested without a
 //! display or webkit. Each app's `src-tauri` crate wraps these functions in `#[tauri::command]`s
-//! that `@newos/sdk` calls.
+//! that `@helixos/sdk` calls.
 
 pub mod assistant_client;
 pub mod assistant_config;
@@ -24,7 +24,7 @@ pub mod wallpapers;
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
     #[error(transparent)]
-    Sys(#[from] newos_syslib::SysError),
+    Sys(#[from] helixos_syslib::SysError),
     #[error("{0}")]
     Invalid(String),
     #[error("the assistant is not running ({0})")]

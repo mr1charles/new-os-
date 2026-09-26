@@ -2,7 +2,7 @@
  * One terminal tab: xterm.js connected to a shell session. It keeps running while hidden, so
  * switching tabs never interrupts a program.
  */
-import { island, notify, terminal as pty, type PtyEvent } from "@newos/sdk"
+import { island, notify, terminal as pty, type PtyEvent } from "@helixos/sdk"
 import { FitAddon } from "@xterm/addon-fit"
 import { Terminal, type ITheme } from "@xterm/xterm"
 import "@xterm/xterm/css/xterm.css"
@@ -57,7 +57,7 @@ const LIGHT: ITheme = {
 function theme(): ITheme {
   const root = getComputedStyle(document.documentElement)
   const dark = document.documentElement.dataset.theme !== "light"
-  const accent = root.getPropertyValue("--newos-accent").trim() || "#0a84ff"
+  const accent = root.getPropertyValue("--helixos-accent").trim() || "#0a84ff"
   return {
     ...(dark ? DARK : LIGHT),
     selectionBackground: `${accent}55`,
@@ -181,7 +181,7 @@ export function TerminalView({
           activityShown = true
           void island
             .show(activityId, {
-              app: "org.newos.Terminal",
+              app: "org.helixos.Terminal",
               icon: "utilities-terminal",
               title: command || title || "Running a command",
               subtitle: "Running in Terminal",

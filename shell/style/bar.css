@@ -1,6 +1,6 @@
 window.bar {
-  background: var(--newos-color-material-bar);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-material-bar);
+  color: var(--helixos-color-fg);
 }
 
 .bar-content {
@@ -14,7 +14,7 @@ menubutton.bar-item > button {
   background: none;
   border: none;
   box-shadow: none;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
   border-radius: 6px;
   padding: 2px 8px;
   min-height: 22px;
@@ -23,11 +23,11 @@ menubutton.bar-item > button {
 
 button.bar-item:hover,
 menubutton.bar-item > button:hover {
-  background: var(--newos-color-control-hover);
+  background: var(--helixos-color-control-hover);
 }
 
 menubutton.bar-item > button:checked {
-  background: var(--newos-color-control-active);
+  background: var(--helixos-color-control-active);
 }
 
 menubutton.logo > button {
@@ -53,18 +53,18 @@ menubutton.logo image {
 }
 
 .battery.charging image {
-  color: var(--newos-color-success);
+  color: var(--helixos-color-success);
 }
 
 .battery.low image {
-  color: var(--newos-color-warning);
+  color: var(--helixos-color-warning);
 }
 
 .battery.critical image,
 .battery.critical .battery-percent {
-  color: var(--newos-color-danger);
+  color: var(--helixos-color-danger);
 }
 
 .assistant-button image {
-  color: var(--newos-accent);
+  color: var(--helixos-accent);
 }

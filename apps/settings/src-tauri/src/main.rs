@@ -1,14 +1,14 @@
-//! NewOS Settings. `newos-settings --page <id>` opens a page (ids are in
+//! HelixOS Settings. `helixos-settings --page <id>` opens a page (ids are in
 //! `packages/sdk/src/settings-pages.ts`); a second launch focuses the open window and switches
 //! to that page instead of starting another copy.
 
 mod commands;
 
-use newos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
+use helixos_appkit::tauri_app::{setup, with_common_commands, Common, WindowSpec};
 use tauri::{Emitter, Manager, Runtime};
 
 /// Tells the frontend to switch page (see `App.tsx`).
-const OPEN_PAGE_EVENT: &str = "newos://open-page";
+const OPEN_PAGE_EVENT: &str = "helixos://open-page";
 
 /// The value after `--page`, if it is a plain page id.
 fn page_arg(args: &[String]) -> Option<String> {
@@ -103,9 +103,9 @@ mod tests {
     #[test]
     fn reads_the_page_argument() {
         let args = |a: &[&str]| a.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-        assert_eq!(page_arg(&args(&["newos-settings", "--page", "wifi"])), Some("wifi".into()));
-        assert_eq!(page_arg(&args(&["newos-settings"])), None);
-        assert_eq!(page_arg(&args(&["newos-settings", "--page"])), None);
-        assert_eq!(page_arg(&args(&["newos-settings", "--page", "../x?y"])), None);
+        assert_eq!(page_arg(&args(&["helixos-settings", "--page", "wifi"])), Some("wifi".into()));
+        assert_eq!(page_arg(&args(&["helixos-settings"])), None);
+        assert_eq!(page_arg(&args(&["helixos-settings", "--page"])), None);
+        assert_eq!(page_arg(&args(&["helixos-settings", "--page", "../x?y"])), None);
     }
 }

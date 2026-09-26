@@ -2,13 +2,13 @@
 //! Account names come only from [`crate::registry::Registry::new_account`], never from
 //! input, and passwords go to `chpasswd` on stdin.
 
-use newos_syslib::runner::run_checked;
-use newos_syslib::CommandRunner;
+use helixos_syslib::runner::run_checked;
+use helixos_syslib::CommandRunner;
 
 use crate::registry::valid_account;
 use crate::{Error, Result};
 
-pub const GROUP: &str = "newos-spaces";
+pub const GROUP: &str = "helixos-spaces";
 
 fn check(account: &str) -> Result<()> {
     if valid_account(account) {
@@ -42,7 +42,7 @@ pub async fn account_exists(runner: &dyn CommandRunner, account: &str) -> bool {
     runner.run("getent", &["passwd".into(), account.into()]).await.map(|o| o.success()).unwrap_or(false)
 }
 
-/// Create the account (home folder, own group, in `newos-spaces` and the usual desktop
+/// Create the account (home folder, own group, in `helixos-spaces` and the usual desktop
 /// groups) and set its password.
 pub async fn create(runner: &dyn CommandRunner, account: &str, display_name: &str, password: &str) -> Result<()> {
     check(account)?;
@@ -140,12 +140,12 @@ pub async fn activate(runner: &dyn CommandRunner, session: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use newos_syslib::{CommandOutput, MockRunner};
+    use helixos_syslib::{CommandOutput, MockRunner};
 
     #[tokio::test]
     async fn creates_accounts_with_the_password_on_stdin() {
         let runner = MockRunner::new();
-        runner.respond(CommandOutput::ok("newos-spaces:x:970:\n")); // getent group
+        runner.respond(CommandOutput::ok("helixos-spaces:x:970:\n")); // getent group
         create(&runner, "space-work", "Work: Mine", "correct horse").await.unwrap();
         let calls = runner.calls();
         assert_eq!(calls[1][0], "useradd");
@@ -161,7 +161,7 @@ mod tests {
         let runner = MockRunner::new();
         runner.respond(CommandOutput::failed(2, ""));
         ensure_group(&runner).await.unwrap();
-        assert_eq!(runner.calls()[1], ["groupadd", "--system", "newos-spaces"]);
+        assert_eq!(runner.calls()[1], ["groupadd", "--system", "helixos-spaces"]);
     }
 
     #[tokio::test]

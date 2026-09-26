@@ -3,7 +3,7 @@
   position: relative;
   min-height: 0;
   padding: 4px 4px 4px 10px;
-  background: var(--newos-color-bg);
+  background: var(--helixos-color-bg);
 }
 
 .term-view {
@@ -35,29 +35,29 @@
 .term-tab {
   display: flex;
   align-items: center;
-  border-radius: var(--newos-radius-xs);
-  color: var(--newos-color-fg-secondary);
+  border-radius: var(--helixos-radius-xs);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .term-tab:hover {
-  background: var(--newos-color-control);
+  background: var(--helixos-color-control);
 }
 
 .term-tab--active {
-  background: var(--newos-color-control-hover);
-  color: var(--newos-color-fg);
+  background: var(--helixos-color-control-hover);
+  color: var(--helixos-color-fg);
 }
 
 .term-tab__label {
   max-width: 180px;
   height: 26px;
-  padding: 0 var(--newos-space-3);
+  padding: 0 var(--helixos-space-3);
   border: 0;
   background: transparent;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: var(--newos-font-size-footnote);
+  font-size: var(--helixos-font-size-footnote);
 }
 
 .term-tab__close {
@@ -76,12 +76,12 @@
 
 .term-tab__close:hover {
   opacity: 1;
-  background: var(--newos-color-control-active);
+  background: var(--helixos-color-control-active);
 }
 
 .term-active {
-  background: var(--newos-color-control-hover);
-  color: var(--newos-accent);
+  background: var(--helixos-color-control-hover);
+  color: var(--helixos-accent);
 }
 
 .term-bar {
@@ -91,22 +91,22 @@
   transform: translateX(-50%);
   width: min(640px, calc(100% - 32px));
   z-index: 5;
-  padding: var(--newos-space-2);
-  border-radius: var(--newos-radius-md);
-  background: var(--newos-color-material-thick);
-  backdrop-filter: blur(var(--newos-blur-material));
-  box-shadow: var(--newos-color-shadow-popover);
-  animation: nx-sheet-in var(--newos-motion-normal) var(--newos-motion-spring);
+  padding: var(--helixos-space-2);
+  border-radius: var(--helixos-radius-md);
+  background: var(--helixos-color-material-thick);
+  backdrop-filter: blur(var(--helixos-blur-material));
+  box-shadow: var(--helixos-color-shadow-popover);
+  animation: nx-sheet-in var(--helixos-motion-normal) var(--helixos-motion-spring);
 }
 
 .term-bar__row {
   display: flex;
   align-items: center;
-  gap: var(--newos-space-2);
+  gap: var(--helixos-space-2);
 }
 
 .term-bar__icon {
-  color: var(--newos-accent);
+  color: var(--helixos-accent);
   flex: none;
   margin-left: 4px;
 }
@@ -117,9 +117,9 @@
   height: 30px;
   border: 0;
   background: transparent;
-  color: var(--newos-color-fg);
+  color: var(--helixos-color-fg);
   font: inherit;
-  font-size: var(--newos-font-size-callout);
+  font-size: var(--helixos-font-size-callout);
   user-select: text;
 }
 
@@ -132,10 +132,10 @@
 .term-bar__error,
 .term-bar__explain,
 .term-bar__result {
-  margin-top: var(--newos-space-2);
-  padding: var(--newos-space-2);
-  border-radius: var(--newos-radius-sm);
-  background: var(--newos-color-control);
+  margin-top: var(--helixos-space-2);
+  padding: var(--helixos-space-2);
+  border-radius: var(--helixos-radius-sm);
+  background: var(--helixos-color-control);
   line-height: 1.5;
   user-select: text;
 }
@@ -143,12 +143,12 @@
 .term-bar__status {
   display: flex;
   align-items: center;
-  gap: var(--newos-space-2);
-  color: var(--newos-color-fg-secondary);
+  gap: var(--helixos-space-2);
+  color: var(--helixos-color-fg-secondary);
 }
 
 .term-bar__error {
-  color: var(--newos-color-danger);
+  color: var(--helixos-color-danger);
 }
 
 .term-bar__explain {
@@ -160,22 +160,22 @@
 .term-bar__command {
   display: block;
   padding: 6px 8px;
-  border-radius: var(--newos-radius-xs);
-  background: var(--newos-color-bg);
+  border-radius: var(--helixos-radius-xs);
+  background: var(--helixos-color-bg);
   white-space: pre-wrap;
   word-break: break-all;
 }
 
 .term-bar__risk {
-  margin-top: var(--newos-space-2);
-  font-size: var(--newos-font-size-footnote);
+  margin-top: var(--helixos-space-2);
+  font-size: var(--helixos-font-size-footnote);
 }
 
 .term-bar__actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--newos-space-2);
-  margin-top: var(--newos-space-2);
+  gap: var(--helixos-space-2);
+  margin-top: var(--helixos-space-2);
 }
 
 .term-scrim {

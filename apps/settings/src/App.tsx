@@ -1,12 +1,12 @@
-import { listen } from "@newos/sdk"
-import { useAppTheme, useCommand } from "@newos/sdk/react"
-import { SearchField, Sidebar, SidebarItem, SidebarSection, Toolbar, Window } from "@newos/ui"
+import { listen } from "@helixos/sdk"
+import { useAppTheme, useCommand } from "@helixos/sdk/react"
+import { SearchField, Sidebar, SidebarItem, SidebarSection, Toolbar, Window } from "@helixos/ui"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { AccountCard } from "./components/AccountCard"
 import { DEFAULT_PAGE, findPage, PageIcon, PAGES, SECTIONS, searchPages } from "./pages"
 
-/** Emitted by the backend when `newos-settings --page <id>` runs while Settings is open. */
-export const OPEN_PAGE_EVENT = "newos://open-page"
+/** Emitted by the backend when `helixos-settings --page <id>` runs while Settings is open. */
+export const OPEN_PAGE_EVENT = "helixos://open-page"
 
 function initialPage(): string {
   const requested = new URLSearchParams(window.location.search).get("page")

@@ -1,12 +1,12 @@
 /**
  * Client for assistantd's HTTP API over its unix socket
- * ($XDG_RUNTIME_DIR/newos/assistant.sock). Uses libsoup with a unix socket connectable, and
+ * ($XDG_RUNTIME_DIR/helixos/assistant.sock). Uses libsoup with a unix socket connectable, and
  * parses the Server-Sent Events stream line by line.
  */
 import GLib from "gi://GLib?version=2.0"
 import Gio from "gi://Gio?version=2.0"
 import Soup from "gi://Soup?version=3.0"
-import { SseParser } from "@newos/sdk/sse"
+import { SseParser } from "@helixos/sdk/sse"
 import {
   parseChatEvent,
   parseSystemEvent,
@@ -15,7 +15,7 @@ import {
   type CompleteRequest,
   type StatusResponse,
   type SystemEvent,
-} from "@newos/sdk/assistant-protocol"
+} from "@helixos/sdk/assistant-protocol"
 import { config } from "./config"
 
 Gio._promisify(Soup.Session.prototype, "send_async", "send_finish")
@@ -25,7 +25,7 @@ Gio._promisify(Gio.DataInputStream.prototype, "read_line_async", "read_line_fini
 export function socketPath(): string {
   const configured = config.peek().assistant.socketPath
   return (
-    configured || GLib.build_filenamev([GLib.get_user_runtime_dir(), "newos", "assistant.sock"])
+    configured || GLib.build_filenamev([GLib.get_user_runtime_dir(), "helixos", "assistant.sock"])
   )
 }
 
@@ -133,7 +133,7 @@ export function chat(request: ChatRequest, onEvent: (event: ChatEvent) => void):
     onEvent({
       type: "error",
       message: unreachable
-        ? "The assistant service is not running. Start it with: systemctl --user start newos-assistantd"
+        ? "The assistant service is not running. Start it with: systemctl --user start helixos-assistantd"
         : text,
     })
   })

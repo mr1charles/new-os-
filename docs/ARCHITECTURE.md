@@ -1,21 +1,21 @@
 # Architecture
 
-NewOS is a Linux distribution with a custom desktop. The kernel, drivers, and compositor are
+HelixOS is a Linux distribution with a custom desktop. The kernel, drivers, and compositor are
 reused; the shell, assistant, login, apps, and installer are built here.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ Apps: Tauri 2 + React: Settings, Files, Notes, Terminal, Calculator        │  apps/
-│ @newos/ui (window chrome, controls) · @newos/sdk (IPC, settings, assistant)│  packages/
+│ @helixos/ui (window chrome, controls) · @helixos/sdk (IPC, settings, assistant)│  packages/
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Shell: AGS/Astal, TypeScript, GTK4 layer-shell                             │  shell/
 │ bar · Dynamic Island · Dock · launcher · Control Center · notifications    │
 │ app switcher · assistant panel · wallpaper · (greeter, lock screen in M5)  │
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Services (Rust)                                                            │  services/
-│ newos-assistantd: models, tools, memory, local API                         │
-│ newos-syslib: audio, display, network, Bluetooth, power, input, windows    │
-│ newos-appkit: settings, assistant, notes, files, PTY, shared Tauri setup   │
+│ helixos-assistantd: models, tools, memory, local API                         │
+│ helixos-syslib: audio, display, network, Bluetooth, power, input, windows    │
+│ helixos-appkit: settings, assistant, notes, files, PTY, shared Tauri setup   │
 │ (spacesd for Dual Space in M5)                                             │
 ├────────────────────────────────────────────────────────────────────────────┤
 │ Platform: Hyprland · greetd · PipeWire/WirePlumber · NetworkManager ·      │
@@ -30,10 +30,10 @@ reused; the shell, assistant, login, apps, and installer are built here.
 | Process | Started by | Talks to |
 |---|---|---|
 | Hyprland | greetd (M5/M8), or `scripts/dev-session.sh` | everything on screen |
-| Shell (`ags run`, instance `newos`) | Hyprland `exec-once` | Hyprland IPC, D-Bus services, assistantd |
-| `newos-assistantd` | systemd user unit (`newos-session.target`) | Anthropic API or Ollama, system tools |
+| Shell (`ags run`, instance `helixos`) | Hyprland `exec-once` | Hyprland IPC, D-Bus services, assistantd |
+| `helixos-assistantd` | systemd user unit (`helixos-session.target`) | Anthropic API or Ollama, system tools |
 | Ollama | its own systemd service | assistantd |
-| Apps (`newos-settings`, ...) | the Dock, Spotlight, `Super+,` | their Rust backend: syslib, appkit, assistantd |
+| Apps (`helixos-settings`, ...) | the Dock, Spotlight, `Super+,` | their Rust backend: syslib, appkit, assistantd |
 
 The shell is also the desktop's notification server: it owns
 `org.freedesktop.Notifications` through AstalNotifd, so no other notification daemon runs.
@@ -71,13 +71,13 @@ Hovering keeps a transient activity on screen. Sizes animate through CSS transit
 
 ### Commands
 
-Keybindings and scripts drive the shell with `ags request -i newos <command>`. Run
-`ags request -i newos help` for the list. It includes launcher, assistant, control-center,
+Keybindings and scripts drive the shell with `ags request -i helixos <command>`. Run
+`ags request -i helixos help` for the list. It includes launcher, assistant, control-center,
 notifications, volume, brightness, theme, dnd, timer, and switcher.
 
 ## The assistant
 
-`newos-assistantd` serves HTTP on `$XDG_RUNTIME_DIR/newos/assistant.sock`. The socket is
+`helixos-assistantd` serves HTTP on `$XDG_RUNTIME_DIR/helixos/assistant.sock`. The socket is
 mode 0600 inside a 0700 directory, so only the logged-in user can reach it. See
 [ASSISTANT.md](ASSISTANT.md) for the API.
 
@@ -95,7 +95,7 @@ A chat request goes through these steps:
    most 12 steps.
 5. If the cloud fails before producing anything, the same turn retries on the local model.
 6. The conversation, facts, and a tool audit log are saved in
-   `~/.local/share/newos/assistant.db`.
+   `~/.local/share/helixos/assistant.db`.
 
 Claude-specific handling lives in `providers/claude.rs`:
 
@@ -109,17 +109,17 @@ Claude-specific handling lives in `providers/claude.rs`:
 
 Each app is a Tauri 2 window with a React frontend and a small Rust backend.
 
-- **`@newos/ui`** draws the macOS-style chrome and controls: traffic lights (the window has no
+- **`@helixos/ui`** draws the macOS-style chrome and controls: traffic lights (the window has no
   server-side decorations; Hyprland adds rounding, shadow, and blur), sidebar, toolbar,
   grouped rows, switches, sliders, segmented controls, sheets, popovers. Everything is styled
   with design-token CSS variables, so light/dark and the accent follow the user's settings.
-- **`@newos/sdk`** is how the frontend reaches the system. `call("wifi_networks", {rescan})` is
+- **`@helixos/sdk`** is how the frontend reaches the system. `call("wifi_networks", {rescan})` is
   typed end to end by the `Commands` map in `packages/sdk/src/commands.ts`. The same package
   has the live settings store (`useSettings()`), theming (`useAppTheme()`), the assistant
   client (`assistant.complete("summarize", text)`, streamed `assistant.chat()`), and a mock
   backend so an app's UI runs in a plain browser with sample data.
-- **The Rust backend** registers `#[tauri::command]`s that wrap `newos-syslib` (system) and
-  `newos-appkit` (settings file with a file watcher, assistant config and keyring, a client
+- **The Rust backend** registers `#[tauri::command]`s that wrap `helixos-syslib` (system) and
+  `helixos-appkit` (settings file with a file watcher, assistant config and keyring, a client
   for assistantd's unix socket, since webviews cannot open one). A Vitest check keeps the SDK's
   command list, the registered handlers, and the mock in step, and IPC tests on Tauri's mock
   runtime call each command with the JSON the frontend sends.
@@ -134,13 +134,13 @@ The apps and what they add on top of that:
 
 | App | Binary | Backend logic | Assistant features |
 |---|---|---|---|
-| Settings | `newos-settings` | syslib (system tools) | model and key setup |
-| Files | `newos-files` | `appkit::files` (listing, copy/move, Trash, drives via UDisks, search, `pdftoppm`/`pdftotext`) | plain-language search, summarize a document |
-| Notes | `newos-notes` | `appkit::notes` (Markdown in `~/Notes`, pins, search, watcher) | summarize, rewrite, continue writing, ask my notes |
-| Terminal | `newos-terminal` | `appkit::pty` (`portable-pty`) | English to a command, explain output |
-| Calculator | `newos-calculator` | none (math in `@newos/sdk/math`) | words to an expression |
+| Settings | `helixos-settings` | syslib (system tools) | model and key setup |
+| Files | `helixos-files` | `appkit::files` (listing, copy/move, Trash, drives via UDisks, search, `pdftoppm`/`pdftotext`) | plain-language search, summarize a document |
+| Notes | `helixos-notes` | `appkit::notes` (Markdown in `~/Notes`, pins, search, watcher) | summarize, rewrite, continue writing, ask my notes |
+| Terminal | `helixos-terminal` | `appkit::pty` (`portable-pty`) | English to a command, explain output |
+| Calculator | `helixos-calculator` | none (math in `@helixos/sdk/math`) | words to an expression |
 
-Settings (`apps/settings`, binary `newos-settings`) opens a page with `--page <id>`; ids are
+Settings (`apps/settings`, binary `helixos-settings`) opens a page with `--page <id>`; ids are
 shared with the shell's Spotlight search in `packages/sdk/src/settings-pages.ts`. A second
 launch focuses the open window and switches page.
 
@@ -148,15 +148,15 @@ launch focuses the open window and switches page.
 
 | Path | Owner | Contents |
 |---|---|---|
-| `~/.config/newos/shell.json` | shell, Settings | appearance, Dock, bar, island, Focus, Night Shift |
-| `~/.config/newos/assistant.toml` | assistantd, Settings | mode, models, privacy, tools |
-| `~/.config/newos/hyprland-settings.conf` | Settings | input and monitor choices, applied live with `hyprctl keyword` |
-| `~/.config/newos/hyprland-user.conf` | user | Hyprland overrides (sourced last, so they win) |
-| Keyring: `service=newos-assistant account=anthropic-api-key` | Settings, assistantd | the Anthropic API key |
-| `~/.local/share/newos/assistant.db` | assistantd | conversations, facts, tool audit |
+| `~/.config/helixos/shell.json` | shell, Settings | appearance, Dock, bar, island, Focus, Night Shift |
+| `~/.config/helixos/assistant.toml` | assistantd, Settings | mode, models, privacy, tools |
+| `~/.config/helixos/hyprland-settings.conf` | Settings | input and monitor choices, applied live with `hyprctl keyword` |
+| `~/.config/helixos/hyprland-user.conf` | user | Hyprland overrides (sourced last, so they win) |
+| Keyring: `service=helixos-assistant account=anthropic-api-key` | Settings, assistantd | the Anthropic API key |
+| `~/.local/share/helixos/assistant.db` | assistantd | conversations, facts, tool audit |
 | `~/Notes/*.md` | Notes app, assistant | notes |
-| `$XDG_RUNTIME_DIR/newos/assistant.sock` | assistantd | local API |
-| `/usr/share/newos/shell/` | package | installed shell and assets (M8) |
+| `$XDG_RUNTIME_DIR/helixos/assistant.sock` | assistantd | local API |
+| `/usr/share/helixos/shell/` | package | installed shell and assets (M8) |
 
 Both config files are optional. Invalid or unknown values fall back to defaults in the shell.
 The daemon rejects typos with a clear error.

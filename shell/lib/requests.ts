@@ -1,7 +1,7 @@
 /**
  * Command interface for keybindings and scripts:
  *
- *   ags request -i newos <command> [args]
+ *   ags request -i helixos <command> [args]
  *
  * Hyprland binds (shell/hypr/hyprland.conf) call these for Super+Space, volume keys, etc.
  */
@@ -11,16 +11,16 @@ import { stepVolume, toggleMute } from "./audio"
 import { stepBrightness } from "./brightness"
 import { showBrightnessOsd, showVolumeOsd } from "./island-sources"
 import { updateConfig, config } from "./config"
-import type { ShellConfig } from "@newos/sdk/settings-schema"
+import type { ShellConfig } from "@helixos/sdk/settings-schema"
 import { island } from "./island"
 import { cycleSwitcher } from "./switcher"
 import { send } from "./assistant-session"
 import { startTimer } from "./timers"
 import { parseDuration } from "./format"
 import { arrangeWorkspace, snap } from "./windows"
-import { diffConfig, patchConfig, PRESETS } from "@newos/sdk/customize"
+import { diffConfig, patchConfig, PRESETS } from "@helixos/sdk/customize"
 
-const HELP = `NewOS shell commands:
+const HELP = `HelixOS shell commands:
   launcher | launchpad            open Spotlight search or the app grid
   assistant [prompt...]           open the assistant (and ask something)
   control-center | notifications  toggle a panel

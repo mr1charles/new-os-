@@ -86,6 +86,7 @@ pub fn completion_prompt(task: &str, input: &str, options: &serde_json::Map<Stri
             format!("Extract these fields from the text below: {}. Output only a JSON object with exactly those keys, using null when a field is missing.", fields.join(", "))
         }
         "title" => "Write a short title (at most six words) for the text below. Output only the title.".to_string(),
+        "continue" => "Continue the text below in the same voice, language, and format: one or two more paragraphs, or more items if it ends in a list. Output only the new text, without repeating what is already there.".to_string(),
         other => return Err(format!("unknown task: {other}")),
     };
     Ok(format!("{instruction}\n\n<text>\n{input}\n</text>"))
@@ -124,5 +125,6 @@ mod tests {
         assert!(completion_prompt("classify", "x", &Default::default()).is_err());
         assert!(completion_prompt("dance", "x", &Default::default()).is_err());
         assert!(completion_prompt("summarize", "x", &Default::default()).is_ok());
+        assert!(completion_prompt("continue", "Dear Sam,", &Default::default()).unwrap().contains("Continue the text"));
     }
 }

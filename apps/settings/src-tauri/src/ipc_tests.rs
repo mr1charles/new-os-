@@ -11,6 +11,8 @@ use tauri::test::{get_ipc_response, mock_builder, MockRuntime, INVOKE_KEY};
 use tauri::webview::InvokeRequest;
 use tauri::{App, WebviewWindow, WebviewWindowBuilder};
 
+use newos_appkit::tauri_app::Common;
+
 use crate::commands::Ctx;
 
 struct Harness {
@@ -21,15 +23,15 @@ struct Harness {
 
 fn harness() -> Harness {
     let dir = tempfile::tempdir().unwrap();
-    let ctx = Ctx {
+    let common = Common {
         runner: newos_syslib::SystemRunner::default(),
         assistant: newos_appkit::assistant_client::AssistantClient::new(dir.path().join("missing.sock")),
         settings_file: dir.path().join("shell.json"),
         assistant_config: dir.path().join("assistant.toml"),
-        hypr_settings: dir.path().join("hyprland-settings.conf"),
     };
+    let ctx = Ctx { runner: newos_syslib::SystemRunner::default(), hypr_settings: dir.path().join("hyprland-settings.conf") };
     // The real generated context, so the app's own capabilities (ACL) apply as in production.
-    let app = crate::with_commands(mock_builder(), ctx).build(tauri::generate_context!()).unwrap();
+    let app = crate::with_commands(mock_builder(), common, ctx).build(tauri::generate_context!()).unwrap();
     let webview = WebviewWindowBuilder::new(&app, "main", Default::default()).build().unwrap();
     Harness { _app: app, webview, dir }
 }

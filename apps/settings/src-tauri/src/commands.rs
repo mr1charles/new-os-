@@ -1,101 +1,31 @@
-//! The commands the Settings frontend calls through `@newos/sdk` (`packages/sdk/src/
+//! The system commands the Settings frontend calls through `@newos/sdk` (`packages/sdk/src/
 //! commands.ts` has the matching types). Each one is a thin wrapper: the logic and its tests
-//! live in `newos-syslib` (system) and `newos-appkit` (settings file, assistant).
+//! live in `newos-syslib`. The settings file and assistant commands every app shares come from
+//! `newos_appkit::tauri_app`.
 
 use std::path::PathBuf;
 
-use newos_appkit::assistant_client::AssistantClient;
-use newos_appkit::{assistant_config, keyring, paths, settings, terminal, wallpapers, AppError};
+use newos_appkit::{paths, terminal, wallpapers, AppError};
 use newos_syslib::display::{Monitor, MonitorSetup};
 use newos_syslib::{about, audio, bluetooth, desktop, display, hyprconf, network, power, updates, users, SystemRunner};
-use serde_json::Value;
-use tauri::ipc::Channel;
 use tauri::State;
 
 type Result<T> = std::result::Result<T, AppError>;
 
 pub struct Ctx {
     pub runner: SystemRunner,
-    pub assistant: AssistantClient,
-    pub settings_file: PathBuf,
-    pub assistant_config: PathBuf,
     pub hypr_settings: PathBuf,
 }
 
 impl Ctx {
     pub fn from_env() -> Self {
-        Self {
-            runner: SystemRunner::default(),
-            assistant: AssistantClient::from_env(),
-            settings_file: paths::settings_file(),
-            assistant_config: paths::assistant_config_file(),
-            hypr_settings: paths::hyprland_settings_file(),
-        }
+        Self { runner: SystemRunner::default(), hypr_settings: paths::hyprland_settings_file() }
     }
 }
 
 /// Run blocking work (keyring, file scans) off the async runtime.
 async fn blocking<T: Send + 'static>(f: impl FnOnce() -> Result<T> + Send + 'static) -> Result<T> {
     tokio::task::spawn_blocking(f).await.map_err(|e| AppError::Invalid(e.to_string()))?
-}
-
-// Settings file -------------------------------------------------------------------------------
-
-#[tauri::command]
-pub fn settings_read(ctx: State<'_, Ctx>) -> Value {
-    settings::read(&ctx.settings_file)
-}
-
-#[tauri::command]
-pub fn settings_update(ctx: State<'_, Ctx>, patch: Value) -> Result<Value> {
-    settings::update(&ctx.settings_file, &patch)
-}
-
-// Assistant -----------------------------------------------------------------------------------
-
-#[tauri::command]
-pub async fn assistant_request(ctx: State<'_, Ctx>, method: String, path: String, body: Option<Value>) -> Result<Value> {
-    ctx.assistant.request(&method, &path, body.as_ref()).await
-}
-
-#[tauri::command]
-pub async fn assistant_stream(ctx: State<'_, Ctx>, path: String, body: Value, on_chunk: Channel<String>) -> Result<()> {
-    ctx.assistant
-        .stream(&path, &body, |chunk| {
-            // A closed channel means the page went away; the stream just ends.
-            let _ = on_chunk.send(chunk);
-        })
-        .await
-}
-
-#[tauri::command]
-pub fn assistant_settings_read(ctx: State<'_, Ctx>) -> Result<assistant_config::AssistantSettings> {
-    assistant_config::read(&ctx.assistant_config)
-}
-
-#[tauri::command]
-pub fn assistant_settings_set(ctx: State<'_, Ctx>, field: String, value: Value) -> Result<assistant_config::AssistantSettings> {
-    assistant_config::set(&ctx.assistant_config, &field, &value)
-}
-
-#[tauri::command]
-pub async fn assistant_key_status() -> Result<bool> {
-    blocking(|| Ok(keyring::has_api_key())).await
-}
-
-#[tauri::command]
-pub async fn assistant_key_store(key: String) -> Result<()> {
-    blocking(move || keyring::store_api_key(&key)).await
-}
-
-#[tauri::command]
-pub async fn assistant_key_clear() -> Result<()> {
-    blocking(keyring::clear_api_key).await
-}
-
-#[tauri::command]
-pub async fn assistant_restart(ctx: State<'_, Ctx>) -> Result<()> {
-    newos_appkit::assistant_client::restart_daemon(&ctx.runner).await
 }
 
 // Network -------------------------------------------------------------------------------------

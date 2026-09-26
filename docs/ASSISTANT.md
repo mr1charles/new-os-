@@ -120,6 +120,7 @@ are snake_case.
 - `command` (English to a bash command)
 - `extract` (`options.fields`, returns JSON)
 - `title`
+- `continue` (writes the next paragraph or list items)
 
 Apps use these for their intelligent features.
 

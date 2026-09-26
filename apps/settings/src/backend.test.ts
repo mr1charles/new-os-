@@ -17,8 +17,8 @@ function sdkCommands(): string[] {
   return [...block.matchAll(/^ {2}(\w+): \[/gm)].map((m) => m[1]!)
 }
 
-/** Names in `tauri::generate_handler![commands::a, commands::b, ...]`. */
-function registeredCommands(): string[] {
+/** The app's own handlers: `tauri::generate_handler![commands::a, ...]` in main.rs. */
+function appCommands(): string[] {
   const source = read("../src-tauri/src/main.rs")
   const block = source.slice(
     source.indexOf("generate_handler!["),
@@ -26,6 +26,18 @@ function registeredCommands(): string[] {
   )
   return [...block.matchAll(/commands::(\w+)/g)].map((m) => m[1]!)
 }
+
+/** Commands every app gets from newos-appkit (`COMMANDS` in tauri_app.rs). */
+function sharedCommands(): string[] {
+  const source = read("../../../services/appkit/src/tauri_app.rs")
+  const block = source.slice(
+    source.indexOf("pub const COMMANDS"),
+    source.indexOf("];", source.indexOf("pub const COMMANDS")),
+  )
+  return [...block.matchAll(/"(\w+)"/g)].map((m) => m[1]!)
+}
+
+const registeredCommands = () => [...sharedCommands(), ...appCommands()]
 
 // Streaming commands take a channel, so they are called through callStreaming, not Commands.
 const STREAMING = ["assistant_stream"]
@@ -37,7 +49,7 @@ describe("backend commands", () => {
 
   it("defines each Rust command in commands.rs", () => {
     const source = read("../src-tauri/src/commands.rs")
-    for (const name of registeredCommands()) {
+    for (const name of appCommands()) {
       expect(source, name).toMatch(new RegExp(`pub (async )?fn ${name}\\(`))
     }
   })

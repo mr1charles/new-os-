@@ -1,6 +1,6 @@
 /**
- * Safe calculator for the launcher ("15% of 84", "sqrt(2)*3", "2^10"). A small recursive
- * descent parser, never `eval`.
+ * Safe calculator for the launcher and the Calculator app ("15% of 84", "sqrt(2)*3", "2^10").
+ * A small recursive descent parser, never `eval`.
  *
  * Grammar (lowest to highest precedence):
  *   expr    := term (("+" | "-") term)*
@@ -84,9 +84,22 @@ function factorial(n: number): number {
   return result
 }
 
+export interface EvalOptions {
+  /** Units for sin/cos/tan and their inverses. Default radians. */
+  angle?: "rad" | "deg"
+  /** Named values, e.g. `ans` for the previous result. */
+  variables?: Record<string, number>
+}
+
+const TRIG = new Set(["sin", "cos", "tan"])
+const INVERSE_TRIG = new Set(["asin", "acos", "atan"])
+
 class Parser {
   #pos = 0
-  constructor(private readonly tokens: Token[]) {}
+  constructor(
+    private readonly tokens: Token[],
+    private readonly options: EvalOptions = {},
+  ) {}
 
   parse(): number {
     const value = this.expr()
@@ -190,8 +203,14 @@ class Parser {
         const arg = this.expr()
         if (!this.#isOp(")")) throw new Error("missing )")
         this.#pos++
+        if (this.options.angle === "deg") {
+          if (TRIG.has(token.value)) return fn((arg * Math.PI) / 180)
+          if (INVERSE_TRIG.has(token.value)) return (fn(arg) * 180) / Math.PI
+        }
         return fn(arg)
       }
+      const variable = this.options.variables?.[token.value]
+      if (variable !== undefined) return variable
       const constant = CONSTANTS[token.value]
       if (constant !== undefined) return constant
     }
@@ -200,11 +219,11 @@ class Parser {
 }
 
 /** Evaluate an expression. Returns null for anything that is not valid, finite math. */
-export function evaluate(input: string): number | null {
+export function evaluate(input: string, options: EvalOptions = {}): number | null {
   const tokens = tokenize(input.trim().replace(/=\s*$/, ""))
   if (!tokens || tokens.length === 0) return null
   try {
-    const value = new Parser(tokens).parse()
+    const value = new Parser(tokens, options).parse()
     return Number.isFinite(value) ? value : null
   } catch {
     return null

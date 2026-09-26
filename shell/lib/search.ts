@@ -3,7 +3,7 @@
  * assistant", and web search into one ranked list. Pure TypeScript for Node tests.
  */
 import { SETTINGS_PAGES } from "@newos/sdk/settings-pages"
-import { evaluate, formatNumber, looksLikeMath } from "./math"
+import { evaluate, formatNumber, looksLikeMath } from "@newos/sdk/math"
 
 export interface SearchableApp {
   entry: string

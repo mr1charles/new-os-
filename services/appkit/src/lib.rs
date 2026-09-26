@@ -9,6 +9,8 @@ pub mod assistant_config;
 pub mod keyring;
 pub mod paths;
 pub mod settings;
+#[cfg(feature = "tauri")]
+pub mod tauri_app;
 pub mod terminal;
 pub mod wallpapers;
 

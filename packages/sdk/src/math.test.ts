@@ -47,4 +47,12 @@ describe("formatNumber", () => {
     expect(formatNumber(1 / 3)).toBe("0.3333333333")
     expect(formatNumber(1e21)).toBe("1e+21")
   })
+
+  it("supports degrees and variables", () => {
+    expect(evaluate("sin(30)", { angle: "deg" })).toBeCloseTo(0.5)
+    expect(evaluate("asin(1)", { angle: "deg" })).toBeCloseTo(90)
+    expect(evaluate("sin(30)")).toBeCloseTo(-0.988, 3)
+    expect(evaluate("ans * 2", { variables: { ans: 21 } })).toBe(42)
+    expect(evaluate("ans * 2")).toBeNull()
+  })
 })

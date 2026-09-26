@@ -1,6 +1,6 @@
 [package]
-name = "newos-settings"
-description = "NewOS Settings app backend: Tauri commands over newos-syslib and newos-appkit."
+name = "newos-calculator"
+description = "NewOS Calculator backend."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,7 +8,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "newos-settings"
+name = "newos-calculator"
 path = "src/main.rs"
 
 [build-dependencies]
@@ -21,8 +21,8 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
 tauri = { version = "2", features = ["protocol-asset"] }
-tauri-plugin-dialog = "2"
 tauri-plugin-single-instance = "2"
+
 
 [dev-dependencies]
 tauri = { version = "2", features = ["protocol-asset", "test"] }

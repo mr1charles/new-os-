@@ -53,7 +53,15 @@ export interface ChatRequest {
 }
 
 export type CompletionTask =
-  "summarize" | "rewrite" | "classify" | "reply" | "explain" | "command" | "extract" | "title"
+  | "summarize"
+  | "rewrite"
+  | "classify"
+  | "reply"
+  | "explain"
+  | "command"
+  | "extract"
+  | "title"
+  | "continue"
 
 export interface CompleteRequest {
   task: CompletionTask

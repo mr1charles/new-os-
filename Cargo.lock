@@ -2612,6 +2612,7 @@ dependencies = [
  "notify",
  "serde",
  "serde_json",
+ "tauri",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -2644,6 +2645,21 @@ dependencies = [
  "tracing-subscriber",
  "uuid",
  "walkdir",
+]
+
+[[package]]
+name = "newos-calculator"
+version = "0.1.0"
+dependencies = [
+ "newos-appkit",
+ "newos-syslib",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-single-instance",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]

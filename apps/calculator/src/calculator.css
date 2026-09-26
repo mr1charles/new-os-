@@ -1,0 +1,203 @@
+.calc-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.calc-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--newos-space-3) var(--newos-space-3);
+  gap: var(--newos-space-3);
+  min-width: 0;
+}
+
+.calc-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: var(--newos-space-2) var(--newos-space-1) 0;
+}
+
+.calc-expression {
+  min-height: 18px;
+  font-size: var(--newos-font-size-footnote);
+  color: var(--newos-color-fg-secondary);
+  text-align: right;
+}
+
+.calc-input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--newos-color-fg);
+  font: inherit;
+  font-size: 34px;
+  font-weight: 300;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  user-select: text;
+  padding: 0;
+}
+
+.calc-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.calc-input::placeholder {
+  color: var(--newos-color-fg);
+}
+
+.calc-result {
+  display: flex;
+  align-items: center;
+  gap: var(--newos-space-2);
+  min-height: 24px;
+  font-size: var(--newos-font-size-title3);
+  color: var(--newos-color-fg-secondary);
+  font-variant-numeric: tabular-nums;
+  user-select: text;
+}
+
+.calc-notice {
+  font-size: var(--newos-font-size-footnote);
+  color: var(--newos-color-warning);
+  text-align: right;
+}
+
+.calc-keypad {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(40px, 1fr);
+  gap: 8px;
+}
+
+.calc-key {
+  border: 0;
+  border-radius: var(--newos-radius-sm);
+  background: var(--newos-color-control-hover);
+  font-size: var(--newos-font-size-title3);
+  font-variant-numeric: tabular-nums;
+  transition: filter var(--newos-motion-fast);
+}
+
+.calc-key:hover {
+  filter: brightness(1.12);
+}
+
+.calc-key:active {
+  filter: brightness(0.9);
+}
+
+.calc-key--operator {
+  background: var(--newos-accent);
+  color: var(--newos-color-fg-on-accent);
+  font-size: 22px;
+}
+
+.calc-key--function {
+  background: var(--newos-color-control-active);
+}
+
+.calc-key--scientific {
+  background: var(--newos-color-control);
+  font-size: var(--newos-font-size-body);
+}
+
+.calc-active {
+  background: var(--newos-color-control-hover);
+  color: var(--newos-color-fg);
+}
+
+.calc-history {
+  width: 200px;
+  flex: none;
+  overflow-y: auto;
+  border-left: 1px solid var(--newos-color-separator);
+  padding: 0 var(--newos-space-2) var(--newos-space-3);
+}
+
+.calc-history__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--newos-space-1) var(--newos-space-1) var(--newos-space-2);
+  font-weight: var(--newos-font-weight-semibold);
+}
+
+.calc-history__empty {
+  color: var(--newos-color-fg-secondary);
+  padding: var(--newos-space-2) var(--newos-space-1);
+}
+
+.calc-history__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+  padding: 6px var(--newos-space-2);
+  border: 0;
+  border-radius: var(--newos-radius-xs);
+  background: transparent;
+  text-align: right;
+}
+
+.calc-history__item:hover {
+  background: var(--newos-color-control);
+}
+
+.calc-history__input {
+  font-size: var(--newos-font-size-footnote);
+  color: var(--newos-color-fg-secondary);
+  overflow-wrap: anywhere;
+}
+
+.calc-history__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--newos-font-weight-medium);
+}
+
+.calc-converter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--newos-space-3);
+  padding-top: var(--newos-space-3);
+}
+
+.calc-convert-row {
+  display: flex;
+  align-items: center;
+  gap: var(--newos-space-2);
+}
+
+.calc-convert-input,
+.calc-convert-result {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-convert-result {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--newos-space-2);
+  user-select: text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calc-swap {
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--newos-color-control);
+  font-size: 16px;
+}

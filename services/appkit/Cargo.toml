@@ -20,6 +20,11 @@ hyper = { version = "1", features = ["client", "http1"] }
 hyper-util = { version = "0.1", features = ["tokio"] }
 notify = "8"
 toml_edit = "0.23"
+tauri = { version = "2", optional = true }
+
+[features]
+# Shared Tauri commands and window setup for NewOS apps (links WebKitGTK).
+tauri = ["dep:tauri"]
 
 [dev-dependencies]
 tempfile = "3"

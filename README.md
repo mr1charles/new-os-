@@ -55,11 +55,13 @@ The Settings app's interface also runs in any browser against sample data:
 pnpm --filter @newos/settings dev   # then open http://localhost:1420
 ```
 
-To run the desktop from this checkout inside your current session, see
-[docs/DEVELOPING.md](docs/DEVELOPING.md):
+To try the whole OS on a Linux machine without installing anything, use testing mode: a
+rootless container with everything NewOS needs, using your real Wi-Fi, sound, and Bluetooth
+([details](docs/DEVELOPING.md#testing-mode-the-whole-os-in-a-container)):
 
 ```bash
-scripts/dev-session.sh
+scripts/live.sh create   # once, ~20-30 minutes
+scripts/live.sh run      # NewOS in a window (or full screen from a text console)
 ```
 
 ## Docs

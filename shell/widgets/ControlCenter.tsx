@@ -261,7 +261,7 @@ function SoundModule() {
       />
       <label
         class="cc-caption"
-        label={createBinding(speaker, "description")}
+        label={createBinding(speaker, "description").as((d) => d ?? "")}
         xalign={0}
         ellipsize={Pango.EllipsizeMode.END}
       />
@@ -292,14 +292,14 @@ function NowPlaying() {
             <box orientation={VERTICAL} hexpand valign={Gtk.Align.CENTER}>
               <label
                 class="cc-toggle-title"
-                label={createBinding(player, "title")}
+                label={createBinding(player, "title").as((t) => t ?? "")}
                 xalign={0}
                 ellipsize={Pango.EllipsizeMode.END}
                 maxWidthChars={20}
               />
               <label
                 class="cc-caption"
-                label={createBinding(player, "artist")}
+                label={createBinding(player, "artist").as((a) => a ?? "")}
                 xalign={0}
                 ellipsize={Pango.EllipsizeMode.END}
                 maxWidthChars={20}

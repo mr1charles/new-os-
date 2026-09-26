@@ -35,6 +35,37 @@ sudo pacman -S hyprland hypridle hyprlock hyprsunset xdg-desktop-portal-hyprland
 paru -S aylurs-gtk-shell-git libastal-meta
 ```
 
+## Testing mode: the whole OS in a container
+
+`scripts/live.sh` runs the complete NewOS desktop on this machine without installing anything
+on the host and without root. It builds a rootless Arch Linux container (user namespaces, the
+ranges in `/etc/subuid`), installs Hyprland, AGS/Astal, WebKitGTK and the rest inside it, and
+builds NewOS from this checkout.
+
+```bash
+scripts/live.sh create     # once: ~3 GB download and 20-30 minutes; lands in ~/.local/share/newos-live
+scripts/live.sh run        # start NewOS
+scripts/live.sh update     # rebuild the assistant and apps after you pull or edit
+scripts/live.sh exec hyprctl configerrors   # run a command in the running session
+scripts/live.sh shell      # a shell inside the container (`shell root` for root)
+scripts/live.sh remove     # delete the container
+```
+
+- **In a window** (started from your desktop): shortcuts use **Alt** instead of Super, because
+  the host keeps Super. Alt+Space is the assistant, Alt+A search, Alt+, Settings.
+- **Full screen** (started from a text console, Ctrl+Alt+F3): the real Super key, like the
+  installed OS.
+- The container shares the host's network, GPU, PipeWire, and system services
+  (NetworkManager, BlueZ, UPower, fprintd, power profiles), so Wi-Fi, Bluetooth, volume, and
+  the fingerprint reader in NewOS are the real ones. Screen brightness needs the full-screen
+  mode (logind only lets the active session change it).
+- It has its own home folder, so NewOS settings never touch the host desktop's. The assistant
+  uses the host's Ollama; the first run picks a model that is already pulled.
+- The shell runs from this checkout: edit `shell/`, then restart it with
+  `scripts/live.sh exec pkill gjs` followed by `scripts/live.sh exec sh -c 'cd $NEWOS_REPO/shell && ags run --gtk 4 app.ts &'`,
+  or just restart the session.
+- Logs: `~/.local/share/newos-live/root/home/$USER/.local/state/newos-live/`.
+
 ## Running the shell
 
 ```bash

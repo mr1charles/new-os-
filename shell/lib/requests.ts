@@ -20,7 +20,7 @@ import { parseDuration } from "./format"
 import { arrangeWorkspace, snap } from "./windows"
 import app from "ags/gtk4/app"
 import { playStartup } from "../widgets/Startup"
-import { editWidgets } from "../widgets/DesktopWidgets"
+import { editWidgets } from "./widget-edit"
 import { diffConfig, patchConfig, PRESETS } from "@helixos/sdk/customize"
 
 const HELP = `HelixOS shell commands:

@@ -98,18 +98,16 @@ fn main() {
                         url: "index.html?setup=1".into(),
                         size: (1100.0, 720.0),
                         min_size: (800.0, 560.0),
+                        fullscreen: true,
                     },
                 )?;
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.set_fullscreen(true);
-                }
                 return Ok(());
             }
             let url = match &initial_page {
                 Some(page) => format!("index.html?page={page}"),
                 None => "index.html".into(),
             };
-            setup(app, WindowSpec { title: "Settings", url, size: (920.0, 660.0), min_size: (720.0, 480.0) })
+            setup(app, WindowSpec { title: "Settings", url, size: (920.0, 660.0), min_size: (720.0, 480.0), fullscreen: false })
         })
         .run(tauri::generate_context!())
         .expect("Settings failed to start");

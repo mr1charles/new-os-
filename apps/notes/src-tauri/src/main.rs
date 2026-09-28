@@ -37,7 +37,10 @@ fn main() {
             }
         }))
         .setup(|app| {
-            setup(app, WindowSpec { title: "Notes", url: "index.html".into(), size: (1040.0, 680.0), min_size: (640.0, 420.0) })?;
+            setup(
+                app,
+                WindowSpec { title: "Notes", url: "index.html".into(), size: (1040.0, 680.0), min_size: (640.0, 420.0), fullscreen: false },
+            )?;
             // Notes written by the assistant or another program show up right away.
             let handle = app.handle().clone();
             let dir = app.state::<commands::Ctx>().notes.dir().to_path_buf();

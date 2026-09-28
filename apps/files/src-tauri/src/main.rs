@@ -38,7 +38,12 @@ fn main() {
                 let _ = window.set_focus();
             }
         }))
-        .setup(|app| setup(app, WindowSpec { title: "Files", url: "index.html".into(), size: (1000.0, 640.0), min_size: (560.0, 360.0) }))
+        .setup(|app| {
+            setup(
+                app,
+                WindowSpec { title: "Files", url: "index.html".into(), size: (1000.0, 640.0), min_size: (560.0, 360.0), fullscreen: false },
+            )
+        })
         .run(tauri::generate_context!())
         .expect("Files failed to start");
 }

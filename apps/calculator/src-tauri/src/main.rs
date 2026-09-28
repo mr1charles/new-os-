@@ -19,7 +19,16 @@ fn main() {
             }
         }))
         .setup(|app| {
-            setup(app, WindowSpec { title: "Calculator", url: "index.html".into(), size: (380.0, 580.0), min_size: (360.0, 480.0) })
+            setup(
+                app,
+                WindowSpec {
+                    title: "Calculator",
+                    url: "index.html".into(),
+                    size: (380.0, 580.0),
+                    min_size: (360.0, 480.0),
+                    fullscreen: false,
+                },
+            )
         })
         .run(tauri::generate_context!())
         .expect("Calculator failed to start");

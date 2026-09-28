@@ -165,6 +165,12 @@ pub struct WindowSpec<'a> {
     pub url: String,
     pub size: (f64, f64),
     pub min_size: (f64, f64),
+    /// Start fullscreen (e.g. the first-run Setup wizard). Set on the builder itself, not with
+    /// a `set_fullscreen` call after `build()` — asking a window manager to fullscreen a window
+    /// that already mapped at `size` is a request it can silently miss or apply too late, and
+    /// under Hyprland it left Setup's window sitting at its initial 1100x720 size, half off the
+    /// edge of a smaller real screen, instead of covering it.
+    pub fullscreen: bool,
 }
 
 /// Open the main window and start reporting `shell.json` changes to the frontend.
@@ -175,6 +181,7 @@ pub fn setup<R: Runtime>(app: &mut App<R>, window: WindowSpec<'_>) -> std::resul
         .min_inner_size(window.min_size.0, window.min_size.1)
         .decorations(false)
         .transparent(true)
+        .fullscreen(window.fullscreen)
         .build()?;
     let handle = app.handle().clone();
     let path = app.state::<Common>().settings_file.clone();

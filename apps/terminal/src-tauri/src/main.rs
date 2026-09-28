@@ -39,7 +39,16 @@ fn main() {
         }))
         .setup(move |app| {
             *app.state::<commands::Pending>().0.lock().unwrap() = initial;
-            setup(app, WindowSpec { title: "Terminal", url: "index.html".into(), size: (820.0, 520.0), min_size: (420.0, 260.0) })
+            setup(
+                app,
+                WindowSpec {
+                    title: "Terminal",
+                    url: "index.html".into(),
+                    size: (820.0, 520.0),
+                    min_size: (420.0, 260.0),
+                    fullscreen: false,
+                },
+            )
         })
         .run(tauri::generate_context!())
         .expect("Terminal failed to start");

@@ -34,7 +34,11 @@ export default function Wallpaper({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
       layer={Astal.Layer.BACKGROUND}
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
-      keymode={Astal.Keymode.NONE}
+      // Right-click opens a Gtk.Popover (attachDesktopMenu, below) — a layer-shell surface
+      // with Keymode.NONE can't host a popup at all, and asking it to segfaults the whole
+      // shell (gdk_surface_new_popup on a surface that refused any keyboard interactivity).
+      // ON_DEMAND still never grabs focus unless the popover is actually open.
+      keymode={Astal.Keymode.ON_DEMAND}
       // Shown last: Astal applies the layer only before the window is mapped.
       visible
     >

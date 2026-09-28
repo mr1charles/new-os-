@@ -223,3 +223,109 @@ export function widgetRows(kinds: readonly WidgetKind[]): WidgetKind[][] {
   }
   return rows
 }
+
+// ---------------------------------------------------------------------------------------------
+// Placement: widgets can be dragged anywhere; positions are saved as "kind:x:y".
+// ---------------------------------------------------------------------------------------------
+
+export interface Rect {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+/** Card sizes in layout pixels, including the card's padding and border. */
+export const CARD_SIZE: Record<"small" | "medium", { w: number; h: number }> = {
+  medium: { w: 352, h: 172 },
+  small: { w: 184, h: 172 },
+}
+
+const GRID = 8
+export const snap = (v: number) => Math.round(v / GRID) * GRID
+
+export function parsePositions(
+  saved: readonly string[],
+): Map<WidgetKind, { x: number; y: number }> {
+  const out = new Map<WidgetKind, { x: number; y: number }>()
+  for (const entry of saved) {
+    const [kind, x, y] = entry.split(":")
+    if (!kind || !isWidgetKind(kind)) continue
+    const nx = Number(x)
+    const ny = Number(y)
+    if (Number.isFinite(nx) && Number.isFinite(ny)) out.set(kind, { x: nx, y: ny })
+  }
+  return out
+}
+
+export function serializePositions(positions: Map<WidgetKind, { x: number; y: number }>): string[] {
+  return [...positions].map(([kind, p]) => `${kind}:${Math.round(p.x)}:${Math.round(p.y)}`)
+}
+
+const overlaps = (a: Rect, b: Rect, gap = 12) =>
+  a.x < b.x + b.w + gap && b.x < a.x + a.w + gap && a.y < b.y + b.h + gap && b.y < a.y + a.h + gap
+
+/** Keep a card fully inside the area. */
+export function clampInto(p: { x: number; y: number }, size: { w: number; h: number }, area: Rect) {
+  return {
+    x: snap(Math.min(Math.max(p.x, area.x), area.x + area.w - size.w)),
+    y: snap(Math.min(Math.max(p.y, area.y), area.y + area.h - size.h)),
+  }
+}
+
+/**
+ * The first free spot for a card, going down columns from the chosen side. When the reserved
+ * area (between the bar and the Dock) has no room left, the search continues below it: a
+ * widget partly behind the Dock is still visible and draggable, unlike one placed exactly on
+ * top of another (which was silently unreachable — see the placement tests).
+ */
+export function freeSpot(
+  taken: readonly Rect[],
+  size: { w: number; h: number },
+  area: Rect,
+  side: "left" | "right",
+): { x: number; y: number } {
+  const step = GRID * 2
+  const columns: number[] = []
+  for (let x = area.x; x + size.w <= area.x + area.w; x += step) columns.push(x)
+  if (side === "right") columns.reverse()
+  const overflow = Math.max(area.h * 4, 2000)
+  for (const x of columns)
+    for (let y = area.y; y + size.h <= area.y + area.h + overflow; y += step) {
+      const rect = { x: snap(x), y: snap(y), w: size.w, h: size.h }
+      if (!taken.some((t) => overlaps(t, rect))) return { x: rect.x, y: rect.y }
+    }
+  // No column is even wide enough for the card (the desktop itself is narrower than one
+  // widget): stagger so each one stays at least partly visible and clickable, rather than
+  // exactly hidden under the last.
+  const stagger = taken.length * 28
+  return {
+    x: snap(area.x + (stagger % Math.max(1, area.w - size.w + 1))),
+    y: snap(area.y + (stagger % 200)),
+  }
+}
+
+/**
+ * Where every shown widget goes: its saved spot (kept on screen), or the first free spot for
+ * widgets without one, in order.
+ */
+export function placeWidgets(
+  kinds: readonly WidgetKind[],
+  saved: readonly string[],
+  area: Rect,
+  side: "left" | "right",
+): Map<WidgetKind, Rect> {
+  const positions = parsePositions(saved)
+  const placed = new Map<WidgetKind, Rect>()
+  for (const kind of kinds) {
+    const size = CARD_SIZE[WIDGET_SIZE[kind]]
+    const p = positions.get(kind)
+    if (p) placed.set(kind, { ...clampInto(p, size, area), ...size })
+  }
+  for (const kind of kinds) {
+    if (placed.has(kind)) continue
+    const size = CARD_SIZE[WIDGET_SIZE[kind]]
+    placed.set(kind, { ...freeSpot([...placed.values()], size, area, side), ...size })
+  }
+  return placed
+}

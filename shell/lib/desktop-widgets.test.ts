@@ -10,6 +10,11 @@ import {
   parseForecast,
   shownWidgets,
   widgetRows,
+  clampInto,
+  freeSpot,
+  parsePositions,
+  placeWidgets,
+  serializePositions,
 } from "./desktop-widgets"
 
 describe("widgets", () => {
@@ -105,5 +110,67 @@ describe("widget rows", () => {
       ["batteries"],
       ["clock"],
     ])
+  })
+})
+
+describe("placement", () => {
+  const area = { x: 24, y: 56, w: 1872, h: 900 }
+
+  it("reads and writes saved positions", () => {
+    const map = parsePositions(["clock:400:300", "bogus:1:2", "weather:x:1"])
+    expect([...map]).toEqual([["clock", { x: 400, y: 300 }]])
+    expect(serializePositions(map)).toEqual(["clock:400:300"])
+  })
+
+  it("stacks new widgets down the side without overlap", () => {
+    const placed = placeWidgets(["weather", "batteries", "clock", "calendar"], [], area, "left")
+    const w = placed.get("weather")!
+    const b = placed.get("batteries")!
+    expect(w).toMatchObject({ x: 24, y: 56 })
+    expect(b.x).toBe(24)
+    expect(b.y).toBeGreaterThanOrEqual(w.y + w.h)
+    const rects = [...placed.values()]
+    for (const a of rects)
+      for (const c of rects)
+        if (a !== c)
+          expect(a.x + a.w <= c.x || c.x + c.w <= a.x || a.y + a.h <= c.y || c.y + c.h <= a.y).toBe(
+            true,
+          )
+  })
+
+  it("keeps saved spots, on screen and snapped", () => {
+    const placed = placeWidgets(["clock", "weather"], ["clock:5000:61"], area, "right")
+    expect(placed.get("clock")).toMatchObject({ x: 1712, y: 64 })
+    expect(placed.get("weather")!.x).toBeGreaterThan(1000)
+  })
+
+  it("clamps and snaps", () => {
+    expect(clampInto({ x: -50, y: 3 }, { w: 100, h: 100 }, area)).toEqual({ x: 24, y: 56 })
+    expect(freeSpot([], { w: 100, h: 100 }, area, "right").x).toBeGreaterThan(1700)
+  })
+
+  it("never places two widgets exactly on top of each other, even when the screen is too short for all of them", () => {
+    // The preview's nested window (945x508) minus the bar and Dock: room for barely one
+    // widget's height. Widgets used to fall back to the area's top-left corner here, landing
+    // exactly on the first widget and making themselves impossible to see or drag.
+    const tiny = { x: 24, y: 56, w: 897, h: 342 }
+    const placed = placeWidgets(["weather", "batteries", "clock", "calendar"], [], tiny, "left")
+    const rects = [...placed.values()]
+    expect(rects).toHaveLength(4)
+    for (let i = 0; i < rects.length; i++)
+      for (let j = i + 1; j < rects.length; j++) {
+        const a = rects[i]!
+        const b = rects[j]!
+        const exactlyOverlapping =
+          a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h
+        expect(exactlyOverlapping).toBe(false)
+      }
+  })
+
+  it("staggers instead of stacking when even one column never fits", () => {
+    const narrow = { x: 0, y: 0, w: 50, h: 900 }
+    const placed = placeWidgets(["weather", "batteries"], [], narrow, "left")
+    const rects = [...placed.values()]
+    expect(rects[0]).not.toEqual(rects[1])
   })
 })

@@ -2,7 +2,7 @@ import app from "ags/gtk4/app"
 import Astal from "gi://Astal?version=4.0"
 import Gtk from "gi://Gtk?version=4.0"
 import type Gdk from "gi://Gdk?version=4.0"
-import { createBinding, createComputed, createState, For, With, onCleanup } from "ags"
+import { createBinding, createComputed, createRoot, createState, For, With, onCleanup } from "ags"
 import { config, updateConfig } from "../lib/config"
 import { now } from "../lib/clock"
 import { battery, bluetooth } from "../lib/services"
@@ -15,25 +15,24 @@ import {
   WIDGET_INFO,
   WIDGET_KINDS,
   WIDGET_SIZE,
-  widgetRows,
+  CARD_SIZE,
+  clampInto,
+  parsePositions,
+  placeWidgets,
+  serializePositions,
   type BatteryRing,
+  type Rect as DesktopRect,
   type WidgetKind,
 } from "../lib/desktop-widgets"
 import { startWeather, weather } from "../lib/weather"
+import { editing, editWidgets } from "../lib/widget-edit"
+import { attachDesktopMenu } from "../lib/desktop-menu"
 import { openSettings } from "../lib/system"
 
 const VERTICAL = Gtk.Orientation.VERTICAL
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
-const [editing, setEditing] = createState(false)
-export { editing }
-
-/** Edit mode: widgets show a remove button and the gallery opens to add more. */
-export function editWidgets(on: boolean = !editing.peek()) {
-  setEditing(on)
-}
-
-const kinds = config.as((c) => (c.widgets.show ? shownWidgets(c.widgets.items) : []))
+export { editing, editWidgets }
 
 function removeWidget(kind: WidgetKind) {
   updateConfig((c) => (c.widgets.items = c.widgets.items.filter((k) => k !== kind)))
@@ -356,11 +355,101 @@ function Card({ kind }: { kind: WidgetKind }) {
  * Widgets on the desktop, like macOS: weather, batteries, a clock, and a calendar, in a column
  * behind windows. Right-click the desktop → Edit Widgets to remove them or add more.
  */
+/** Where widgets may go: below the menu bar, above the Dock, clear of the screen edges. */
+function usableArea(gdkmonitor: Gdk.Monitor): DesktopRect {
+  const { width, height } = gdkmonitor.get_geometry()
+  const c = config.peek()
+  const taskbar = c.dock.style === "taskbar"
+  const top = !taskbar && c.bar.position === "top" ? 56 : 24
+  const bottom =
+    (taskbar ? 64 : c.dock.position === "bottom" ? c.dock.iconSize * 1.5 + 44 : 24) +
+    (!taskbar && c.bar.position === "bottom" ? 40 : 0)
+  const left = !taskbar && c.dock.position === "left" ? c.dock.iconSize * 1.5 + 44 : 24
+  const right = !taskbar && c.dock.position === "right" ? c.dock.iconSize * 1.5 + 44 : 24
+  return {
+    x: left,
+    y: top,
+    w: Math.max(200, width - left - right),
+    h: Math.max(200, height - top - bottom),
+  }
+}
+
+/** Drag a card anywhere; it snaps to the grid and remembers the spot. */
+function makeDraggable(
+  card: Gtk.Widget,
+  fixed: Gtk.Fixed,
+  kind: WidgetKind,
+  gdkmonitor: Gdk.Monitor,
+) {
+  const drag = new Gtk.GestureDrag()
+  let start = { x: 0, y: 0 }
+  drag.connect("drag-begin", () => {
+    const [x, y] = fixed.get_child_position(card)
+    start = { x, y }
+    card.add_css_class("dragging")
+  })
+  drag.connect("drag-update", (_g, dx, dy) => fixed.move(card, start.x + dx, start.y + dy))
+  drag.connect("drag-end", (_g, dx, dy) => {
+    card.remove_css_class("dragging")
+    if (Math.abs(dx) < 3 && Math.abs(dy) < 3) return
+    const size = CARD_SIZE[WIDGET_SIZE[kind]]
+    const p = clampInto({ x: start.x + dx, y: start.y + dy }, size, usableArea(gdkmonitor))
+    fixed.move(card, p.x, p.y)
+    updateConfig((c) => {
+      const positions = parsePositions(c.widgets.positions)
+      positions.set(kind, p)
+      c.widgets.positions = serializePositions(positions)
+    })
+  })
+  card.add_controller(drag)
+}
+
+/**
+ * Widgets on the desktop, like macOS: weather, batteries, a clock, and a calendar, behind
+ * windows. Drag them anywhere. Right-click the desktop → Edit Widgets to remove them or add
+ * more. The layer covers the whole screen so the desktop's right-click menu works over it.
+ */
 export default function DesktopWidgets({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   startWeather()
-  const side = config.as((c) => c.widgets.side)
-  const rows = kinds.as((k) => widgetRows(k))
-  const rowsKey = rows.as((r) => JSON.stringify(r))
+  const fixed = new Gtk.Fixed({ hexpand: true, vexpand: true, cssClasses: ["desktop-fixed"] })
+  attachDesktopMenu(fixed)
+  let dispose: (() => void) | null = null
+  // Cards are rebuilt when the set of widgets or their places change. They use reactive
+  // bindings, so each rebuild gets its own scope (disposed on the next rebuild).
+  const layoutKey = config.as((c) =>
+    JSON.stringify([
+      c.widgets.show ? shownWidgets(c.widgets.items) : [],
+      c.widgets.positions,
+      c.widgets.side,
+      c.dock.style,
+      c.dock.position,
+      c.dock.iconSize,
+      c.bar.position,
+    ]),
+  )
+  const layout = () => {
+    dispose?.()
+    for (let child = fixed.get_first_child(); child; child = fixed.get_first_child())
+      fixed.remove(child)
+    const c = config.peek()
+    const shown = c.widgets.show ? shownWidgets(c.widgets.items) : []
+    const placed = placeWidgets(shown, c.widgets.positions, usableArea(gdkmonitor), c.widgets.side)
+    createRoot((d) => {
+      dispose = d
+      for (const kind of shown) {
+        const rect = placed.get(kind)!
+        const card = Card({ kind }) as Gtk.Widget
+        fixed.put(card, rect.x, rect.y)
+        makeDraggable(card, fixed, kind, gdkmonitor)
+      }
+    })
+  }
+  layout()
+  const unsubscribe = layoutKey.subscribe(layout)
+  onCleanup(() => {
+    unsubscribe()
+    dispose?.()
+  })
   return (
     <window
       name={`widgets-${gdkmonitor.connector}`}
@@ -369,28 +458,13 @@ export default function DesktopWidgets({ gdkmonitor }: { gdkmonitor: Gdk.Monitor
       gdkmonitor={gdkmonitor}
       application={app}
       layer={Astal.Layer.BOTTOM}
-      anchor={side.as((s) => TOP | (s === "left" ? LEFT : RIGHT))}
+      anchor={TOP | BOTTOM | LEFT | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.ON_DEMAND}
-      marginTop={56}
-      marginLeft={side.as((s) => (s === "left" ? 24 : 0))}
-      marginRight={side.as((s) => (s === "right" ? 24 : 0))}
       // Shown last: Astal applies the layer only before the window is mapped.
-      visible={kinds.as((k) => k.length > 0)}
+      visible
     >
-      <With value={rowsKey}>
-        {() => (
-          <box orientation={VERTICAL} spacing={14}>
-            {rows.peek().map((row) => (
-              <box spacing={14}>
-                {row.map((kind) => (
-                  <Card kind={kind} />
-                ))}
-              </box>
-            ))}
-          </box>
-        )}
-      </With>
+      {fixed}
     </window>
   )
 }

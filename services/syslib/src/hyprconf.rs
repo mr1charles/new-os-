@@ -154,9 +154,17 @@ pub fn default_path() -> PathBuf {
 }
 
 /// Apply an option now and remember it.
+///
+/// `hyprctl keyword` exits 0 even when it refuses the option (an unknown key, or a config
+/// loaded in a format it no longer supports print a message on stdout instead) — checked
+/// here, since `run_checked` alone would take that for success and save a change that never
+/// actually applied.
 pub async fn set_option(runner: &dyn CommandRunner, path: &Path, key: &str, value: &str) -> Result<String> {
     let value = normalize(key, value)?;
-    run_checked(runner, "hyprctl", &["keyword", key, &value]).await?;
+    let reply = run_checked(runner, "hyprctl", &["keyword", key, &value]).await?;
+    if reply.trim() != "ok" {
+        return Err(SysError::Failed { program: "hyprctl".into(), message: reply.trim().to_string() });
+    }
     let mut settings = HyprSettings::load(path);
     settings.options.insert(key.to_string(), value.clone());
     settings.save(path)?;
@@ -252,5 +260,19 @@ mod tests {
         let saved = std::fs::read_to_string(&path).unwrap();
         assert!(saved.contains("input:touchpad:tap-to-click = true\n"));
         assert!(saved.contains("monitor = eDP-1,preferred,0x0,1\n"));
+    }
+
+    #[tokio::test]
+    async fn refuses_a_change_hyprctl_rejects_even_though_it_exits_ok() {
+        // `hyprctl keyword` on a bad option (or a config Hyprland no longer loads in the
+        // legacy format) prints an error message but still exits 0 — verified against a real
+        // Hyprland 0.56.2. Must not be saved as if it had applied.
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("helixos/hyprland-settings.conf");
+        let runner = MockRunner::new();
+        runner.respond(CommandOutput::ok("config option <input:bogus> does not exist."));
+        let error = set_option(&runner, &path, "input:touchpad:tap-to-click", "on").await.unwrap_err();
+        assert!(error.to_string().contains("does not exist"), "{error}");
+        assert!(!path.exists(), "a rejected change must not be saved");
     }
 }

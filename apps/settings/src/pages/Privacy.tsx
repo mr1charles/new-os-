@@ -52,7 +52,7 @@ export function PrivacyPage() {
         </Row>
         <Row
           label="Keep conversation history"
-          description="Saved on this laptop in ~/.local/share/helixos. Off keeps conversations in memory until you log out."
+          description="Saved on this laptop in ~/.local/share/helixos. Off keeps conversations only until the assistant restarts. Things you’ve asked it to remember, below, are always saved."
         >
           <Toggle
             label="Keep conversation history"

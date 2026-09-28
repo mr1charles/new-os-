@@ -161,8 +161,10 @@ impl AppState {
             ollama: ollama.clone(),
             cache: Mutex::new(None),
         });
-        let memory =
-            Arc::new(if config.privacy.store_history { Memory::open(&paths.data_dir.join("assistant.db"))? } else { Memory::in_memory()? });
+        // Facts (what the user asked to be remembered) always persist here; conversation
+        // transcripts only do when store_history is on — see Memory::history_disabled.
+        let db_path = paths.data_dir.join("assistant.db");
+        let memory = Arc::new(if config.privacy.store_history { Memory::open(&db_path)? } else { Memory::history_disabled(&db_path)? });
         Ok(Self::assemble(StateParts {
             config,
             cloud,

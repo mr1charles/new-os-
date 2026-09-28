@@ -9,7 +9,13 @@ use serde::Serialize;
 use crate::conversation::{title_from, Message};
 
 pub struct Memory {
-    db: Mutex<Connection>,
+    /// Facts (things the user explicitly asked to be remembered) always persist here,
+    /// regardless of `privacy.store_history` — that setting is about conversation
+    /// transcripts, and turning it off for privacy should not also silently erase facts.
+    facts_db: Mutex<Connection>,
+    /// Conversations, their messages, and the tool-call audit log: in-memory (gone when the
+    /// daemon stops) when `privacy.store_history` is false.
+    history_db: Mutex<Connection>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -62,33 +68,56 @@ CREATE TABLE IF NOT EXISTS tool_audit (
 ";
 
 impl Memory {
+    /// Facts and conversation history both on disk at `path`.
     pub fn open(path: &Path) -> anyhow::Result<Self> {
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-        Self::init(Connection::open(path)?)
+        Ok(Self {
+            facts_db: Mutex::new(Self::connect(Connection::open(path)?)?),
+            history_db: Mutex::new(Self::connect(Connection::open(path)?)?),
+        })
     }
 
-    /// History that disappears when the daemon stops (privacy.store_history = false).
+    /// Facts persist at `facts_path`; conversations and the tool-call audit log do not
+    /// survive a restart (`privacy.store_history` = false).
+    pub fn history_disabled(facts_path: &Path) -> anyhow::Result<Self> {
+        if let Some(parent) = facts_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        Ok(Self {
+            facts_db: Mutex::new(Self::connect(Connection::open(facts_path)?)?),
+            history_db: Mutex::new(Self::connect(Connection::open_in_memory()?)?),
+        })
+    }
+
+    /// Nothing persists — for tests, and any fully ephemeral setup.
     pub fn in_memory() -> anyhow::Result<Self> {
-        Self::init(Connection::open_in_memory()?)
+        Ok(Self {
+            facts_db: Mutex::new(Self::connect(Connection::open_in_memory()?)?),
+            history_db: Mutex::new(Self::connect(Connection::open_in_memory()?)?),
+        })
     }
 
-    fn init(conn: Connection) -> anyhow::Result<Self> {
+    fn connect(conn: Connection) -> anyhow::Result<Connection> {
         conn.execute_batch("PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;")?;
         conn.execute_batch(SCHEMA)?;
-        Ok(Self { db: Mutex::new(conn) })
+        Ok(conn)
     }
 
-    fn db(&self) -> std::sync::MutexGuard<'_, Connection> {
-        self.db.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    fn facts_db(&self) -> std::sync::MutexGuard<'_, Connection> {
+        self.facts_db.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    fn history_db(&self) -> std::sync::MutexGuard<'_, Connection> {
+        self.history_db.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 
     /// Create a conversation titled from its first message.
     pub fn create_conversation(&self, first_message: &str) -> anyhow::Result<String> {
         let id = uuid::Uuid::new_v4().to_string();
         let ts = now();
-        self.db().execute(
+        self.history_db().execute(
             "INSERT INTO conversations (id, title, created_at, updated_at) VALUES (?1, ?2, ?3, ?3)",
             params![id, title_from(first_message), ts],
         )?;
@@ -96,11 +125,11 @@ impl Memory {
     }
 
     pub fn conversation_exists(&self, id: &str) -> anyhow::Result<bool> {
-        Ok(self.db().query_row("SELECT 1 FROM conversations WHERE id = ?1", [id], |_| Ok(())).optional()?.is_some())
+        Ok(self.history_db().query_row("SELECT 1 FROM conversations WHERE id = ?1", [id], |_| Ok(())).optional()?.is_some())
     }
 
     pub fn append(&self, conversation_id: &str, messages: &[Message]) -> anyhow::Result<()> {
-        let mut db = self.db();
+        let mut db = self.history_db();
         let tx = db.transaction()?;
         let ts = now();
         for message in messages {
@@ -115,7 +144,7 @@ impl Memory {
     }
 
     pub fn messages(&self, conversation_id: &str) -> anyhow::Result<Vec<Message>> {
-        let db = self.db();
+        let db = self.history_db();
         let mut stmt = db.prepare("SELECT body FROM messages WHERE conversation_id = ?1 ORDER BY id")?;
         let rows = stmt.query_map([conversation_id], |row| row.get::<_, String>(0))?;
         let mut out = Vec::new();
@@ -126,7 +155,7 @@ impl Memory {
     }
 
     pub fn conversations(&self, limit: u32) -> anyhow::Result<Vec<ConversationSummary>> {
-        let db = self.db();
+        let db = self.history_db();
         let mut stmt =
             db.prepare("SELECT id, title, created_at, updated_at FROM conversations ORDER BY updated_at DESC, rowid DESC LIMIT ?1")?;
         let rows = stmt.query_map([limit], |row| {
@@ -136,13 +165,13 @@ impl Memory {
     }
 
     pub fn delete_conversation(&self, id: &str) -> anyhow::Result<bool> {
-        Ok(self.db().execute("DELETE FROM conversations WHERE id = ?1", [id])? > 0)
+        Ok(self.history_db().execute("DELETE FROM conversations WHERE id = ?1", [id])? > 0)
     }
 
     pub fn remember(&self, text: &str) -> anyhow::Result<Fact> {
         let text = text.trim();
         anyhow::ensure!(!text.is_empty(), "nothing to remember");
-        let db = self.db();
+        let db = self.facts_db();
         db.execute("INSERT OR IGNORE INTO facts (text, created_at) VALUES (?1, ?2)", params![text, now()])?;
         Ok(db.query_row("SELECT id, text, created_at FROM facts WHERE text = ?1", [text], |row| {
             Ok(Fact { id: row.get(0)?, text: row.get(1)?, created_at: row.get(2)? })
@@ -150,7 +179,7 @@ impl Memory {
     }
 
     pub fn facts(&self) -> anyhow::Result<Vec<Fact>> {
-        let db = self.db();
+        let db = self.facts_db();
         let mut stmt = db.prepare("SELECT id, text, created_at FROM facts ORDER BY id")?;
         let rows = stmt.query_map([], |row| Ok(Fact { id: row.get(0)?, text: row.get(1)?, created_at: row.get(2)? }))?;
         Ok(rows.collect::<Result<_, _>>()?)
@@ -158,7 +187,7 @@ impl Memory {
 
     /// Forget facts by id, or every fact containing the given text. Returns how many.
     pub fn forget(&self, id_or_text: &str) -> anyhow::Result<usize> {
-        let db = self.db();
+        let db = self.facts_db();
         if let Ok(id) = id_or_text.trim().parse::<i64>() {
             return Ok(db.execute("DELETE FROM facts WHERE id = ?1", [id])?);
         }
@@ -168,7 +197,7 @@ impl Memory {
 
     pub fn audit(&self, conversation_id: &str, tool: &str, input: &serde_json::Value, output: &str, ok: bool) -> anyhow::Result<()> {
         let output: String = output.chars().take(4000).collect();
-        self.db().execute(
+        self.history_db().execute(
             "INSERT INTO tool_audit (conversation_id, tool, input, output, ok, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![conversation_id, tool, input.to_string(), output, ok as i32, now()],
         )?;
@@ -221,5 +250,27 @@ mod tests {
             memory.audit("c", "set_timer", &serde_json::json!({"seconds": 1}), "ok", true).unwrap();
         }
         assert_eq!(Memory::open(&path).unwrap().facts().unwrap()[0].text, "likes tea");
+    }
+
+    #[test]
+    fn turning_off_conversation_history_does_not_also_erase_facts() {
+        // privacy.store_history = false: someone turns this off for the conversation
+        // transcripts, not expecting it to also silently wipe things they explicitly asked
+        // the assistant to remember.
+        let dir = tempfile::tempdir().unwrap();
+        let facts_path = dir.path().join("assistant.db");
+        {
+            let memory = Memory::history_disabled(&facts_path).unwrap();
+            memory.remember("likes tea").unwrap();
+            let id = memory.create_conversation("hello").unwrap();
+            memory.append(&id, &[Message::user(vec![Block::text("hello")])]).unwrap();
+            assert_eq!(memory.conversations(10).unwrap().len(), 1);
+        }
+        // A fresh daemon start, same facts file: the fact is still there; the conversation
+        // (kept only in memory) is not, because a new in-memory history_db starts empty.
+        let reopened = Memory::history_disabled(&facts_path).unwrap();
+        assert_eq!(reopened.facts().unwrap().len(), 1);
+        assert_eq!(reopened.facts().unwrap()[0].text, "likes tea");
+        assert!(reopened.conversations(10).unwrap().is_empty());
     }
 }

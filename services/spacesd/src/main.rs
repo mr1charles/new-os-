@@ -6,10 +6,9 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use clap::Parser;
-use helixos_spacesd::auth::MockAuthenticator;
 use helixos_spacesd::callers::AccountFiles;
 use helixos_spacesd::ratelimit::RateLimiter;
-use helixos_spacesd::registry::{Registry, Space};
+use helixos_spacesd::registry::Registry;
 use helixos_spacesd::service::{Authorization, Service, BUS_NAME, OBJECT_PATH};
 use helixos_syslib::SystemRunner;
 use tokio::sync::Mutex;
@@ -56,13 +55,16 @@ async fn main() -> anyhow::Result<()> {
 
     let (registry, auth, runner): (Registry, Arc<dyn helixos_spacesd::auth::Authenticator>, Arc<dyn helixos_syslib::CommandRunner>) =
         if args.demo {
-            let mut registry = Registry::default();
-            for (account, name, accent) in [("space-work", "Work", "blue"), ("space-personal", "Personal", "pink")] {
-                registry.add(Space { account: account.into(), name: name.into(), accent: accent.into(), default: false, last_used: 0 });
-            }
-            let mock = MockAuthenticator::with(&[("space-work", "work-demo"), ("space-personal", "home-demo")]);
+            // Kept in the runtime folder: changes last for this login, like a real session.
+            let path = std::env::var_os("XDG_RUNTIME_DIR")
+                .map(std::path::PathBuf::from)
+                .unwrap_or_else(std::env::temp_dir)
+                .join("helixos-spaces-demo.json");
+            let registry = helixos_spacesd::demo::registry(&path)?;
+            let mock = Arc::new(helixos_spacesd::demo::authenticator());
+            let runner = helixos_spacesd::demo::DemoRunner::new(&registry, mock.clone());
             tracing::warn!("demo mode: mock accounts, nothing is changed on this system");
-            (registry, Arc::new(mock), Arc::new(helixos_syslib::MockRunner::new()))
+            (registry, mock, Arc::new(runner))
         } else {
             (Registry::load(&args.state)?, auth, Arc::new(SystemRunner::default()))
         };

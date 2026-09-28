@@ -22,7 +22,7 @@ const MODELS = [
   { value: "claude-opus-5", label: "Claude Opus 5 (default)" },
   { value: "claude-opus-5-5", label: "Claude Opus 5.5" },
   { value: "claude-sonnet-5", label: "Claude Sonnet 5 (faster, lower cost)" },
-  { value: "claude-haiku-4-5", label: "Claude Haiku 4.5 (fastest)" },
+  { value: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 (fastest)" },
   { value: "claude-fable-5-1", label: "Claude Fable 5.1 (most capable)" },
 ]
 

@@ -10,7 +10,8 @@ use toml_edit::{value, DocumentMut, Item, Table};
 use crate::{AppError, Result};
 
 /// Models offered in Settings. The first is assistantd's default.
-pub const CLOUD_MODELS: [&str; 5] = ["claude-opus-5", "claude-opus-5-5", "claude-sonnet-5", "claude-haiku-4-5", "claude-fable-5-1"];
+pub const CLOUD_MODELS: [&str; 5] =
+    ["claude-opus-5", "claude-opus-5-5", "claude-sonnet-5", "claude-haiku-4-5-20251001", "claude-fable-5-1"];
 pub const MODES: [&str; 3] = ["auto", "cloud", "local"];
 pub const EFFORT_LEVELS: [&str; 5] = ["low", "medium", "high", "xhigh", "max"];
 

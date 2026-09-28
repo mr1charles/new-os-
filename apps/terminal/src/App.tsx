@@ -1,8 +1,8 @@
-import { assistant } from "@helixos/sdk"
+import { assistant, listen } from "@helixos/sdk"
 import { useAppTheme, useSettings } from "@helixos/sdk/react"
 import { Badge, Button, cx, Spinner, Toolbar, Window } from "@helixos/ui"
 import { Plus, Sparkles, X } from "lucide-react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { assessCommand, cleanCommand, lastLines, tabTitle } from "./logic"
 import { TerminalView, type TerminalHandle } from "./TerminalView"
 
@@ -136,6 +136,14 @@ export function App() {
     setTabs((t) => [...t, { key, title: "Terminal", cwd }])
     setActive(key)
   }, [active])
+
+  // `helixos-terminal -- CMD` while Terminal is open (Settings → Software Update) opens a tab
+  // that runs the command.
+  useEffect(() => {
+    let unlisten: (() => void) | undefined
+    void listen("helixos://new-tab", () => void newTab()).then((u) => (unlisten = u))
+    return () => unlisten?.()
+  }, [newTab])
 
   const closeTab = useCallback(
     (key: number) => {

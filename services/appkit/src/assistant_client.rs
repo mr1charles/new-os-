@@ -120,10 +120,40 @@ impl AssistantClient {
     }
 }
 
-/// Restart the daemon so it reads a changed assistant.toml or keyring entry.
+/// Restart the daemon so it reads a changed assistant.toml or keyring entry. In the installed
+/// session systemd restarts it; where it is not a systemd unit (the preview runs it in a
+/// restart loop), stopping it is enough for its supervisor to start it again.
 pub async fn restart_daemon(runner: &dyn helixos_syslib::CommandRunner) -> Result<()> {
-    helixos_syslib::runner::run_checked(runner, "systemctl", &["--user", "try-restart", "helixos-assistantd.service"]).await?;
+    let active = runner
+        .run("systemctl", &["--user".into(), "is-active".into(), "--quiet".into(), "helixos-assistantd.service".into()])
+        .await
+        .is_ok_and(|o| o.success());
+    if active {
+        helixos_syslib::runner::run_checked(runner, "systemctl", &["--user", "restart", "helixos-assistantd.service"]).await?;
+    } else {
+        // Exit status 1 means no such process, which is fine: there is nothing to restart.
+        let _ = runner.run("pkill", &["-TERM".into(), "-x".into(), "helixos-assistantd".into()]).await;
+    }
     Ok(())
+}
+
+#[cfg(test)]
+mod restart_tests {
+    use super::restart_daemon;
+    use helixos_syslib::{CommandOutput, MockRunner};
+
+    #[tokio::test]
+    async fn restarts_through_systemd_or_stops_it_for_its_supervisor() {
+        let systemd = MockRunner::new();
+        systemd.respond(CommandOutput::ok("")).respond(CommandOutput::ok(""));
+        restart_daemon(&systemd).await.unwrap();
+        assert_eq!(systemd.calls()[1], ["systemctl", "--user", "restart", "helixos-assistantd.service"]);
+
+        let preview = MockRunner::new();
+        preview.respond(CommandOutput::failed(1, "Failed to connect to bus")).respond(CommandOutput::ok(""));
+        restart_daemon(&preview).await.unwrap();
+        assert_eq!(preview.calls()[1], ["pkill", "-TERM", "-x", "helixos-assistantd"]);
+    }
 }
 
 #[cfg(test)]

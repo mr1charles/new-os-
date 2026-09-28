@@ -4,6 +4,7 @@
 pub mod accounts;
 pub mod auth;
 pub mod callers;
+pub mod demo;
 pub mod ratelimit;
 pub mod registry;
 pub mod service;

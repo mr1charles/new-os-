@@ -50,6 +50,8 @@ export interface ShellConfig {
     doNotDisturb: boolean
   }
   assistant: {
+    /** Off hides the assistant everywhere (Setup and Settings → Assistant). */
+    enabled: boolean
     name: string
     /** Empty means $XDG_RUNTIME_DIR/helixos/assistant.sock. */
     socketPath: string
@@ -58,12 +60,18 @@ export interface ShellConfig {
     enabled: boolean
     temperature: number
   }
+  setup: {
+    /** The first-run Setup (language, look, assistant, browser) has been finished or skipped. */
+    done: boolean
+  }
   widgets: {
     /** Widgets on the desktop, behind windows. */
     show: boolean
     /** Kinds in order: weather, batteries, clock, calendar. Unknown kinds are skipped. */
     items: string[]
     side: WidgetSide
+    /** Where widgets were dragged to: "kind:x:y" in layout pixels from the screen's corner. */
+    positions: string[]
     /** Weather location, e.g. "London". Empty until set. */
     city: string
     fahrenheit: boolean
@@ -169,6 +177,7 @@ export const DEFAULT_CONFIG: ShellConfig = {
     doNotDisturb: false,
   },
   assistant: {
+    enabled: true,
     name: "Assistant",
     socketPath: "",
   },
@@ -176,10 +185,14 @@ export const DEFAULT_CONFIG: ShellConfig = {
     enabled: false,
     temperature: 4500,
   },
+  setup: {
+    done: false,
+  },
   widgets: {
     show: true,
     items: ["weather", "batteries"],
     side: "left",
+    positions: [],
     city: "",
     fahrenheit: false,
   },

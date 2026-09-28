@@ -124,6 +124,8 @@ export function looksLikeRequest(query: string): boolean {
 
 export interface BuildOptions {
   assistantName?: string
+  /** False when the assistant is turned off: no "Ask" result. */
+  assistant?: boolean
   maxApps?: number
   maxSettings?: number
 }
@@ -144,7 +146,7 @@ export function buildResults(
 ): SearchResult[] {
   const q = query.trim()
   if (q.length === 0) return []
-  const { assistantName = "Assistant", maxApps = 6, maxSettings = 3 } = options
+  const { assistantName = "Assistant", assistant = true, maxApps = 6, maxSettings = 3 } = options
   const results: SearchResult[] = []
 
   const flathub = flathubAppId(q)
@@ -222,17 +224,18 @@ export function buildResults(
   }
 
   const request = looksLikeRequest(q)
-  results.push({
-    kind: "assistant",
-    id: "assistant",
-    title: `Ask ${assistantName}: “${q}”`,
-    subtitle: request
-      ? "Sounds like a question for the assistant"
-      : "Get an answer or have it done for you",
-    iconName: "helixos-sparkle-symbolic",
-    score: request ? 1.5 : 0.1,
-    prompt: q,
-  })
+  if (assistant)
+    results.push({
+      kind: "assistant",
+      id: "assistant",
+      title: `Ask ${assistantName}: “${q}”`,
+      subtitle: request
+        ? "Sounds like a question for the assistant"
+        : "Get an answer or have it done for you",
+      iconName: "helixos-sparkle-symbolic",
+      score: request ? 1.5 : 0.1,
+      prompt: q,
+    })
 
   // Not installed? Offer Flathub, where most Linux apps are.
   if (appResults.length === 0 && !flathub && !request && q.length >= 3) {

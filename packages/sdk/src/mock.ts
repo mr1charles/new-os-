@@ -40,6 +40,7 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
   let powerProfile: PowerProfile = "balanced"
   let hasKey = false
   let notificationId = 0
+  let locale = "en_US.UTF-8"
   let assistantSettings: AssistantSettings = {
     mode: "auto",
     name: "Assistant",
@@ -829,6 +830,14 @@ export function createMockBackend(options: MockOptions = {}): MockBackend {
     },
     update_in_terminal: () => null,
 
+    session_info: () => ({ kind: "installed", mod_key: "Super" }),
+    locale_get: () => locale,
+    locale_set: ({ lang }) => {
+      locale = String(lang)
+      return null
+    },
+    setup_install_app: () => null,
+    setup_default_browser: () => null,
     spaces_list: () => spaces.map((s) => ({ ...s })),
     spaces_create: async ({ name, password, accent }) => {
       await wait(latency)

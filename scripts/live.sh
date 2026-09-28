@@ -293,12 +293,17 @@ session() {
   fi
 
   local helixos_conf="$HELIXOS_REPO/shell/hypr/helixos.conf"
+  # Checked here, before Hyprland starts and gives its own clients their own WAYLAND_DISPLAY
+  # (which would shadow this): nested in a window on the host desktop, or a bare VT.
+  local nested=0
   if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    nested=1
     # Nested in a window: the host compositor keeps Super, so HelixOS shortcuts use Alt.
     # shellcheck disable=SC2016 # $mod is Hyprland's variable, not the shell's
     sed 's/^\$mod = SUPER/$mod = ALT/' "$helixos_conf" > "$conf_dir/helixos.conf"
     helixos_conf="$conf_dir/helixos.conf"
   fi
+  export HELIXOS_NESTED="$nested"
   cat > "$conf_dir/hyprland.conf" <<CONF
 monitor = , preferred, auto, 1
 source = $helixos_conf
@@ -310,7 +315,8 @@ env = XCURSOR_SIZE, 24
 env = HELIXOS_SPACES_BUS, session
 exec-once = sh -c 'helixos-spacesd --session --demo > "$logs/spacesd.log" 2>&1'
 exec-once = gnome-keyring-daemon --start --components=secrets
-exec-once = sh -c 'helixos-assistantd > "$logs/assistantd.log" 2>&1'
+# In a loop, like systemd's Restart=: Settings restarts it after changes by stopping it.
+exec-once = sh -c 'while :; do helixos-assistantd >> "$logs/assistantd.log" 2>&1; sleep 1; done'
 exec-once = sh -c 'cd "$HELIXOS_REPO/shell" && XDG_DATA_DIRS="\$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share" exec ags run --gtk 4 app.ts > "$logs/shell.log" 2>&1'
 source = $HOME/.config/helixos/hyprland-user.conf
 CONF

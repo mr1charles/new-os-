@@ -151,6 +151,7 @@ export default function Launcher() {
   const results = createComputed(() =>
     buildResults(query(), appList().map(toSearchable), {
       assistantName: config().assistant.name,
+      assistant: config().assistant.enabled,
     }).slice(0, MAX_RESULTS),
   )
   const view = createComputed(() =>

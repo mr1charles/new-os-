@@ -57,6 +57,11 @@ fn with_commands<R: Runtime>(builder: tauri::Builder<R>, common: Common, ctx: co
         commands::fingerprints,
         commands::updates,
         commands::update_in_terminal,
+        commands::session_info,
+        commands::locale_get,
+        commands::locale_set,
+        commands::setup_install_app,
+        commands::setup_default_browser,
         commands::spaces_list,
         commands::spaces_create,
         commands::spaces_delete,
@@ -70,6 +75,8 @@ fn with_commands<R: Runtime>(builder: tauri::Builder<R>, common: Common, ctx: co
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let initial_page = page_arg(&args);
+    // `--setup`: the first-run Setup, full screen, instead of the usual window.
+    let setup_mode = args.iter().any(|a| a == "--setup");
 
     with_commands(tauri::Builder::default(), Common::from_env(), commands::Ctx::from_env())
         .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
@@ -83,6 +90,21 @@ fn main() {
         }))
         .plugin(tauri_plugin_dialog::init())
         .setup(move |app| {
+            if setup_mode {
+                setup(
+                    app,
+                    WindowSpec {
+                        title: "Welcome to HelixOS",
+                        url: "index.html?setup=1".into(),
+                        size: (1100.0, 720.0),
+                        min_size: (800.0, 560.0),
+                    },
+                )?;
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.set_fullscreen(true);
+                }
+                return Ok(());
+            }
             let url = match &initial_page {
                 Some(page) => format!("index.html?page={page}"),
                 None => "index.html".into(),

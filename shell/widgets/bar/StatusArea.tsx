@@ -102,6 +102,7 @@ export default function StatusArea() {
       </button>
       <button
         class="bar-item assistant-button"
+        visible={config.as((c) => c.assistant.enabled)}
         tooltipText="Assistant (Super+Space)"
         onClicked={() => togglePopup("assistant")}
       >

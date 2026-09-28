@@ -33,11 +33,14 @@ export function HyprToggle({
   option,
   label,
   description,
+  disabled,
 }: {
   options: Options
   option: string
   label: string
   description?: string
+  /** Force it off even once the value has loaded (the preview's nested mode). */
+  disabled?: boolean
 }) {
   const raw = options.value(option)
   return (
@@ -45,7 +48,7 @@ export function HyprToggle({
       <Toggle
         label={label}
         checked={raw === "true" || raw === "1"}
-        disabled={raw === undefined}
+        disabled={disabled || raw === undefined}
         onChange={(v) => void options.set(option, String(v))}
       />
     </Row>
@@ -62,6 +65,7 @@ export function HyprSlider({
   start,
   end,
   invert = false,
+  disabled,
 }: {
   options: Options
   option: string
@@ -73,6 +77,8 @@ export function HyprSlider({
   end?: string
   /** For options where a smaller number feels "more" (key repeat delay). */
   invert?: boolean
+  /** Force it off even once the value has loaded (the preview's nested mode). */
+  disabled?: boolean
 }) {
   const raw = Number(options.value(option) ?? (min + max) / 2)
   const [drag, setDrag] = useState<number | null>(null)
@@ -87,6 +93,7 @@ export function HyprSlider({
         step={step}
         value={drag ?? toSlider(raw)}
         onChange={setDrag}
+        disabled={disabled}
         onCommit={(v) => {
           setDrag(null)
           const next = round(toSlider(v))

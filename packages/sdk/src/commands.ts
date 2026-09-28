@@ -137,6 +137,14 @@ export interface Fingerprints {
   enrolled: string[]
 }
 
+export type SessionKind = "installed" | "live_fullscreen" | "live_nested"
+
+export interface SessionInfo {
+  kind: SessionKind
+  /** The key that plays Super's role here ("Alt" when nested in a window on the host desktop). */
+  mod_key: string
+}
+
 export interface SpaceInfo {
   /** The account behind the space, e.g. "space-work". */
   account: string
@@ -383,6 +391,14 @@ export interface Commands {
   updates: [Record<string, never>, PackageUpdate[]]
 
   // Users & Spaces (helixos-spacesd; changes ask for an administrator)
+  session_info: [Record<string, never>, SessionInfo]
+
+  // Setup (first run)
+  locale_get: [Record<string, never>, string]
+  locale_set: [{ lang: string }, null]
+  setup_install_app: [{ appId: string; defaultBrowser: boolean }, null]
+  setup_default_browser: [{ desktopId: string }, null]
+
   spaces_list: [Record<string, never>, SpaceInfo[]]
   spaces_create: [{ name: string; password: string; accent: string }, SpaceInfo]
   spaces_delete: [{ account: string; keepHome: boolean }, null]

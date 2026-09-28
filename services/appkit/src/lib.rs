@@ -9,9 +9,11 @@ pub mod assistant_config;
 pub mod files;
 pub mod island;
 pub mod keyring;
+pub mod locale;
 pub mod notes;
 pub mod paths;
 pub mod pty;
+pub mod session;
 pub mod settings;
 pub mod spaces;
 #[cfg(feature = "tauri")]

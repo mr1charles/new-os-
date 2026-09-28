@@ -225,6 +225,62 @@ pub async fn update_in_terminal(ctx: State<'_, Ctx>) -> Result<()> {
     terminal::run_in_terminal(&ctx.runner, terminal::UPDATE_SCRIPT).await
 }
 
+/// Whether this is a real install, the preview taking over a text console, or the preview
+/// nested in a window — Trackpad and Keyboard use this to explain themselves in the preview.
+#[tauri::command]
+pub fn session_info() -> helixos_appkit::session::SessionInfo {
+    helixos_appkit::session::current()
+}
+
+// Setup -------------------------------------------------------------------------------------------
+
+/// The language set for this account ("en_US.UTF-8"), or the session's.
+#[tauri::command]
+pub fn locale_get() -> String {
+    helixos_appkit::locale::read(&helixos_appkit::locale::locale_file())
+        .or_else(|| std::env::var("LANG").ok())
+        .unwrap_or_else(|| "en_US.UTF-8".into())
+}
+
+#[tauri::command]
+pub fn locale_set(lang: String) -> Result<()> {
+    helixos_appkit::locale::write(&helixos_appkit::locale::locale_file(), &lang)
+}
+
+/// Install an app from Flathub by id through the Installer (progress shows in the Dynamic
+/// Island). Setup already asked, so the Installer does not ask again. `default_browser` makes
+/// it the default web browser once installed.
+#[tauri::command]
+pub async fn setup_install_app(ctx: State<'_, Ctx>, app_id: String, default_browser: bool) -> Result<()> {
+    let valid = app_id.split('.').count() >= 3
+        && app_id.len() <= 255
+        && app_id.split('.').all(|p| !p.is_empty() && p.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-'));
+    if !valid {
+        return Err(AppError::Invalid(format!("not an app id: {app_id}")));
+    }
+    let mut args = vec!["--yes".to_string()];
+    if default_browser {
+        args.push("--default-browser".into());
+    }
+    args.push(format!("appstream://{app_id}"));
+    use helixos_syslib::CommandRunner;
+    ctx.runner
+        .spawn_detached("helixos-open", &args)
+        .await
+        .map_err(|_| AppError::Invalid("The Installer (helixos-open) isn’t installed.".into()))
+}
+
+/// Make an installed browser (a desktop id like "firefox") the default.
+#[tauri::command]
+pub async fn setup_default_browser(ctx: State<'_, Ctx>, desktop_id: String) -> Result<()> {
+    let id = desktop_id.trim_end_matches(".desktop");
+    if id.is_empty() || !id.chars().all(|c| c.is_ascii_alphanumeric() || "._-".contains(c)) {
+        return Err(AppError::Invalid(format!("not a desktop id: {desktop_id}")));
+    }
+    helixos_syslib::runner::run_checked(&ctx.runner, "xdg-settings", &["set", "default-web-browser", &format!("{id}.desktop")]).await?;
+    Ok(())
+}
+
 // Users & Spaces (helixos-spacesd) -----------------------------------------------------------------
 
 use helixos_appkit::spaces::{self, Space};

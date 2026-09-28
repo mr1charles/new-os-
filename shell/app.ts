@@ -31,6 +31,7 @@ import { serveIsland } from "./lib/island-service"
 import { setupWindowManagement } from "./lib/windows"
 import { playStartup } from "./widgets/Startup"
 import { shouldPlayAtLogin } from "./lib/startup"
+import { hasProgram, spawn } from "./lib/system"
 
 const destroy = (window: GObject.Object) => (window as Gtk.Window).destroy()
 
@@ -74,6 +75,7 @@ app.start({
     serveIsland()
     setupWindowManagement()
     startupAtLogin()
+    firstRunSetup()
   },
 })
 
@@ -89,4 +91,16 @@ function startupAtLogin() {
   GLib.mkdir_with_parents(GLib.path_get_dirname(flag), 0o700)
   GLib.file_set_contents(flag, "")
   for (const monitor of app.get_monitors()) playStartup(monitor)
+}
+
+/**
+ * The first time HelixOS starts: Setup (language, look, assistant, browser), full screen, after
+ * the startup animation. It sets `setup.done` when finished or skipped.
+ */
+function firstRunSetup() {
+  if (config.peek().setup.done || !hasProgram("helixos-settings")) return
+  GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3300, () => {
+    if (!config.peek().setup.done) spawn(["helixos-settings", "--setup"])
+    return GLib.SOURCE_REMOVE
+  })
 }

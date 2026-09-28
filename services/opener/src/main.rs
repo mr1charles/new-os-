@@ -181,7 +181,37 @@ fn add_appimage(path: &Path) -> Result<PathBuf> {
     Ok(target)
 }
 
-async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner) -> Result<()> {
+/// Command-line choices: `--yes` when the caller already asked (Setup), and
+/// `--default-browser` to make the installed app the default browser.
+#[derive(Debug, Default, Clone, PartialEq)]
+struct Options {
+    yes: bool,
+    default_browser: bool,
+}
+
+/// Split flags from the files and links to open.
+fn parse_args(args: &[String]) -> (Options, Vec<String>) {
+    let mut options = Options::default();
+    let mut inputs = vec![];
+    for arg in args {
+        match arg.as_str() {
+            "--yes" => options.yes = true,
+            "--default-browser" => options.default_browser = true,
+            _ => inputs.push(arg.clone()),
+        }
+    }
+    (options, inputs)
+}
+
+/// After a successful install: what `--default-browser` runs for the app that was installed.
+fn default_browser_command(target: &Target) -> Option<Vec<String>> {
+    match target {
+        Target::FlathubApp(id) => Some(vec!["xdg-settings".into(), "set".into(), "default-web-browser".into(), format!("{id}.desktop")]),
+        _ => None,
+    }
+}
+
+async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner, yes: bool, after: Option<Vec<String>>) -> Result<()> {
     if let Some((message, link)) = &plan.cannot {
         let actions: Vec<(String, String)> = link.iter().map(|_| ("link".to_string(), "Search Flathub".to_string())).collect();
         if notifier.ask("Can’t open this here", message, &actions).await? == Some("link".into()) {
@@ -194,7 +224,7 @@ async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner) -
     let mut steps = plan.steps.clone();
     let mut open = plan.open.clone();
     let mut done = plan.done.clone();
-    if let Some(question) = &plan.question {
+    if let Some(question) = plan.question.as_ref().filter(|_| !yes) {
         match notifier.ask(&question.title, &question.body, &question.actions).await?.as_deref() {
             Some("install") => {}
             Some("once") => {
@@ -245,6 +275,11 @@ async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner) -
             notifier.notify("Couldn’t finish", &error.to_string(), &[], false).await?;
             return Err(error);
         }
+        if let Some(argv) = &after {
+            if let Err(error) = run_step(runner, &Step::Run(argv.clone())).await {
+                eprintln!("helixos-open: {}: {error}", argv.join(" "));
+            }
+        }
     }
     let spawn = |argv: Vec<String>| async move { runner.spawn_detached(&argv[0], &argv[1..]).await.map_err(|e| anyhow!("{e}")) };
     match (open, done) {
@@ -269,9 +304,10 @@ async fn execute(plan: &Plan, notifier: &Notifier, runner: &dyn CommandRunner) -
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let raw: Vec<String> = std::env::args().skip(1).collect();
+    let (options, args) = parse_args(&raw);
     if args.is_empty() || args[0] == "--help" {
-        println!("usage: helixos-open FILE-OR-LINK...\n\nOpens Windows programs, Flatpaks and Flathub links, AppImages, packages, and Android apps.");
+        println!("usage: helixos-open [--yes] [--default-browser] FILE-OR-LINK...\n\nOpens Windows programs, Flatpaks and Flathub links, AppImages, packages, and Android apps.\n  --yes              do not ask first (the caller already asked)\n  --default-browser  make the installed app the default web browser");
         return Ok(());
     }
     if args[0] == "--classify" {
@@ -292,7 +328,8 @@ async fn main() -> Result<()> {
             _ => None,
         };
         let plan = plan::plan(&target, have, flatpakref.as_deref());
-        if let Err(error) = execute(&plan, &notifier, &runner).await {
+        let after = if options.default_browser { default_browser_command(&target) } else { None };
+        if let Err(error) = execute(&plan, &notifier, &runner, options.yes, after).await {
             eprintln!("helixos-open: {input}: {error}");
             failed = true;
         }
@@ -326,6 +363,19 @@ mod tests {
         ) -> u32 {
             7
         }
+    }
+
+    #[test]
+    fn reads_flags() {
+        let args: Vec<String> = ["--yes", "appstream://com.brave.Browser", "--default-browser"].iter().map(|s| s.to_string()).collect();
+        let (options, inputs) = parse_args(&args);
+        assert_eq!(options, Options { yes: true, default_browser: true });
+        assert_eq!(inputs, vec!["appstream://com.brave.Browser".to_string()]);
+        assert_eq!(
+            default_browser_command(&Target::FlathubApp("com.brave.Browser".into())).unwrap(),
+            ["xdg-settings", "set", "default-web-browser", "com.brave.Browser.desktop"]
+        );
+        assert_eq!(default_browser_command(&Target::Other("x".into())), None);
     }
 
     #[tokio::test]

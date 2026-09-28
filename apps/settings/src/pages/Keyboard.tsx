@@ -1,3 +1,4 @@
+import { useCommand } from "@helixos/sdk/react"
 import { Group, Page, Row, Select, Toggle, Value } from "@helixos/ui"
 import { ActionError, LoadError } from "../components/common"
 import { HyprSlider, HyprToggle, useHyprOptions } from "../components/HyprOptions"
@@ -30,11 +31,20 @@ const SHORTCUTS: [string, string][] = [
   ["Super L", "Lock the screen"],
   ["Ctrl ← / →", "Previous or next desktop"],
   ["Ctrl ↑", "Mission Control"],
+  ["Super Ctrl Shift 1-4", "Move the window to that desktop"],
   ["Super Shift 3 / 4", "Screenshot of the screen / an area"],
 ]
 
+/** "Super" everywhere in a shortcut, replaced with whatever key plays that role here. */
+function withModKey(keys: string, modKey: string): string {
+  return modKey === "Super" ? keys : keys.replace(/\bSuper\b/g, modKey)
+}
+
 export function KeyboardPage() {
   const options = useHyprOptions()
+  const session = useCommand("session_info")
+  const modKey = session.data?.mod_key ?? "Super"
+  const nested = session.data?.kind === "live_nested"
   const layout = options.value("input:kb_layout") ?? "us"
   const variant = options.value("input:kb_variant") ?? ""
   const current = variant ? `${layout}:${variant}` : layout
@@ -109,11 +119,18 @@ export function KeyboardPage() {
         />
       </Group>
       <ActionError error={options.error} />
-      <Group title="Keyboard Shortcuts">
+      <Group
+        title="Keyboard Shortcuts"
+        footer={
+          nested
+            ? "The preview is running in a window, so the host desktop keeps Super; HelixOS shortcuts use Alt instead."
+            : undefined
+        }
+      >
         {SHORTCUTS.map(([keys, action]) => (
           <Row key={keys} label={action}>
             <Value>
-              <kbd className="settings-kbd">{keys}</kbd>
+              <kbd className="settings-kbd">{withModKey(keys, modKey)}</kbd>
             </Value>
           </Row>
         ))}

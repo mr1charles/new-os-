@@ -143,6 +143,9 @@ export function diffConfig(before: unknown, after: unknown, path = ""): Change[]
 
 /** Settings the assistant may change. Pinned apps and the assistant's own setup stay out. */
 const EXCLUDED = new Set([
+  "setup.done",
+  "widgets.positions",
+  "assistant.enabled",
   "dock.pinned",
   "assistant.name",
   "assistant.socketPath",

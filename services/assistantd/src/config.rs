@@ -47,6 +47,10 @@ pub struct LocalConfig {
     pub embed_model: String,
     /// Context window requested from Ollama.
     pub num_ctx: u32,
+    /// How long Ollama keeps the model loaded after use ("30m", "1h", "-1" for indefinitely).
+    /// Kept generous by default: on a CPU-only laptop, reloading the model costs several
+    /// seconds, which otherwise happens on the first message of every new conversation.
+    pub keep_alive: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -97,7 +101,13 @@ impl Default for CloudConfig {
 
 impl Default for LocalConfig {
     fn default() -> Self {
-        Self { url: "http://127.0.0.1:11434".into(), model: "qwen2.5:3b".into(), embed_model: "nomic-embed-text".into(), num_ctx: 8192 }
+        Self {
+            url: "http://127.0.0.1:11434".into(),
+            model: "qwen2.5:3b".into(),
+            embed_model: "nomic-embed-text".into(),
+            num_ctx: 8192,
+            keep_alive: "30m".into(),
+        }
     }
 }
 

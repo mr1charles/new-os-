@@ -18,6 +18,11 @@ pub struct OllamaSettings {
     pub model: String,
     pub embed_model: String,
     pub num_ctx: u32,
+    /// How long Ollama keeps the model loaded after a request ("30m", "-1" for indefinitely).
+    /// Ollama's own default is 5 minutes; on a CPU-only laptop, reloading a 2-4 GB model costs
+    /// several seconds, so a short default here makes the assistant feel slow on the first
+    /// message of every new conversation. See [`OllamaProvider::preload`].
+    pub keep_alive: String,
 }
 
 pub struct OllamaProvider {
@@ -62,6 +67,17 @@ impl OllamaProvider {
     pub fn embed_model(&self) -> &str {
         &self.settings.embed_model
     }
+
+    /// Ask Ollama to load the model now (and keep it loaded per `settings.keep_alive`), so the
+    /// user's first real message does not pay the load cost. Errors are swallowed: this is a
+    /// head start, not something a request should ever fail over; the model loads normally on
+    /// first use regardless.
+    pub async fn preload(&self) {
+        let body = json!({"model": self.settings.model, "messages": [], "keep_alive": self.settings.keep_alive});
+        if let Err(error) = self.http.post(self.url("/api/chat")).json(&body).send().await {
+            tracing::debug!(%error, model = %self.settings.model, "local model preload failed (will load on first use instead)");
+        }
+    }
 }
 
 /// `GET /api/tags` lists models as "name:tag"; "qwen2.5:3b" matches exactly, "llama3.2"
@@ -92,6 +108,7 @@ pub fn build_body(settings: &OllamaSettings, request: &TurnRequest<'_>) -> Value
         "model": settings.model,
         "messages": to_ollama_messages(request.system, request.messages),
         "stream": true,
+        "keep_alive": settings.keep_alive,
         "options": {"num_ctx": settings.num_ctx, "num_predict": request.max_tokens.min(8192)},
     });
     if !request.tools.is_empty() {
@@ -263,6 +280,59 @@ impl Provider for OllamaProvider {
 mod tests {
     use super::*;
     use tokio::sync::mpsc::unbounded_channel;
+
+    fn settings() -> OllamaSettings {
+        OllamaSettings {
+            base_url: "http://127.0.0.1:11434".into(),
+            model: "qwen2.5:3b".into(),
+            embed_model: "nomic-embed-text".into(),
+            num_ctx: 8192,
+            keep_alive: "30m".into(),
+        }
+    }
+
+    #[test]
+    fn sends_keep_alive_so_the_model_stays_loaded_between_messages() {
+        // Ollama's own default (5 minutes) unloads a CPU-only model between messages in a
+        // normal conversation, adding several seconds to the next reply; this must not regress.
+        let messages = vec![Message::user(vec![Block::text("hi")])];
+        let request = TurnRequest { system: "sys", messages: &messages, tools: &[], max_tokens: 512, effort: None };
+        let body = build_body(&settings(), &request);
+        assert_eq!(body["keep_alive"], "30m");
+    }
+
+    /// A one-shot HTTP server that answers `/api/chat` once and hands back the request body.
+    async fn serve_once() -> (String, tokio::task::JoinHandle<String>) {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let handle = tokio::spawn(async move {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            let mut buffer = vec![0u8; 8192];
+            let n = stream.read(&mut buffer).await.unwrap();
+            let request = String::from_utf8_lossy(&buffer[..n]).into_owned();
+            let body = r#"{"model":"m","created_at":"now","message":{"role":"assistant","content":""},"done":true,"done_reason":"load"}"#;
+            let response = format!("HTTP/1.1 200 OK\r\ncontent-type: application/json\r\ncontent-length: {}\r\n\r\n{body}", body.len());
+            stream.write_all(response.as_bytes()).await.unwrap();
+            let _ = stream.shutdown().await;
+            request
+        });
+        (format!("http://{addr}"), handle)
+    }
+
+    #[tokio::test]
+    async fn preload_asks_ollama_to_load_the_model_without_generating_anything() {
+        let (base_url, handle) = serve_once().await;
+        let provider = OllamaProvider::new(reqwest::Client::new(), OllamaSettings { base_url, ..settings() });
+        provider.preload().await;
+        let request = handle.await.unwrap();
+        assert!(request.contains("POST /api/chat"), "{request}");
+        let body_start = request.find("\r\n\r\n").unwrap() + 4;
+        let body: Value = serde_json::from_str(&request[body_start..]).unwrap();
+        assert_eq!(body["model"], "qwen2.5:3b");
+        assert_eq!(body["messages"], json!([]));
+        assert_eq!(body["keep_alive"], "30m");
+    }
 
     #[test]
     fn matches_installed_models() {

@@ -151,6 +151,7 @@ impl AppState {
                 model: config.local.model.clone(),
                 embed_model: config.local.embed_model.clone(),
                 num_ctx: config.local.num_ctx,
+                keep_alive: config.local.keep_alive.clone(),
             },
         ));
         let probe = Arc::new(LiveProbe {

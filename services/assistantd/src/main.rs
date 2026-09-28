@@ -3,6 +3,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use helixos_assistantd::config::{Config, Paths};
+use helixos_assistantd::router::Mode;
 use helixos_assistantd::{api, AppState};
 use tracing_subscriber::EnvFilter;
 
@@ -45,6 +46,14 @@ async fn main() -> anyhow::Result<()> {
         local_model = %state.config.local.model,
         "assistant ready"
     );
+    // Load the local model into Ollama now, in the background, so the first message of the day
+    // does not pay that cost (several seconds on a CPU-only laptop). Skipped in Cloud-only
+    // mode, and never blocks startup or a request: it is a head start, not a dependency.
+    if state.config.mode != Mode::Cloud {
+        if let Some(ollama) = state.ollama.clone() {
+            tokio::spawn(async move { ollama.preload().await });
+        }
+    }
     let app = api::router(state);
 
     let socket = args.socket.unwrap_or_else(|| paths.socket.clone());

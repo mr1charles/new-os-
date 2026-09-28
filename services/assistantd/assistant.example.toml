@@ -25,6 +25,10 @@ url = "http://127.0.0.1:11434"
 model = "qwen2.5:3b"
 embed_model = "nomic-embed-text"
 num_ctx = 8192
+# How long Ollama keeps the model loaded after use. Ollama's own default is 5 minutes; on a
+# CPU-only laptop, reloading a model costs several seconds, so this is kept generous. "-1"
+# keeps it loaded indefinitely.
+keep_alive = "30m"
 
 [privacy]
 share_window_title = true

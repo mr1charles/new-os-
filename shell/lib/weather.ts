@@ -4,7 +4,7 @@
  * name and its coordinates leave the computer.
  */
 import GLib from "gi://GLib?version=2.0"
-import { fetch } from "ags/fetch"
+import { getJson } from "./http"
 import { createState } from "ags"
 import { config } from "./config"
 import { forecastUrl, geocodeUrl, parseForecast, type Weather } from "./desktop-widgets"
@@ -20,12 +20,12 @@ export { weather }
 
 let place: { key: string; name: string; latitude: number; longitude: number } | null = null
 let timer: number | null = null
+let retry: number | null = null
 let generation = 0
 
 async function locate(city: string) {
   if (place?.key === city) return place
-  const response = await fetch(geocodeUrl(city))
-  const json = (await response.json()) as {
+  const json = (await getJson(geocodeUrl(city))) as {
     results?: {
       name: string
       admin1?: string
@@ -51,8 +51,8 @@ async function refresh() {
   if (weather.peek().status !== "ready") setWeather({ status: "loading" })
   try {
     const p = await locate(city)
-    const response = await fetch(forecastUrl(p.latitude, p.longitude, c.widgets.fahrenheit))
-    const parsed = parseForecast(p.name, await response.json(), c.bar.clock24h)
+    const json = await getJson(forecastUrl(p.latitude, p.longitude, c.widgets.fahrenheit))
+    const parsed = parseForecast(p.name, json, c.bar.clock24h)
     if (mine !== generation) return
     setWeather(
       parsed
@@ -61,9 +61,16 @@ async function refresh() {
     )
   } catch (e) {
     if (mine !== generation) return
-    // Keep showing the last forecast when a refresh fails (offline for a moment).
+    // Keep showing the last forecast when a refresh fails (offline for a moment), and try
+    // again in a minute rather than waiting for the next 15-minute refresh.
     if (weather.peek().status !== "ready")
       setWeather({ status: "error", message: e instanceof Error ? e.message : String(e) })
+    if (retry === null)
+      retry = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60, () => {
+        retry = null
+        void refresh()
+        return GLib.SOURCE_REMOVE
+      })
   }
 }
 

@@ -13,7 +13,7 @@ import Gio from "gi://Gio?version=2.0"
 import GLib from "gi://GLib?version=2.0"
 import AstalAuth from "gi://AstalAuth"
 import Gtk4SessionLock from "gi://Gtk4SessionLock?version=1.0"
-import { createState } from "ags"
+import { createRoot, createState } from "ags"
 import { listSpaces, switchTo } from "../lib/spaces"
 import { notify } from "../lib/system"
 import { waitMessage } from "../lib/login-flow"
@@ -23,6 +23,7 @@ import MediaCard from "./login/MediaCard"
 
 let instance: Gtk4SessionLock.Instance | null = null
 const windows: Gtk.Window[] = []
+const disposers: (() => void)[] = []
 const [spaceName, setSpaceName] = createState(GLib.get_real_name() || GLib.get_user_name())
 
 function checkOwnPassword(password: string): Promise<boolean> {
@@ -62,6 +63,41 @@ async function attempt(password: string): Promise<Attempt> {
   }
 }
 
+/**
+ * The unlock UI. If building the full view fails for any reason, fall back to a bare password
+ * field: a lock screen that draws nothing leaves the session stuck behind Hyprland's
+ * "lock screen died" page.
+ */
+function unlockView(): Gtk.Widget {
+  try {
+    return LoginView({
+      title: spaceName,
+      subtitle: "Locked",
+      onSubmit: attempt,
+      middle: MediaCard(),
+    }) as Gtk.Widget
+  } catch (error) {
+    console.error(`helixos: lock screen view failed, using the plain one: ${error}`)
+  }
+  try {
+    return LoginView({ title: spaceName, subtitle: "Locked", onSubmit: attempt }) as Gtk.Widget
+  } catch (error) {
+    console.error(`helixos: lock screen fallback failed: ${error}`)
+  }
+  const entry = new Gtk.PasswordEntry({
+    placeholderText: "Enter your password",
+    halign: Gtk.Align.CENTER,
+    valign: Gtk.Align.CENTER,
+    widthRequest: 280,
+  })
+  entry.connect("activate", () => {
+    const password = entry.get_text()
+    entry.set_text("")
+    void attempt(password)
+  })
+  return entry
+}
+
 function lockWindow(monitor: Gdk.Monitor, primary: boolean): Gtk.Window {
   const overlay = new Gtk.Overlay()
   const picture = new Gtk.Picture({
@@ -74,13 +110,12 @@ function lockWindow(monitor: Gdk.Monitor, primary: boolean): Gtk.Window {
   picture.add_css_class("login-wallpaper")
   overlay.set_child(picture)
   if (primary) {
+    // Reactive widgets need a scope; this one lives until the screen unlocks.
     overlay.add_overlay(
-      LoginView({
-        title: spaceName,
-        subtitle: "Locked",
-        onSubmit: attempt,
-        middle: MediaCard(),
-      }) as Gtk.Widget,
+      createRoot((dispose) => {
+        disposers.push(dispose)
+        return unlockView()
+      }),
     )
   }
   const window = new Gtk.Window({ application: app, child: overlay })
@@ -121,6 +156,7 @@ function unlock() {
 
 function cleanup() {
   for (const w of windows.splice(0)) w.destroy()
+  for (const dispose of disposers.splice(0)) dispose()
   instance = null
 }
 

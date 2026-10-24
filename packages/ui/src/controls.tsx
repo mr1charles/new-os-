@@ -1,7 +1,11 @@
 /** Buttons, switches, sliders, and fields in the macOS style, built on native elements. */
 import { Search, X } from "lucide-react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import {
   useId,
+  useLayoutEffect,
+  useRef,
+  useState,
   type ButtonHTMLAttributes,
   type InputHTMLAttributes,
   type ReactNode,
@@ -10,29 +14,93 @@ import {
 } from "react"
 import { cx } from "./cx"
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"
+> {
   variant?: "default" | "primary" | "destructive" | "plain"
   size?: "regular" | "small"
+  /** Shows a spinner, sets aria-busy and swallows clicks, keeping keyboard focus on the button. */
+  loading?: boolean
+}
+
+const PRESS_SPRING = { type: "spring", stiffness: 600, damping: 32 } as const
+const WIDTH_SPRING = { type: "spring", stiffness: 420, damping: 34 } as const
+
+/** Springs the label's width to fit its content, so "Save" to "Saved" does not jump. */
+function MorphLabel({ children, reduce }: { children: string | number; reduce: boolean }) {
+  const measure = useRef<HTMLSpanElement>(null)
+  const [width, setWidth] = useState<number | undefined>(undefined)
+
+  useLayoutEffect(() => {
+    const el = measure.current
+    if (!el) return
+    setWidth(el.offsetWidth)
+    if (typeof ResizeObserver === "undefined") return
+    const observer = new ResizeObserver(() => setWidth(el.offsetWidth))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <motion.span
+      className="nx-button__morph"
+      initial={false}
+      animate={width === undefined ? undefined : { width }}
+      transition={reduce ? { duration: 0 } : WIDTH_SPRING}
+    >
+      <span ref={measure} className="nx-button__measure">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={String(children)}
+            className="nx-button__label"
+            initial={reduce ? { opacity: 0 } : { opacity: 0, filter: "blur(3px)", scale: 0.96 }}
+            animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, filter: "blur(3px)", scale: 0.96 }}
+            transition={{ duration: 0.16 }}
+          >
+            {children}
+          </motion.span>
+        </AnimatePresence>
+      </span>
+    </motion.span>
+  )
 }
 
 export function Button({
   variant = "default",
   size = "regular",
+  loading = false,
   className,
   type = "button",
+  children,
+  onClick,
+  disabled,
   ...props
 }: ButtonProps) {
+  const reduce = useReducedMotion() ?? false
+  const label = typeof children === "string" || typeof children === "number" ? children : null
   return (
-    <button
+    <motion.button
       type={type}
       className={cx(
         "nx-button",
         `nx-button--${variant}`,
         size === "small" && "nx-button--small",
+        loading && "nx-button--loading",
         className,
       )}
+      disabled={disabled}
+      aria-busy={loading || undefined}
+      aria-disabled={loading || undefined}
+      whileTap={reduce || disabled || loading ? undefined : { scale: 0.97 }}
+      transition={PRESS_SPRING}
+      onClick={loading ? (e) => e.preventDefault() : onClick}
       {...props}
-    />
+    >
+      {loading && <span className="nx-button__spinner" aria-hidden="true" />}
+      {label !== null ? <MorphLabel reduce={reduce}>{label}</MorphLabel> : children}
+    </motion.button>
   )
 }
 

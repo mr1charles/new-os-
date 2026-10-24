@@ -1,9 +1,34 @@
-import { act, fireEvent, render, screen } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { useState } from "react"
-import { describe, expect, it, vi } from "vitest"
-import { SearchField, SegmentedControl, Slider, Toggle } from "./controls"
+import { afterEach, describe, expect, it, vi } from "vitest"
+import { Button, SearchField, SegmentedControl, Slider, Toggle } from "./controls"
 import { Row } from "./Group"
 import { Sheet } from "./Sheet"
+
+afterEach(cleanup)
+
+describe("Button", () => {
+  it("clicks normally", () => {
+    const onClick = vi.fn()
+    render(<Button onClick={onClick}>Save</Button>)
+    fireEvent.click(screen.getByRole("button", { name: "Save" }))
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it("swallows clicks while loading but stays focusable", () => {
+    const onClick = vi.fn()
+    render(
+      <Button loading onClick={onClick}>
+        Save
+      </Button>,
+    )
+    const button = screen.getByRole("button", { name: "Save" })
+    fireEvent.click(button)
+    expect(onClick).not.toHaveBeenCalled()
+    expect(button.getAttribute("aria-busy")).toBe("true")
+    expect((button as HTMLButtonElement).disabled).toBe(false)
+  })
+})
 
 describe("Toggle", () => {
   it("is a switch that flips on click", () => {
